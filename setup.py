@@ -7,5 +7,5 @@ setup(
    author="Phil Turner",
    author_email="philip.turner9@nhs.net",
    packages=["ui_automation_core"],
-   install_requires=["selenium"]
+   install_requires=["selenium=3.11.0"]
 )
