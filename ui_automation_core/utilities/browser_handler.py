@@ -1,5 +1,5 @@
 from selenium import webdriver
-from utilities.logger import Logger
+from ui_automation_core.utilities.logger import Logger
 import os
 import json
 
