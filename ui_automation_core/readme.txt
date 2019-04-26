@@ -1,0 +1,2 @@
+This package should be used when writing Python based UI test packs to reduce code duplication across teams.
+For more information see the Confluence page: https://confluence.service.nhs.uk/display/TAS/Core+UI+Automation+Framework

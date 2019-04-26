@@ -1,10 +1,10 @@
-"""
-This represents an element on the page with information which can be used to locate it
-"""
 from enum import Enum
 
 
 class PageElement:
+    """
+    This represents an element on the page with information which can be used to locate it
+    """
 
     def __init__(self, locator_type, locator_value, element_type=""):
         """
