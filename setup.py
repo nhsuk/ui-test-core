@@ -7,5 +7,5 @@ setup(
    author="Phil Turner",
    author_email="philip.turner9@nhs.net",
    packages=["ui_automation_core", "ui_automation_core.utilities"],
-   install_requires=["selenium==3.11.0", "PyHamcrest==1.9.0"]
+   install_requires=["selenium==3.11.0", "PyHamcrest==1.9.0", "requests==2.21.0"]
 )
