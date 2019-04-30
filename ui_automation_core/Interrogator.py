@@ -121,6 +121,25 @@ class Interrogator(object):
         return len(elements) > 0 and elements[0].is_displayed() \
             and not elements[0].get_attribute("aria-hidden") == "true"
 
+    def are_elements_visible(self, page_element):
+        """
+        Finds a list of elements using the page_element passed in, and iterates over them to check they are all visible
+        If one element is not visible, return false
+        if no elements are found, return false
+        :param page_element
+        :return: bool
+        """
+        elements = self.find.elements(page_element)
+
+        if not elements:
+            return False
+
+        for element in elements:
+            if not element.is_displayed() or element.get_attribute("aria-hidden") == "true":
+                return False
+
+        return True
+
     def is_radio_button_visible(self, page_element):
         """
         Check that a radio button is visible - also need to check visibility of parent element for these
