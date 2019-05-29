@@ -37,7 +37,7 @@ class Waiter(object):
     def for_element_to_be_visible(self, page_element):
         """
         Wait for element to be visible, using selenium expected condition class
-        :param page_element: common.PageElement
+        :param page_element: PageElement instance representing the element
         :return:
         """
         self.logger.log(20, "Waiting for element to be visible")

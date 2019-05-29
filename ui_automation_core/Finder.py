@@ -16,7 +16,7 @@ class Finder(object):
     def elements(self, page_element):
         """
         Find the elements matching the given page element object
-        :param page_element: common.PageElement
+        :param page_element: PageElement instance representing the element
         :return: list of matching WebElements
         """
         return self.driver.find_elements(page_element.locator_type, page_element.locator_value)
@@ -24,7 +24,7 @@ class Finder(object):
     def visible_elements(self, page_element):
         """
         Find the elements matching the given page element object, only returning the visible ones
-        :param page_element: common.PageElement
+        :param page_element: PageElement instance representing the element
         :return: list of matching WebElements which are visible
         """
         elements = self.driver.find_elements(page_element.locator_type, page_element.locator_value)
@@ -40,7 +40,7 @@ class Finder(object):
         """
         Find a single element matching the given page element object
         If no element found, will return None
-        :param page_element: common.PageElement
+        :param page_element: PageElement instance representing the element
         :return: single WebElement or None
         """
         try:
@@ -51,7 +51,7 @@ class Finder(object):
     def number_of_elements(self, page_element):
         """
         Count the number of matching elements on the page
-        :param page_element: common.PageElement
+        :param page_element: PageElement instance representing the element
         :return: the number of elements found
         """
         elements = self.elements(page_element)

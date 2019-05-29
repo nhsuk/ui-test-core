@@ -1,4 +1,3 @@
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webelement import WebElement
 
 from ui_automation_core.Finder import Finder
@@ -30,7 +29,7 @@ class Interactor(object):
     def click_element(self, page_element):
         """
         Finds and clicks on an element on the page
-        :param page_element: common.PageElement
+        :param page_element: PageElement instance representing the element
         """
         self.find.element(page_element).click()
 
@@ -46,7 +45,7 @@ class Interactor(object):
     def enter_text(self, page_element, field_input, clear_first=True):
         """
         Writes the given text to an element on the page - only to be used with editable text fields
-        :param page_element: common.PageElement
+        :param page_element: PageElement instance representing the element
         :param field_input: the text to write to the element
         :param clear_first: boolean representing whether or not to clear the field before editing (default True)
         """
@@ -55,14 +54,13 @@ class Interactor(object):
             element.clear()
         element.send_keys(field_input)
 
-    def down_arrow(self, page_element):
+    def send_keys(self, page_element, key):
         """
-        Send a Key Down action to an element
-        :param page_element:
-        :return:
+        Send a Key action to an element
+        :param page_element: PageElement instance representing the element
+        :param key: the key to press e.g. Keys.ARROW_DOWN
         """
-        element: WebElement = self.find.element(page_element)
-        element.send_keys(Keys.ARROW_DOWN)
+        self.enter_text(page_element, key, False)
 
     def append_and_open_url(self, additional_url):
         """

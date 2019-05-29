@@ -17,6 +17,14 @@ class PageElement:
         self.locator_value = locator_value
         self.field_type = element_type
 
+    def __add__(self, value):
+        """
+        Overrides the "+" operator for this class to allow appending of locator value
+        :param value: the string to append to the locator value
+        :return: a new PageElement instance with the altered locator value
+        """
+        return PageElement(self.locator_type, self.locator_value + value)
+
 
 class FieldTypes(Enum):
     text_box = "text"
