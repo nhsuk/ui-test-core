@@ -6,7 +6,7 @@
 ### That causes the other jobs to wait and delays other peoples work.
 ### This has the potential to block deployments.
 ### Chris Midgley suggested that if the agent can't see the URL then the tests should be skipped and the build failed fast. 
-
+### 2019/06/04 now expects basic auth username and password to be passed in to resolve test environments
 
 if [[ ! -z "$1" ]]
   then
@@ -14,6 +14,8 @@ if [[ ! -z "$1" ]]
     echo "### Setting first argument as target URL with https:// added"
     TARGET_URL="https://"$1
     echo $TARGET_URL
+    AUTH_USERNAME=$2
+    AUTH_PASSWORD=$3
 fi
 
 echo '### Checking my own IP address'
@@ -21,7 +23,16 @@ IP=$(curl -s ifconfig.me)
 echo $IP
 
 echo '### Checking URL access'
-PYTHON_SCRIPT='import urllib.request as r; x = r.urlopen(r.Request("'${TARGET_URL}'", headers={"User-Agent": "Mozilla/5.0"})); print(f"Status Code was {x.code}");'
+PYTHON_SCRIPT='
+from urllib import request;
+password_mgr = request.HTTPPasswordMgrWithDefaultRealm();
+password_mgr.add_password(None, "'${TARGET_URL}'", "'${AUTH_USERNAME}'", "'${AUTH_PASSWORD}'");
+handler = request.HTTPBasicAuthHandler(password_mgr);
+opener = request.build_opener(handler);
+request.install_opener(opener);
+response = request.urlopen(request.Request("'${TARGET_URL}'", headers={"User-Agent": "Mozilla/5.0"}));
+print(f"Status Code was {response.code}");
+'
 docker run --rm python:3.7-alpine3.9 python3 -c "$PYTHON_SCRIPT"
 EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ]; then 

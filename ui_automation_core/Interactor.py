@@ -75,11 +75,12 @@ class Interactor(object):
         """
         open any given url
         :param url:
-        :return:
+        :return: None
         """
+
         self.driver.get(url)
         self.wait.for_page_to_load()
-        self.logger.log(20, f"PASS: Successfully opened the URL - {url}")
+        self.logger.log(20, f"PASS: Navigated to the URL - {url}")
 
     def scroll_into_view(self, page_element):
         """
