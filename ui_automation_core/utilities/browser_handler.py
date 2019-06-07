@@ -1,7 +1,10 @@
+import datetime
+import json
+import os
+import shutil
 from selenium import webdriver
 from ui_automation_core.utilities.logger import Logger
-import os
-import json
+from ui_automation_core.utilities.string_util import remove_invalid_characters
 
 """
 Logging Helper:         This class performs any necessary tasks related to the browser
@@ -9,6 +12,8 @@ Created by:             Phil Turner
 Reviewed and Edited by:
 Date Created:           18/01/2019
 """
+
+screenshots_path = "screenshots"
 
 
 class BrowserHandler:
@@ -87,6 +92,50 @@ class BrowserHandler:
         else:
             # Create the file to write logs to
             context.logger = Logger.create_log_file()
+
+    @staticmethod
+    def take_screenshot(driver, description):
+        """
+        Save a screenshot of the browser window - should be used after a test fails
+        :param driver: the browser driver
+        :param description: information about the screenshot to be added to the file name
+        """
+        window_width = driver.get_window_size()["width"]
+        scroll_height = driver.execute_script("return document.body.scrollHeight")
+
+        # Set the browser to the full height of the page so that everything is captured
+        driver.set_window_size(window_width, scroll_height)
+
+        # Create the screenshots folder
+        if not os.path.exists(screenshots_path):
+            os.makedirs(screenshots_path)
+
+        # Create a file name and ensure it is not too long
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H.%M.%S.%f")
+        file_name = f"{screenshots_path}/{timestamp}_{description}"
+        file_name = remove_invalid_characters(file_name)
+        file_name = (file_name[:100] + "---.png") if len(file_name) > 100 else file_name + ".png"
+
+        # Save the screenshot
+        driver.save_screenshot(file_name)
+
+    @staticmethod
+    def move_screenshots_to_folder(folder_name):
+        """
+        Create a new folder and move all screenshots from the root screenshot folder into it (to be run at end of test)
+        :param folder_name: the name of the folder into which the screenshots should be moved
+        """
+        folder_name = remove_invalid_characters(folder_name)
+        source = f"{screenshots_path}/"
+        destination = source + folder_name
+        files = os.listdir(source)
+
+        if not os.path.exists(destination):
+            os.makedirs(destination)
+
+        for file in files:
+            if file.endswith(".png"):
+                shutil.move(source + file, destination)
 
 
 def open_chrome(context):

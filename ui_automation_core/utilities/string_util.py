@@ -13,3 +13,12 @@ def generate_random_string(size=8, chars=string.ascii_letters + string.digits + 
     :return: The generated string
     """
     return "".join(random.choice(chars) for _ in range(size))
+
+
+def remove_invalid_characters(input_string):
+    """
+    Edit a string by replacing underscores with spaces and removing commas, single quotes and new line characters
+    :param input_string: the string which needs to be altered
+    :return: edited string
+    """
+    return input_string.replace(" ", "_").replace(",", "").replace("'", "").replace("\n", "")
