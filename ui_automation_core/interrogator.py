@@ -1,10 +1,10 @@
 import requests
 from selenium.webdriver.common.by import By
 
-from ui_automation_core.Finder import Finder
+from ui_automation_core.finder import Finder
 
 
-class Interrogator(object):
+class Interrogator:
     """
     Interrogate an element and return a value
     Such as is_visible -> True/False
@@ -55,8 +55,7 @@ class Interrogator(object):
         if (len(list_unsorted_tag_result)) > min_list_length:
             self.logger.log(20, "list found and it is not empty")
             return True
-        else:
-            return False
+        return False
 
     def is_image_visible_by_checking_src(self, page_element):
         """
@@ -251,7 +250,7 @@ class Interrogator(object):
         :return: attribute as string
         """
         elements = self.find.elements(page_element)
-        if len(elements) == 0:
+        if not elements:
             return ""
         return elements[0].get_attribute(attribute)
 
@@ -298,8 +297,7 @@ class Interrogator(object):
             siblings_with_class = elements[0].find_elements(By.XPATH,
                                                             "./../*[contains(@class,'" + expected_class + "')]")
             return siblings_with_class and siblings_with_class[0].is_displayed()
-        else:
-            return False
+        return False
 
     def element_contains_link(self, page_element, expected_url):
         """

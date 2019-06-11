@@ -6,17 +6,14 @@ from selenium import webdriver
 from ui_automation_core.utilities.logger import Logger
 from ui_automation_core.utilities.string_util import remove_invalid_characters
 
-"""
-Logging Helper:         This class performs any necessary tasks related to the browser
-Created by:             Phil Turner
-Reviewed and Edited by:
-Date Created:           18/01/2019
-"""
 
-screenshots_path = "screenshots"
+SCREENSHOTS_PATH = "screenshots"
 
 
 class BrowserHandler:
+    """
+    This class performs any necessary tasks related to the browser
+    """
 
     @staticmethod
     def set_browser_size(context):
@@ -34,50 +31,10 @@ class BrowserHandler:
         :param context: the test context instance
         """
         # Check if we have any command line parameters to parse
-        if len(context.config.userdata):
-            for key, value in context.config.userdata.items():
-                if key.lower() == 'base_url':
-                    if key:
-                        context.url = value
-                        continue
-                elif key.lower() == "logging_flag":
-                    if value.lower() == "false":
-                        context.logging_flag = False
-                        continue
-                    else:
-                        context.logging_flag = True
-                        continue
-                elif key.lower() == "maximize_browser_flag":
-                    if value.lower() == "false":
-                        context.maximize_browser = False
-                        continue
-                    else:
-                        context.maximize_browser = True
-                        continue
-                elif key.lower() == "browser":
-                    if value.lower() == "chrome":
-                        open_chrome(context)
-                    elif value.lower() == "firefox":
-                        open_firefox(context)
-                    elif value.lower() == "ie":
-                        open_ie(context)
-                    elif value.lower() == "browserstack":
-                        start_browserstack(context)
-        else:
-            print("No Command line Params detected, using Config file values")
+        parse_config_data(context)
 
         # Check the Browser specified in config and load the Selenium Web Driver
-        if context.browser.lower() == "chrome":
-            open_chrome(context)
-
-        elif context.browser.lower() == "firefox":
-            open_firefox(context)
-
-        elif context.browser.lower() == "ie":
-            open_ie(context)
-
-        elif context.browser.lower() == "browserstack":
-            start_browserstack(context)
+        open_browser(context.browser, context)
 
         # Set Implicit Wait on Selenium Driver
         context.browser.implicitly_wait(context.implicit_wait)
@@ -107,12 +64,12 @@ class BrowserHandler:
         driver.set_window_size(window_width, scroll_height)
 
         # Create the screenshots folder
-        if not os.path.exists(screenshots_path):
-            os.makedirs(screenshots_path)
+        if not os.path.exists(SCREENSHOTS_PATH):
+            os.makedirs(SCREENSHOTS_PATH)
 
         # Create a file name and ensure it is not too long
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H.%M.%S.%f")
-        file_name = f"{screenshots_path}/{timestamp}_{description}"
+        file_name = f"{SCREENSHOTS_PATH}/{timestamp}_{description}"
         file_name = remove_invalid_characters(file_name)
         file_name = (file_name[:100] + "---.png") if len(file_name) > 100 else file_name + ".png"
 
@@ -126,7 +83,7 @@ class BrowserHandler:
         :param folder_name: the name of the folder into which the screenshots should be moved
         """
         folder_name = remove_invalid_characters(folder_name)
-        source = f"{screenshots_path}/"
+        source = f"{SCREENSHOTS_PATH}/"
         destination = source + folder_name
         files = os.listdir(source)
 
@@ -138,6 +95,46 @@ class BrowserHandler:
                 shutil.move(source + file, destination)
 
 
+def parse_config_data(context):
+    """
+    Set any relevant config items on the context
+    :param context: the test context instance
+    """
+    if context.config.userdata:
+
+        for key, value in context.config.userdata.items():
+
+            if key.lower() == 'base_url':
+                context.url = value
+                continue
+
+            elif key.lower() == "logging_flag":
+
+                if value.lower() == "false":
+                    context.logging_flag = False
+                    continue
+
+                else:
+                    context.logging_flag = True
+                    continue
+
+            elif key.lower() == "maximize_browser_flag":
+
+                if value.lower() == "false":
+                    context.maximize_browser = False
+                    continue
+
+                else:
+                    context.maximize_browser = True
+                    continue
+
+            elif key.lower() == "browser":
+                open_browser(value, context)
+
+    else:
+        print("No Command line Params detected, using Config file values")
+
+
 def open_chrome(context):
     """
     Open the Chrome browser
@@ -145,6 +142,7 @@ def open_chrome(context):
     """
     if os.name == 'nt':
         context.browser = webdriver.Chrome(executable_path=r"./browser_executables/chromedriver.exe")
+
     else:
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--no-sandbox')
@@ -196,3 +194,22 @@ def start_browserstack(context):
         desired_capabilities=desired_capabilities,
         command_executor="http://%s:%s@%s/wd/hub" % (browserstack_username, browserstack_access_key, config['server'])
     )
+
+
+def open_browser(browser_name, context):
+    """
+    Open the required browser
+    :param browser_name: the name of the browser to open
+    :param context: the test context instance
+    """
+    if browser_name.lower() == "chrome":
+        open_chrome(context)
+
+    elif browser_name.lower() == "firefox":
+        open_firefox(context)
+
+    elif browser_name.lower() == "ie":
+        open_ie(context)
+
+    elif browser_name.lower() == "browserstack":
+        start_browserstack(context)

@@ -1,11 +1,11 @@
 from selenium.webdriver.remote.webelement import WebElement
 
-from ui_automation_core.Finder import Finder
-from ui_automation_core.Interrogator import Interrogator
-from ui_automation_core.Waiter import Waiter
+from ui_automation_core.finder import Finder
+from ui_automation_core.interrogator import Interrogator
+from ui_automation_core.waiter import Waiter
 
 
-class Interactor(object):
+class Interactor:
     """
     Interact with elements without returning a value, such as clicking, sending keys, or performing Actions
     If you're expecting a return value, such as the Element or True/False look in the Finder or Interrogator

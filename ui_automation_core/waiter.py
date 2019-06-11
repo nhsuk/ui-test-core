@@ -8,7 +8,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from ui_automation_core import custom_expected_conditions
 
 
-class Waiter(object):
+class Waiter:
     """
     Selenium based wait methods
     Uses both standard and custom expected conditions

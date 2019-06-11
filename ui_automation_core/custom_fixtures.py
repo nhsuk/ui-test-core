@@ -16,5 +16,5 @@ def skip_execution_if_running_against_live_environment(context, scenario):
     :return:
     """
     if(context.url in [context.live_url, context.beta_url] or
-            context.browser.current_url in [context.live_url, context.beta_url]):
+       context.browser.current_url in [context.live_url, context.beta_url]):
         scenario.skip("Skipped run against Live when tagged with @fixture.NoRunInLive")

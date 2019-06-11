@@ -1,4 +1,4 @@
-class Finder(object):
+class Finder:
     """
     Selenium based find methods
     Use this class to first find an element(s) before interacting with it

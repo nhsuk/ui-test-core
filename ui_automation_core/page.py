@@ -1,10 +1,10 @@
-from ui_automation_core.Finder import Finder
-from ui_automation_core.Interactor import Interactor
-from ui_automation_core.Interrogator import Interrogator
-from ui_automation_core.Waiter import Waiter
+from ui_automation_core.finder import Finder
+from ui_automation_core.interactor import Interactor
+from ui_automation_core.interrogator import Interrogator
+from ui_automation_core.waiter import Waiter
 
 
-class BasePage(object):
+class BasePage:
     """
     This is the base page class from which common functionality can be inherited
     """

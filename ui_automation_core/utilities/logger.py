@@ -2,30 +2,35 @@ import logging
 import os
 import time
 
-"""
-Logging Helper:         This class contains the functions of interactions when reading a file
-Created by:             Raj Singh
-Reviewed and Edited by:
-Date Created:           05/07/2018
-"""
 
-
-class Logger(object):
+class Logger:
+    """
+    This class contains the functions to log out information about the running tests
+    """
 
     @staticmethod
     def start():
+        """
+        Log out at the start of the test
+        """
         print("Starting Test")
 
     @staticmethod
     def init_logger():
-        # Create logger with some name
+        """
+        Create logger with a name
+        :return: the new logger instance
+        """
         logger = logging.getLogger('base_logger')
         logger.setLevel(logging.DEBUG)
-
         return logger
 
     @staticmethod
     def create_log_file():
+        """
+        Create and configure the log file and formatting
+        :return: the configured logger instance
+        """
         logger = Logger.init_logger()
         file_path = os.path.abspath('logs')
 
@@ -54,4 +59,9 @@ class Logger(object):
 
     @staticmethod
     def log(log_level, message):
+        """
+        Log out a message to the log file
+        :param log_level: severity level - common value for this is 20
+        :param message: the log message to store
+        """
         logging.log(log_level, message)

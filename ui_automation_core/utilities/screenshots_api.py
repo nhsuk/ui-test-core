@@ -1,3 +1,9 @@
+"""
+This module handles attaching screenshots to test result records on Azure DevOps
+Uses Azure DevOps Services REST API:
+https://docs.microsoft.com/en-us/rest/api/azure/devops/test/attachments?view=azure-devops-rest-5.0
+"""
+
 import base64
 import datetime
 import json
@@ -5,8 +11,8 @@ from os import listdir
 import requests
 from ui_automation_core.utilities.string_util import remove_invalid_characters
 
-azure_api_version_get = "5.0"
-azure_api_version_post = "5.0-preview.1"
+AZURE_API_VERSION_GET = "5.0"
+AZURE_API_VERSION_POST = "5.0-preview.1"
 
 
 def parse_parameters(args):
@@ -44,14 +50,14 @@ def get_run_ids(release_id, request_url, auth_token):
         params={"minLastUpdatedDate": min_last_updated_date,
                 "maxLastUpdatedDate": max_last_updated_date,
                 "releaseIds": release_id,
-                "api-version": azure_api_version_get
+                "api-version": AZURE_API_VERSION_GET
                 },
         auth=("", auth_token)
     )
 
     print(f"Get run IDs for release {release_id} - response {response.status_code}")
 
-    if not 200 == response.status_code:
+    if not response.status_code == 200:
         print(f"Could not get run IDs for release {release_id}")
         return []
 
@@ -77,13 +83,13 @@ def get_failed_tests(run_ids, request_url, auth_token):
     for run_id in run_ids:
         response = requests.get(
             request_url + f"/{run_id}/results",
-            params={"api-version": azure_api_version_get},
+            params={"api-version": AZURE_API_VERSION_GET},
             auth=("", auth_token)
         )
 
         print(f"Get failed tests for run ID {run_id} - response {response.status_code}")
 
-        if not 200 == response.status_code:
+        if not response.status_code == 200:
             print(f"Could not get failed test IDs for run {run_id}")
             continue
 
@@ -168,7 +174,7 @@ def attach_screenshots(project, args):
 
             response = requests.post(
                 f"{request_url}/{run_id}/Results/{test_case_result_id}/attachments",
-                params={"api-version": azure_api_version_post},
+                params={"api-version": AZURE_API_VERSION_POST},
                 auth=("", auth_token),
                 headers={"Content-Type": "application/json"},
                 data=json.dumps({
