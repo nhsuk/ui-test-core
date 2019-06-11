@@ -1,5 +1,5 @@
 from selenium.webdriver.remote.webelement import WebElement
-
+from selenium.webdriver.support.select import Select
 from ui_automation_core.finder import Finder
 from ui_automation_core.interrogator import Interrogator
 from ui_automation_core.waiter import Waiter
@@ -41,6 +41,34 @@ class Interactor:
         """
         element: WebElement = self.find.element(page_element)
         return self.driver.execute_script("arguments[0].click();", element)
+
+    def select_by_visible_text(self,page_element,visible_text_to_select):
+        """
+        Select all options that display text matching the visible_text_to_select argument.
+        :param page_element: the element to select
+        :param visible_text_to_select: The visible text to select in the dropdown
+        """
+        element: WebElement = self.find.element(page_element)
+        Select(element).select_by_visible_text(visible_text_to_select)
+
+    def select_by_value(self,page_element, value):
+        """
+        Select all options that have a value matching the argument
+        :param page_element: the element to select
+        :param value:The value to match against
+        """
+        element: WebElement = self.find.element(page_element)
+        Select(element).select_by_value(value)
+
+    def select_by_index(self, page_element, index):
+        """
+        Select the option at the given index. This is done by examining the "index" attribute of an
+        element
+        :param page_element:the element to select
+        :param index:The option at this index will be selected
+        """
+        element: WebElement = self.find.element(page_element)
+        Select(element).select_by_index(index)
 
     def enter_text(self, page_element, field_input, clear_first=True):
         """
