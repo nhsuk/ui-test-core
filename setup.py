@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
    name="ui_automation_core",
-   version="1.0.1",
+   version="1.1.0",
    description="Module providing common functionality for automation test packs",
    packages=["ui_automation_core", "ui_automation_core.utilities"],
    install_requires=["selenium==3.141.0",
