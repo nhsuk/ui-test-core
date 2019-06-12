@@ -42,16 +42,16 @@ class Interactor:
         element: WebElement = self.find.element(page_element)
         return self.driver.execute_script("arguments[0].click();", element)
 
-    def select_by_visible_text(self,page_element,visible_text_to_select):
+    def select_by_visible_text(self, page_element, visible_text_to_select):
         """
         Select all options that display text matching the visible_text_to_select argument.
         :param page_element: the element to select
-        :param visible_text_to_select: The visible text to select in the dropdown
+        :param visible_text_to_select: The visible text to select in the drop down
         """
         element: WebElement = self.find.element(page_element)
         Select(element).select_by_visible_text(visible_text_to_select)
 
-    def select_by_value(self,page_element, value):
+    def select_by_value(self, page_element, value):
         """
         Select all options that have a value matching the argument
         :param page_element: the element to select
