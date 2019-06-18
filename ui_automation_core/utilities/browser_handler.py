@@ -58,10 +58,12 @@ class BrowserHandler:
         :param description: information about the screenshot to be added to the file name
         """
         window_width = driver.get_window_size()["width"]
+        window_height = driver.get_window_size()["height"]
         scroll_height = driver.execute_script("return document.body.scrollHeight")
 
         # Set the browser to the full height of the page so that everything is captured
-        driver.set_window_size(window_width, scroll_height)
+        if scroll_height > window_height:
+            driver.set_window_size(window_width, scroll_height)
 
         # Create the screenshots folder
         if not os.path.exists(SCREENSHOTS_PATH):
