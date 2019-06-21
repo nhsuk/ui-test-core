@@ -78,6 +78,10 @@ class BrowserHandler:
         # Save the screenshot
         driver.save_screenshot(file_name)
 
+        # Reset the browser size if it was changed
+        if scroll_height > window_height:
+            driver.set_window_size(window_width, window_height)
+
     @staticmethod
     def move_screenshots_to_folder(folder_name):
         """
