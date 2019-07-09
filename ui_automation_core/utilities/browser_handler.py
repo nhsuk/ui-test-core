@@ -30,18 +30,18 @@ class BrowserHandler:
         Set up the browser based on the config options
         :param context: the test context instance
         """
+
         # Check if we have any command line parameters to parse
         parse_config_data(context)
 
         # Check the Browser specified in config and load the Selenium Web Driver
-        open_browser(context.browser, context)
+        open_browser(context)
 
         # Set Implicit Wait on Selenium Driver
         context.browser.implicitly_wait(context.implicit_wait)
 
         # Check if Maximize Browser Flag has been activated
-        if context.maximize_browser:
-            context.browser.maximize_window()
+        BrowserHandler.set_browser_size(context)
 
         # If the logging flag is false, disable the logger
         if not context.logging_flag:
@@ -135,7 +135,7 @@ def parse_config_data(context):
                     continue
 
             elif key.lower() == "browser":
-                open_browser(value, context)
+                open_browser(context)
 
     else:
         print("No Command line Params detected, using Config file values")
@@ -202,20 +202,19 @@ def start_browserstack(context):
     )
 
 
-def open_browser(browser_name, context):
+def open_browser(context):
     """
     Open the required browser
-    :param browser_name: the name of the browser to open
     :param context: the test context instance
     """
-    if browser_name.lower() == "chrome":
+    if context.browser.lower() == "chrome":
         open_chrome(context)
 
-    elif browser_name.lower() == "firefox":
+    elif context.browser.lower() == "firefox":
         open_firefox(context)
 
-    elif browser_name.lower() == "ie":
+    elif context.browser.lower() == "ie":
         open_ie(context)
 
-    elif browser_name.lower() == "browserstack":
+    elif context.browser.lower() == "browserstack":
         start_browserstack(context)

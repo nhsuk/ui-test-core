@@ -36,7 +36,7 @@ def parse_parameters(args):
 
 def get_run_ids(release_id, request_url, auth_token):
     """
-    Get the rest run IDs for the given release ID - each feature will have a unique run ID
+    Get the test run IDs for the given release ID - each feature will have a unique run ID
     :param release_id: the release ID from Azure DevOps
     :param request_url: the URL for the Microsoft API
     :param auth_token: the ID number of the release from Azure DevOps
