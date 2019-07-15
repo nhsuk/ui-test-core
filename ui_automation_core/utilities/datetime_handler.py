@@ -13,6 +13,14 @@ def get_current_date():
     return datetime.date.today()
 
 
+def get_current_datetime():
+    """
+    Uses the standard datetime lib to return date.now()
+    :return: Date in YYY-MM-DD-HH-MM-SS format
+    """
+    return datetime.datetime.now()
+
+
 def get_date_altered_by_days(day_difference, current_date=datetime.date.today()):
     """
     Generates a date offset by a number of days

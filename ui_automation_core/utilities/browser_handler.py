@@ -1,11 +1,10 @@
-import datetime
 import json
 import os
 import shutil
 from selenium import webdriver
+from ui_automation_core.utilities.datetime_handler import get_current_datetime
 from ui_automation_core.utilities.logger import Logger
 from ui_automation_core.utilities.string_util import remove_invalid_characters
-
 
 SCREENSHOTS_PATH = "screenshots"
 
@@ -70,7 +69,7 @@ class BrowserHandler:
             os.makedirs(SCREENSHOTS_PATH)
 
         # Create a file name and ensure it is not too long
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H.%M.%S.%f")
+        timestamp = get_current_datetime().strftime("%Y-%m-%d_%H.%M.%S.%f")
         file_name = f"{SCREENSHOTS_PATH}/{timestamp}_{description}"
         file_name = remove_invalid_characters(file_name)
         file_name = (file_name[:100] + "---.png") if len(file_name) > 100 else file_name + ".png"
