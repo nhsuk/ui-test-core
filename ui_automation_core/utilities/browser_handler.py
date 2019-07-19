@@ -140,6 +140,18 @@ def parse_config_data(context):
         print("No Command line Params detected, using Config file values")
 
 
+def open_browser(context):
+    """
+    Open the required browser
+    :param context: the test context instance
+    """
+    if context.browser.lower() == "chrome":
+        open_chrome(context)
+
+    elif context.browser.lower() == "browserstack":
+        start_browserstack(context)
+
+
 def open_chrome(context):
     """
     Open the Chrome browser
@@ -150,31 +162,13 @@ def open_chrome(context):
 
     else:
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--window-size=1420,1080')
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--window-size=1420,1080")
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
         # no need to specify the executable as we're using one installed via pip in Dockerfile
         context.browser = webdriver.Chrome(chrome_options=chrome_options)
 
-    BrowserHandler.set_browser_size(context)
-
-
-def open_firefox(context):
-    """
-    Open the Firefox browser
-    :param context: the test context instance
-    """
-    context.browser = webdriver.Firefox(executable_path=r"browser_executables/geckodriver.exe")
-    BrowserHandler.set_browser_size(context)
-
-
-def open_ie(context):
-    """
-    Open the Internet Explorer browser
-    :param context: the test context instance
-    """
-    context.browser = webdriver.Ie(executable_path=r"browser_executables/IEDriverServer.exe")
     BrowserHandler.set_browser_size(context)
 
 
@@ -199,21 +193,3 @@ def start_browserstack(context):
         desired_capabilities=desired_capabilities,
         command_executor="http://%s:%s@%s/wd/hub" % (browserstack_username, browserstack_access_key, config['server'])
     )
-
-
-def open_browser(context):
-    """
-    Open the required browser
-    :param context: the test context instance
-    """
-    if context.browser.lower() == "chrome":
-        open_chrome(context)
-
-    elif context.browser.lower() == "firefox":
-        open_firefox(context)
-
-    elif context.browser.lower() == "ie":
-        open_ie(context)
-
-    elif context.browser.lower() == "browserstack":
-        start_browserstack(context)
