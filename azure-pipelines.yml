@@ -1,0 +1,40 @@
+# Python package
+# Create and test a Python package on multiple Python versions.
+# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+strategy:
+  matrix:
+    Python37:
+      python.version: '3.7'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -e .
+    pip install pylint-fail-under==0.2.0
+  displayName: 'Install dependencies'
+
+- script: |
+    pytest --junitxml='reports/junit/unit-tests.xml'
+  displayName: 'pytest'
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: 'reports/junit/unit-tests.xml'
+    testRunTitle: 'Publish test results for Python $(python.version)'
+
+- script: |
+    pylint-fail-under --fail_under 9.5 ui_automation_core
+  displayName: 'pylint'
