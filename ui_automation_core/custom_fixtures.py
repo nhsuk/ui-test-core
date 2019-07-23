@@ -11,9 +11,8 @@ def skip_execution_if_running_against_live_environment(context, scenario):
     """
     Skip the current scenario if we are running against the Live URL
     https://stackoverflow.com/a/42721605
-    :param context:
-    :param scenario:
-    :return:
+    :param context: the test context instance
+    :param scenario: the Behave scenario instance
     """
     # Get the live and beta URLs, ensuring there are no errors if these don't exist on the context
     live_url = getattr(context, "live_url", "")
