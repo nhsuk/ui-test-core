@@ -1,6 +1,6 @@
 import pytest
 from hamcrest import assert_that, equal_to
-from ui_automation_core.custom_fixtures import skip_execution_if_running_against_live_environment
+from ui_automation_core.custom_fixtures import *
 
 
 class MockBrowser:
