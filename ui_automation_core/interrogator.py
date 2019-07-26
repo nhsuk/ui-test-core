@@ -310,3 +310,16 @@ class Interrogator:
         if elements:
             return elements[0].is_displayed() and expected_url in elements[0].get_attribute("href")
         return False
+
+    def get_value_from_cookie(self, name_to_find):
+        """
+        Return the value of a named cookie. The name of the cookie must be supplied and matched
+        :param name_to_find: The name of the cookie to search for and return
+        :return: The value of the named cookie or an empty string
+        """
+        dictionary_from_cookie = self.driver.get_cookies()
+
+        for x in dictionary_from_cookie:
+            if x['name'] == name_to_find:
+                return x['value']
+        return ""
