@@ -1,4 +1,6 @@
-from hamcrest import assert_that, equal_to, is_not
+from json import JSONDecodeError
+
+from hamcrest import assert_that, equal_to, is_not, raises, calling
 from ui_automation_core.utilities.string_util import *
 
 
@@ -29,16 +31,42 @@ def test_generate_random_string_increased_length():
 
 
 def test_remove_invalid_characters():
-    input = "test, 'string'\n"
+    test_input_string = "test, 'string'\n"
 
-    result = remove_invalid_characters(input)
+    result = remove_invalid_characters(test_input_string)
 
     assert_that(result, equal_to("test_string"), "All invalid characters should be removed")
 
 
 def test_remove_invalid_characters_does_not_change_valid_string():
-    input = "test_string"
+    test_input_string = "test_string"
 
-    result = remove_invalid_characters(input)
+    result = remove_invalid_characters(test_input_string)
 
-    assert_that(result, equal_to(input), "A string with only valid characters should not be changed")
+    assert_that(result, equal_to(test_input_string), "A string with only valid characters should not be changed")
+
+
+def test_decode_url_string_with_empty_input():
+    empty_url_string = ""
+    assert_that(calling(decode_url_string).with_args(empty_url_string), raises(JSONDecodeError),
+                "A JSONDecodeError should occur when decoding an empty string")
+
+
+def test_decode_url_string_with_none_input():
+    none_url_string = None
+    assert_that(calling(decode_url_string).with_args(none_url_string), raises(TypeError),
+                "A JSONDecodeError should occur with a None value ")
+
+
+def test_decode_url_string_with_invalid_input():
+    invalid_url_string = "necessary%22%3Atrue%2C%22preferences%22%3Atrue%2C%22statistics%22%3Atrue" \
+                         "%2C%22marketing%22%3Afalse%2C%22consented%22%3Afalse%2C%22version1"
+    assert_that(calling(decode_url_string).with_args(invalid_url_string), raises(JSONDecodeError),
+                "A JSONDecodeError should occur when decoding an invalid input string")
+
+
+def test_decode_url_string_with_valid_input():
+    valid_url_string = "%7B%22necessary%22%3Atrue%2C%22preferences%22%3Atrue%2C%22statistics%22%3Atrue" \
+                       "%2C%22marketing%22%3Afalse%2C%22consented%22%3Afalse%2C%22version%22%3A1%7D"
+    assert_that(calling(decode_url_string).with_args(valid_url_string), is_not(raises(JSONDecodeError)),
+                "A JSONDecodeError should not occur when decoding a valid input string")

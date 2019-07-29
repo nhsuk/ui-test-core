@@ -14,33 +14,33 @@ class MockDriver(object):
 
 def test_get_value_from_cookie_with_empty_string():
     finder = Finder("driver", "logger")
-    test_finder = Interrogator(MockDriver(), "logger", finder)
+    test_interrogator = Interrogator(MockDriver(), "logger", finder)
     name = ""
-    result = test_finder.get_value_from_cookie(name)
+    result = test_interrogator.get_value_from_cookie(name)
     assert_that(result, equal_to(""), f"Incorrect cookie value when searching for name: '{name}'")
 
 
 def test_get_value_from_cookie_with_none_value():
     finder = Finder("driver", "logger")
-    test_finder = Interrogator(MockDriver(), "logger", finder)
+    test_interrogator = Interrogator(MockDriver(), "logger", finder)
     name = None
-    result = test_finder.get_value_from_cookie(name)
+    result =  test_interrogator.get_value_from_cookie(name)
     assert_that(result, equal_to(""), f"Incorrect cookie value when searching for name: '{name}'")
 
 
 def test_get_value_from_cookie_with_correct_value():
     finder = Finder("driver", "logger")
-    test_finder = Interrogator(MockDriver(), "logger", finder)
+    test_interrogator = Interrogator(MockDriver(), "logger", finder)
     name = "nhsuk-cookie-consent"
-    result = test_finder.get_value_from_cookie(name)
+    result = test_interrogator.get_value_from_cookie(name)
     assert_that(result, equal_to("%7B%22preferences%22%3Atrue%7D"), f"Incorrect cookie value when searching for name: '{name}'")
 
 
 def test_get_value_from_cookie_with_wrong_key_value():
     finder = Finder("driver", "logger")
-    test_finder = Interrogator(MockDriver(), "logger", finder)
+    test_interrogator = Interrogator(MockDriver(), "logger", finder)
     name = "nhsuk-consent"
-    result = test_finder.get_value_from_cookie(name)
+    result = test_interrogator.get_value_from_cookie(name)
     assert_that(result, equal_to(""), f"Incorrect cookie value when searching for name: '{name}'")
 
 
