@@ -20,3 +20,21 @@ class BrowserIsReady:
     def __call__(self, driver):
         time.sleep(wait.POLL_FREQUENCY)
         return driver.execute_script("return document.readyState") == "complete"
+
+
+class ElementHasAttribute:
+    """
+    This condition checks if an element has a specific attribute e.g. to check if an animation has finished
+    """
+    def __init__(self, finder, page_element, attribute_name, expected_attribute_value):
+        self.find = finder
+        self.page_element = page_element
+        self.attribute_name = attribute_name
+        self.expected_attribute_value = expected_attribute_value
+
+    def __call__(self, driver):
+        elements = self.find.elements(self.page_element)
+        if elements:
+            attribute_value = elements[0].get_attribute(self.attribute_name)
+            return attribute_value == self.expected_attribute_value
+        return False
