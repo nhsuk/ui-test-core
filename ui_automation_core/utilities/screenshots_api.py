@@ -8,6 +8,7 @@ import base64
 import datetime
 import json
 from os import listdir
+from xml.etree.ElementTree import fromstring
 import requests
 from ui_automation_core.utilities.string_util import remove_invalid_characters
 
@@ -59,6 +60,7 @@ def get_run_ids(release_id, request_url, auth_token):
 
     if not response.status_code == 200:
         print(f"Could not get run IDs for release {release_id}")
+        print_response_info(response)
         return []
 
     response_json = response.json()
@@ -68,6 +70,16 @@ def get_run_ids(release_id, request_url, auth_token):
         run_ids.append(item["id"])
 
     return run_ids
+
+
+def print_response_info(response):
+    """
+    Prints additional infomration from the title of the response e.g. to show when the token has expired
+    :param response: the response object returned by the request
+    """
+    info = fromstring(response.content).findtext('.//title')
+    if info:
+        print(info)
 
 
 def get_failed_tests(run_ids, request_url, auth_token):
