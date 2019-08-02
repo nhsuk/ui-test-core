@@ -1,5 +1,13 @@
 from hamcrest import assert_that, equal_to
-from ui_automation_core.custom_expected_conditions import ElementHasAttribute
+from ui_automation_core.custom_expected_conditions import *
+
+
+class MockDriver:
+    def __init__(self, state):
+        self.state = state
+
+    def execute_script(self, _script):
+        return self.state
 
 
 class MockFinder:
@@ -16,6 +24,30 @@ class MockElement:
 
     def get_attribute(self, *_args):
         return self.attribute
+
+
+def test_browser_is_ready_complete():
+    inst = BrowserIsReady()
+
+    result = inst(MockDriver("complete"))
+
+    assert_that(result, equal_to(True), "The browser should have been ready")
+
+
+def test_browser_is_ready_incomplete():
+    inst = BrowserIsReady()
+
+    result = inst(MockDriver("incomplete"))
+
+    assert_that(result, equal_to(False), "The browser should not have been ready")
+
+
+def test_browser_is_ready_none():
+    inst = BrowserIsReady()
+
+    result = inst(MockDriver(None))
+
+    assert_that(result, equal_to(False), "The browser should not have been ready")
 
 
 def test_element_has_attribute():

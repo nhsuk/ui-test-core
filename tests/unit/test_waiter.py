@@ -31,8 +31,9 @@ def test_for_element_to_have_attribute_exists(mock_element_has_attribute):
     check_mocked_functions_called(mock_element_has_attribute)
 
 
+@mock.patch("time.sleep")
 @mock.patch("ui_automation_core.waiter.ElementHasAttribute", side_effect=MockElementHasAttribute)
-def test_for_element_to_have_attribute_not_exists(mock_element_has_attribute):
+def test_for_element_to_have_attribute_not_exists(mock_element_has_attribute, _mock_sleep):
     test_waiter = Waiter("driver", "logger", "finder", 0)
 
     assert_that(calling(test_waiter.for_element_to_have_attribute).with_args(
