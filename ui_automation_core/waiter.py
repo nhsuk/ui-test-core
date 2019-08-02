@@ -1,12 +1,13 @@
 """
 Created by Tony Lawson
 """
+import time
+from selenium.webdriver.support import wait
 from selenium.webdriver.support.expected_conditions import presence_of_element_located
 from selenium.webdriver.support.expected_conditions import visibility_of_element_located
 from selenium.webdriver.support.wait import WebDriverWait
 from ui_automation_core import custom_expected_conditions
 from ui_automation_core.custom_expected_conditions import ElementHasAttribute
-from ui_automation_core.finder import Finder
 
 
 class Waiter:
@@ -34,6 +35,10 @@ class Waiter:
         :return:
         """
         self.logger.log(20, "Waiting for browser")
+
+        # Initial sleep before the first check - some tests can fail without this
+        time.sleep(wait.POLL_FREQUENCY)
+
         WebDriverWait(self.driver, self.wait_time).until(custom_expected_conditions.BrowserIsReady())
         self.logger.log(20, "Finished waiting for browser")
 
