@@ -1,5 +1,5 @@
 from hamcrest import assert_that, equal_to
-from ui_automation_core.custom_expected_conditions import *
+from uitestcore.custom_expected_conditions import *
 
 
 class MockDriver:

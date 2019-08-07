@@ -1,7 +1,7 @@
 from json import JSONDecodeError
 
 from hamcrest import assert_that, equal_to, is_not, raises, calling
-from ui_automation_core.utilities.string_util import *
+from uitestcore.utilities.string_util import *
 
 
 def test_generate_random_string_default_length():

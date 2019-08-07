@@ -1,6 +1,6 @@
 from datetime import timedelta
 from hamcrest import assert_that, equal_to, less_than
-from ui_automation_core.utilities.datetime_handler import *
+from uitestcore.utilities.datetime_handler import *
 
 
 def test_get_current_date():

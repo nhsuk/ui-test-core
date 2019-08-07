@@ -2,9 +2,9 @@ import json
 import os
 import shutil
 from selenium import webdriver
-from ui_automation_core.utilities.datetime_handler import get_current_datetime
-from ui_automation_core.utilities.logger import Logger
-from ui_automation_core.utilities.string_util import remove_invalid_characters
+from uitestcore.utilities.datetime_handler import get_current_datetime
+from uitestcore.utilities.logger import Logger
+from uitestcore.utilities.string_util import remove_invalid_characters
 
 SCREENSHOTS_PATH = "screenshots"
 

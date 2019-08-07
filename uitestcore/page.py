@@ -1,7 +1,7 @@
-from ui_automation_core.finder import Finder
-from ui_automation_core.interactor import Interactor
-from ui_automation_core.interrogator import Interrogator
-from ui_automation_core.waiter import Waiter
+from uitestcore.finder import Finder
+from uitestcore.interactor import Interactor
+from uitestcore.interrogator import Interrogator
+from uitestcore.waiter import Waiter
 
 
 class BasePage:

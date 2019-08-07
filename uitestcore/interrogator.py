@@ -1,7 +1,7 @@
 import requests
 from selenium.webdriver.common.by import By
 
-from ui_automation_core.finder import Finder
+from uitestcore.finder import Finder
 
 
 class Interrogator:

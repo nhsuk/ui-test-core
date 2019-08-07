@@ -1,5 +1,5 @@
 from hamcrest import assert_that, calling, raises, is_not
-from ui_automation_core.custom_assertion import assert_no_failures
+from uitestcore.custom_assertion import assert_no_failures
 
 
 def test_assert_no_failures_succeeds_when_passed_empty_string():

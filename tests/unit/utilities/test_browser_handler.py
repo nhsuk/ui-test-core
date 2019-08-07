@@ -2,7 +2,7 @@ from datetime import datetime
 from unittest import mock
 from hamcrest import equal_to
 from tests.unit.unit_test_utils import *
-from ui_automation_core.utilities.browser_handler import *
+from uitestcore.utilities.browser_handler import *
 
 
 class MockBrowser:
@@ -117,7 +117,7 @@ def test_set_browser_size_not_maximized():
     assert_that(not context.browser.browser_is_maximised, "Browser was maximized but should not be")
 
 
-@mock.patch("ui_automation_core.utilities.logger.Logger.create_log_file",
+@mock.patch("uitestcore.utilities.logger.Logger.create_log_file",
             side_effect=MockLogger.create_log_file)
 def test_prepare_browser_enable_logger(mock_create_log_file):
     context = MockContext(logging_flag=True)
@@ -142,7 +142,7 @@ def test_prepare_browser_disable_logger():
 
 @mock.patch("os.path.exists", side_effect=lambda *args: False)
 @mock.patch("os.makedirs")
-@mock.patch("ui_automation_core.utilities.browser_handler.get_current_datetime",
+@mock.patch("uitestcore.utilities.browser_handler.get_current_datetime",
             side_effect=lambda *args: datetime.strptime("2019-02-15_00.00.00.000000", "%Y-%m-%d_%H.%M.%S.%f"))
 def test_take_screenshot_save_file(mock_get_current_datetime, mock_makedirs, mock_path_exists):
     driver = MockDriver(1024, 768, 2000)
@@ -237,7 +237,7 @@ def test_parse_config_data_true_values():
     assert_that(context.maximize_browser, equal_to(True), "Maximize browser should be true")
 
 
-@mock.patch("ui_automation_core.utilities.browser_handler.open_browser")
+@mock.patch("uitestcore.utilities.browser_handler.open_browser")
 def test_parse_config_data_opens_browser_with_url(mock_open_browser):
     base_url = "https://www.nhs.uk"
     userdata = {
@@ -254,8 +254,8 @@ def test_parse_config_data_opens_browser_with_url(mock_open_browser):
     assert_that(opened_url, equal_to(base_url), "Browser opened with incorrect url")
 
 
-@mock.patch("ui_automation_core.utilities.browser_handler.open_chrome")
-@mock.patch("ui_automation_core.utilities.browser_handler.start_browserstack")
+@mock.patch("uitestcore.utilities.browser_handler.open_chrome")
+@mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
 def test_open_browser_chrome(mock_start_browserstack, mock_open_chrome):
     context = MockContext()
     context.browser.name = "chrome"
@@ -266,8 +266,8 @@ def test_open_browser_chrome(mock_start_browserstack, mock_open_chrome):
     check_mocked_functions_not_called(mock_start_browserstack)
 
 
-@mock.patch("ui_automation_core.utilities.browser_handler.open_chrome")
-@mock.patch("ui_automation_core.utilities.browser_handler.start_browserstack")
+@mock.patch("uitestcore.utilities.browser_handler.open_chrome")
+@mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
 def test_open_browser_browserstack(mock_start_browserstack, mock_open_chrome):
     context = MockContext()
     context.browser.name = "browserstack"
@@ -281,7 +281,7 @@ def test_open_browser_browserstack(mock_start_browserstack, mock_open_chrome):
 @mock.patch("os.name", "nt")
 @mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
 @mock.patch("selenium.webdriver.ChromeOptions")
-@mock.patch("ui_automation_core.utilities.browser_handler.BrowserHandler.set_browser_size")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
 def test_open_chrome_windows(mock_set_browser_size, mock_chromeoptions, mock_chrome):
     context = MockContext()
 
@@ -294,7 +294,7 @@ def test_open_chrome_windows(mock_set_browser_size, mock_chromeoptions, mock_chr
 @mock.patch("os.name", "ubuntu")
 @mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
 @mock.patch("selenium.webdriver.ChromeOptions.add_argument")
-@mock.patch("ui_automation_core.utilities.browser_handler.BrowserHandler.set_browser_size")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
 def test_open_chrome_non_windows(mock_set_browser_size, mock_add_argument, mock_chrome):
     context = MockContext()
 
@@ -309,7 +309,7 @@ def test_open_chrome_non_windows(mock_set_browser_size, mock_add_argument, mock_
 
 
 @mock.patch("os.environ", browserstack_data)
-@mock.patch("ui_automation_core.utilities.browser_handler.open", side_effect=MockBuiltIn)
+@mock.patch("uitestcore.utilities.browser_handler.open", side_effect=MockBuiltIn)
 @mock.patch("json.load", side_effect=lambda *args: browserstack_config)
 @mock.patch("selenium.webdriver.Remote", side_effect=lambda **kwargs: "mock_browserstack")
 def test_start_browserstack(mock_remote, mock_load, mock_open):

@@ -6,8 +6,8 @@ from selenium.webdriver.support import wait
 from selenium.webdriver.support.expected_conditions import presence_of_element_located
 from selenium.webdriver.support.expected_conditions import visibility_of_element_located
 from selenium.webdriver.support.wait import WebDriverWait
-from ui_automation_core import custom_expected_conditions
-from ui_automation_core.custom_expected_conditions import ElementHasAttribute
+from uitestcore import custom_expected_conditions
+from uitestcore.custom_expected_conditions import ElementHasAttribute
 
 
 class Waiter:

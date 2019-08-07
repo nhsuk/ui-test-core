@@ -23,6 +23,8 @@ steps:
     python -m pip install --upgrade pip
     pip install -e .
     pip install pylint-fail-under==0.2.0
+    pip install pytest==4.5
+    pip install wheel
   displayName: 'Install dependencies'
 
 - script: |
@@ -36,5 +38,18 @@ steps:
     testRunTitle: 'Publish test results for Python $(python.version)'
 
 - script: |
-    pylint-fail-under --fail_under 9.5 ui_automation_core
+    pylint-fail-under --fail_under 9.5 uitestcore
   displayName: 'pylint'
+
+- script: python setup.py sdist bdist_wheel
+  displayName: 'Build sdist'
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: $(Build.SourcesDirectory)/dist
+    targetFolder: $(Build.ArtifactStagingDirectory)
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'dist'

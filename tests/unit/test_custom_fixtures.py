@@ -1,6 +1,6 @@
 import pytest
 from hamcrest import assert_that, equal_to
-from ui_automation_core.custom_fixtures import *
+from uitestcore.custom_fixtures import *
 
 
 class MockBrowser:

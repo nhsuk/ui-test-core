@@ -1,7 +1,7 @@
 from hamcrest import assert_that, equal_to, contains
 
-from ui_automation_core.finder import Finder
-from ui_automation_core.interrogator import Interrogator
+from uitestcore.finder import Finder
+from uitestcore.interrogator import Interrogator
 
 
 class MockDriver(object):

@@ -3,8 +3,8 @@ from hamcrest import calling, raises, is_not
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from tests.unit.unit_test_utils import *
-from ui_automation_core.page_element import PageElement
-from ui_automation_core.waiter import Waiter
+from uitestcore.page_element import PageElement
+from uitestcore.waiter import Waiter
 
 
 class MockElementHasAttribute:
@@ -20,7 +20,7 @@ class MockElementHasAttribute:
         return False
 
 
-@mock.patch("ui_automation_core.waiter.ElementHasAttribute", side_effect=MockElementHasAttribute)
+@mock.patch("uitestcore.waiter.ElementHasAttribute", side_effect=MockElementHasAttribute)
 def test_for_element_to_have_attribute_exists(mock_element_has_attribute):
     test_waiter = Waiter("driver", "logger", "finder", 0)
 
@@ -32,7 +32,7 @@ def test_for_element_to_have_attribute_exists(mock_element_has_attribute):
 
 
 @mock.patch("time.sleep")
-@mock.patch("ui_automation_core.waiter.ElementHasAttribute", side_effect=MockElementHasAttribute)
+@mock.patch("uitestcore.waiter.ElementHasAttribute", side_effect=MockElementHasAttribute)
 def test_for_element_to_have_attribute_not_exists(mock_element_has_attribute, _mock_sleep):
     test_waiter = Waiter("driver", "logger", "finder", 0)
 

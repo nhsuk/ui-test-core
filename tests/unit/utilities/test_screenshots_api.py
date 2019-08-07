@@ -1,6 +1,6 @@
 from unittest import mock
 from tests.unit.unit_test_utils import *
-from ui_automation_core.utilities.screenshots_api import print_response_info
+from uitestcore.utilities.screenshots_api import print_response_info
 
 
 class MockResponse:

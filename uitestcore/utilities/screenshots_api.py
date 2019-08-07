@@ -10,7 +10,7 @@ import json
 from os import listdir
 from xml.etree.ElementTree import fromstring
 import requests
-from ui_automation_core.utilities.string_util import remove_invalid_characters
+from uitestcore.utilities.string_util import remove_invalid_characters
 
 AZURE_API_VERSION_GET = "5.0"
 AZURE_API_VERSION_POST = "5.0-preview.1"
