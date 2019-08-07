@@ -42,7 +42,7 @@ The above page class could then be used in the test steps to perform any require
 
 ### Unit tests and linting
 
-The unit tests for this package can be found in the tests folder and are written using PyTest. Pylint is being used to ensure code qaulity.
+The unit tests for this package can be found in the tests folder and are written using PyTest. Pylint is being used to ensure code quality.
 
 ### Versioning
 
