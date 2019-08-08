@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 from selenium import webdriver
+from uitestcore.utilities.config_handler import parse_config_data
 from uitestcore.utilities.datetime_handler import get_current_datetime
 from uitestcore.utilities.logger import Logger
 from uitestcore.utilities.string_util import remove_invalid_characters
@@ -98,46 +99,6 @@ class BrowserHandler:
         for file in files:
             if file.endswith(".png"):
                 shutil.move(source + file, destination)
-
-
-def parse_config_data(context):
-    """
-    Set any relevant config items on the context
-    :param context: the test context instance
-    """
-    if context.config.userdata:
-
-        for key, value in context.config.userdata.items():
-
-            if key.lower() == 'base_url':
-                context.url = value
-                continue
-
-            elif key.lower() == "logging_flag":
-
-                if value.lower() == "false":
-                    context.logging_flag = False
-                    continue
-
-                else:
-                    context.logging_flag = True
-                    continue
-
-            elif key.lower() == "maximize_browser_flag":
-
-                if value.lower() == "false":
-                    context.maximize_browser = False
-                    continue
-
-                else:
-                    context.maximize_browser = True
-                    continue
-
-            elif key.lower() == "browser":
-                open_browser(context)
-
-    else:
-        print("No Command line Params detected, using Config file values")
 
 
 def open_browser(context):

@@ -209,51 +209,6 @@ def test_move_screenshots_to_folder(mock_move, mock_path_exists, mock_listdir):
     mock_move.assert_any_call("screenshots/test4.png", "screenshots/test_folder")
 
 
-def test_parse_config_data_false_values():
-    userdata = {
-        "logging_flag": "false",
-        "maximize_browser_flag": "false",
-    }
-    context = MockContext()
-    context.config = MockConfig(userdata)
-
-    parse_config_data(context)
-
-    assert_that(context.logging_flag, equal_to(False), "Logging flag should be false")
-    assert_that(context.maximize_browser, equal_to(False), "Maximize browser should be false")
-
-
-def test_parse_config_data_true_values():
-    userdata = {
-        "logging_flag": "true",
-        "maximize_browser_flag": "true",
-    }
-    context = MockContext()
-    context.config = MockConfig(userdata)
-
-    parse_config_data(context)
-
-    assert_that(context.logging_flag, equal_to(True), "Logging flag should be true")
-    assert_that(context.maximize_browser, equal_to(True), "Maximize browser should be true")
-
-
-@mock.patch("uitestcore.utilities.browser_handler.open_browser")
-def test_parse_config_data_opens_browser_with_url(mock_open_browser):
-    base_url = "https://www.nhs.uk"
-    userdata = {
-        "base_url": base_url,
-        "browser": "chrome"
-    }
-    context = MockContext()
-    context.config = MockConfig(userdata)
-
-    parse_config_data(context)
-
-    check_mocked_functions_called(mock_open_browser)
-    opened_url = mock_open_browser.call_args[0][0].url
-    assert_that(opened_url, equal_to(base_url), "Browser opened with incorrect url")
-
-
 @mock.patch("uitestcore.utilities.browser_handler.open_chrome")
 @mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
 def test_open_browser_chrome(mock_start_browserstack, mock_open_chrome):
