@@ -51,3 +51,20 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ### License
 
 This project is licensed under the MIT License - see the LICENSE.md file for details
+
+### Dependencies
+
+The package dependencies along with links to their licenses are as follows:
+
+behave - https://github.com/behave/behave/blob/master/LICENSE<br>
+certifi - http://mozilla.org/MPL/2.0/<br>
+chardet - https://github.com/chardet/chardet/blob/master/LICENSE<br>
+idna - https://github.com/kjd/idna/blob/master/LICENSE.rst<br>
+parse - https://github.com/r1chardj0n3s/parse/blob/master/LICENSE<br>
+parse-type - https://github.com/jenisys/parse_type/blob/master/LICENSE<br>
+pyhamcrest - https://github.com/hamcrest/PyHamcrest/blob/master/LICENSE.txt<br>
+python-dateutil - https://github.com/pganssle/dateutil/blob/master/LICENSE<br>
+requests - https://github.com/psf/requests/blob/master/LICENSE<br>
+selenium - https://github.com/SeleniumHQ/selenium/blob/master/LICENSE<br>
+six - https://github.com/benjaminp/six/blob/master/LICENSE<br>
+urllib3 - https://github.com/urllib3/urllib3/blob/master/LICENSE.txt

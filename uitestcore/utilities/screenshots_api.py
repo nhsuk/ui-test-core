@@ -151,6 +151,7 @@ def attach_screenshots(project, args):
     run_ids = get_run_ids(release_id, request_url, auth_token)
 
     if not run_ids:
+        print(f"No test runs found for release {release_id}")
         return 1
 
     print(f"Run IDs found for release {release_id}: {run_ids}")
