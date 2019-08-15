@@ -129,3 +129,41 @@ class Interactor:
         self.logger.log(20, "Switching to new window")
         self.driver.switch_to_window(new_window)
         self.logger.log(20, "Switched to new window")
+
+    def switch_to_original_window(self):
+        """
+        Switch the control to the original window with a window_handle index of 0
+        :return:None
+        """
+        old_window = self.driver.window_handles[0]
+        self.driver.switch_to_window(old_window)
+
+    def switch_to_frame(self, page_element):
+        """
+        Switch the control into an iframe
+        :param page_element: iframe
+        :return: None
+        """
+        self.driver.switch_to.frame(page_element)
+
+    def accept_alert(self):
+        """
+        Accept an alert using built in selenium
+        :return:
+        """
+        self.driver.switch_to.alert.accept()
+
+    def dismiss_alert(self):
+        """
+        Dismisses an alert using built in selenium
+        :return: None
+        """
+        self.driver.switch_to.alert.dismiss()
+
+    def enter_text_into_alert(self, text):
+        """
+        Sends keys to the alert using Selenium
+        :param text:
+        :return: None
+        """
+        self.driver.switch_to.alert.send_keys(text)
