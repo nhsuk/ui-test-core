@@ -110,6 +110,16 @@ class Interactor:
         self.wait.for_page_to_load()
         self.logger.log(20, f"PASS: Navigated to the URL - {url}")
 
+    def close_current_window(self):
+        """
+        Close the current window/tab
+        Then will switch to a remaining window if available
+        :return: None
+        """
+        self.driver.close()
+        if self.driver.window_handles.len > 1:
+            self.driver.switch_to_window(self.driver.window_handles[self.driver.window_handles.len -1])
+
     def scroll_into_view(self, page_element):
         """
         scroll an element into view using javascript
@@ -120,12 +130,50 @@ class Interactor:
         element: WebElement = self.find.element(page_element)
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
-    def switch_window(self):
+    def switch_to_next_window(self):
         """
         Switch the control to a new page that opens up
+        :return: None
+        """
+        new_window = self.driver.window_handles[self.driver.window_handles.len -1]
+        self.logger.log(20, "Switching to next window")
+        self.driver.switch_to_window(new_window)
+        self.logger.log(20, "Switched to next window")
+
+    def switch_to_original_window(self):
+        """
+        Switch the control to the original window with a window_handle index of 0
+        :return:None
+        """
+        old_window = self.driver.window_handles[0]
+        self.driver.switch_to_window(old_window)
+
+    def switch_to_frame(self, page_element):
+        """
+        Switch the control into an iframe
+        :param page_element: iframe
+        :return: None
+        """
+        self.driver.switch_to.frame(page_element)
+
+    def accept_alert(self):
+        """
+        Accept an alert using built in selenium
         :return:
         """
-        new_window = self.driver.window_handles[1]
-        self.logger.log(20, "Switching to new window")
-        self.driver.switch_to_window(new_window)
-        self.logger.log(20, "Switched to new window")
+        self.driver.switch_to.alert.accept()
+
+    def dismiss_alert(self):
+        """
+        Dismisses an alert using built in selenium
+        :return: None
+        """
+        self.driver.switch_to.alert.dismiss()
+
+    def enter_text_into_alert(self, text):
+        """
+        Sends keys to the alert using Selenium
+        :param text:
+        :return: None
+        """
+        self.driver.switch_to.alert.send_keys(text)
