@@ -1,11 +1,8 @@
 from unittest import mock
 from unittest.mock import MagicMock
 
-from hamcrest import assert_that, equal_to, contains, calling, raises
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-from tests.unit.unit_test_utils import check_mocked_functions_called
 from uitestcore.finder import Finder
 from uitestcore.interactor import Interactor
 from uitestcore.interrogator import Interrogator
@@ -73,11 +70,48 @@ def test_switch_to_original_window(mock_driver):
     interrogator = Interrogator(mock_driver, "logger", finder)
     waiter = Waiter(mock_driver, "logger", finder)
     test_interactor = Interactor(mock_driver, "logger", finder, interrogator, waiter)
-    mock_driver.switch_to_window = MagicMock(name="switch_to_window")
-    mock_driver.window_handles = MagicMock(name="window_handles", return_value=["window_0", "window_1"])
+    mock_driver.window_handles = ["window_0", "window_1"]
 
     test_interactor.switch_to_original_window()
 
-    # can't get this to work, it passes when it shouldn't
-    mock_driver.switch_to_window.assert_called_once_with(mock_driver.window_handles[0])
-    mock_driver.switch_to_window.assert_called_once_with(mock_driver.window_handles[1])
+    mock_driver.switch_to_window_with("window_0")
+
+
+@mock.patch("selenium.webdriver")
+def test_switch_to_new_window(mock_driver):
+    finder = Finder(mock_driver, "logger")
+    interrogator = Interrogator(mock_driver, "logger", finder)
+    waiter = Waiter(mock_driver, "logger", finder)
+    test_interactor = Interactor(mock_driver, MagicMock(name="logger"), finder, interrogator, waiter)
+
+    test_interactor.switch_to_new_window()
+
+    mock_driver.switch_to_window.assert_called_once()
+
+
+@mock.patch("selenium.webdriver")
+def test_close_current_window_with_2_windows(mock_driver):
+    finder = Finder(mock_driver, "logger")
+    interrogator = Interrogator(mock_driver, "logger", finder)
+    waiter = Waiter(mock_driver, "logger", finder)
+    test_interactor = Interactor(mock_driver, MagicMock(name="logger"), finder, interrogator, waiter)
+    mock_driver.window_handles.len = 2
+
+    test_interactor.close_current_window()
+
+    mock_driver.close.assert_called_once()
+    mock_driver.switch_to_window.assert_called_once()
+
+
+@mock.patch("selenium.webdriver")
+def test_close_current_window_with_1_window(mock_driver):
+    finder = Finder(mock_driver, "logger")
+    interrogator = Interrogator(mock_driver, "logger", finder)
+    waiter = Waiter(mock_driver, "logger", finder)
+    test_interactor = Interactor(mock_driver, MagicMock(name="logger"), finder, interrogator, waiter)
+    mock_driver.window_handles.len = 1
+
+    test_interactor.close_current_window()
+
+    mock_driver.close.assert_called_once()
+    mock_driver.switch_to_window.assert_not_called()

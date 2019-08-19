@@ -3,7 +3,7 @@ Created by Tony Lawson
 """
 import time
 from selenium.webdriver.support import wait
-from selenium.webdriver.support.expected_conditions import presence_of_element_located
+from selenium.webdriver.support.expected_conditions import presence_of_element_located, alert_is_present
 from selenium.webdriver.support.expected_conditions import visibility_of_element_located
 from selenium.webdriver.support.wait import WebDriverWait
 from uitestcore import custom_expected_conditions
@@ -32,7 +32,6 @@ class Waiter:
     def for_page_to_load(self):
         """
         Wait for browser to load using custom expected condition BrowserIsReady
-        :return:
         """
         self.logger.log(20, "Waiting for browser")
 
@@ -72,3 +71,11 @@ class Waiter:
         """
         WebDriverWait(self.driver, self.wait_time).until(ElementHasAttribute(self.find, page_element,
                                                                              attribute_name, expected_attribute_value))
+
+    def for_alert_to_be_present(self):
+        """
+        Wait for alert to be present, using selenium expected condition class
+        """
+        self.logger.log(20, "Waiting for alert to be present")
+        WebDriverWait(self.driver, self.wait_time).until(alert_is_present())
+        self.logger.log(20, "switched to alert")

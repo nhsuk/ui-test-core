@@ -110,6 +110,16 @@ class Interactor:
         self.wait.for_page_to_load()
         self.logger.log(20, f"PASS: Navigated to the URL - {url}")
 
+    def close_current_window(self):
+        """
+        Close the current window/tab
+        Then will switch to a remaining window if available
+        :return: None
+        """
+        self.driver.close()
+        if self.driver.window_handles.len > 1:
+            self.driver.switch_to_window(self.driver.window_handles[self.driver.window_handles.len -1])
+
     def scroll_into_view(self, page_element):
         """
         scroll an element into view using javascript
@@ -120,12 +130,12 @@ class Interactor:
         element: WebElement = self.find.element(page_element)
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
-    def switch_window(self):
+    def switch_to_new_window(self):
         """
         Switch the control to a new page that opens up
-        :return:
+        :return: None
         """
-        new_window = self.driver.window_handles[1]
+        new_window = self.driver.window_handles[self.driver.window_handles.len -1]
         self.logger.log(20, "Switching to new window")
         self.driver.switch_to_window(new_window)
         self.logger.log(20, "Switched to new window")

@@ -1,4 +1,6 @@
 from unittest import mock
+from unittest.mock import MagicMock
+
 from hamcrest import calling, raises, is_not
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -41,3 +43,13 @@ def test_for_element_to_have_attribute_not_exists(mock_element_has_attribute, _m
         "Checking for an element with an non-existent attribute should raise an exception")
 
     check_mocked_functions_called(mock_element_has_attribute)
+
+
+@mock.patch("uitestcore.waiter.alert_is_present")
+@mock.patch("selenium.webdriver")
+def test_for_alert_to_be_present(mock_driver, mock_alert_is_present):
+    test_waiter = Waiter(mock_driver, MagicMock(), "finder", 0)
+
+    test_waiter.for_alert_to_be_present()
+
+    check_mocked_functions_called(mock_alert_is_present)
