@@ -84,7 +84,7 @@ def test_switch_to_new_window(mock_driver):
     waiter = Waiter(mock_driver, "logger", finder)
     test_interactor = Interactor(mock_driver, MagicMock(name="logger"), finder, interrogator, waiter)
 
-    test_interactor.switch_to_new_window()
+    test_interactor.switch_to_next_window()
 
     mock_driver.switch_to_window.assert_called_once()
 

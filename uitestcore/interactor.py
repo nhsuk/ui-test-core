@@ -130,15 +130,15 @@ class Interactor:
         element: WebElement = self.find.element(page_element)
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
-    def switch_to_new_window(self):
+    def switch_to_next_window(self):
         """
         Switch the control to a new page that opens up
         :return: None
         """
         new_window = self.driver.window_handles[self.driver.window_handles.len -1]
-        self.logger.log(20, "Switching to new window")
+        self.logger.log(20, "Switching to next window")
         self.driver.switch_to_window(new_window)
-        self.logger.log(20, "Switched to new window")
+        self.logger.log(20, "Switched to next window")
 
     def switch_to_original_window(self):
         """
