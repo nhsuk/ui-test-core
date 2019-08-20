@@ -154,7 +154,7 @@ class Interactor:
         :param page_element: iframe
         :return: None
         """
-        self.driver.switch_to.frame(page_element)
+        self.driver.switch_to.frame(self.find.element(page_element))
 
     def accept_alert(self):
         """
