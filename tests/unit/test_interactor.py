@@ -18,10 +18,11 @@ def test_switch_to_frame(mock_driver):
     test_interactor = Interactor(mock_driver, "logger", finder, interrogator, waiter)
     frame_to_find = PageElement(By.ID, "frame_id")
     mock_driver.switch_to.frame = MagicMock(name="frame")
+    finder.element = MagicMock(name="element", value=frame_to_find)
 
     test_interactor.switch_to_frame(frame_to_find)
 
-    mock_driver.switch_to.frame.assert_called_once_with(frame_to_find)
+    mock_driver.switch_to.frame.assert_called_once_with(finder.element(frame_to_find))
 
 
 @mock.patch("selenium.webdriver")
