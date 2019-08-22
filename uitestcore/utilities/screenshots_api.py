@@ -19,7 +19,7 @@ AZURE_API_VERSION_POST = "5.0-preview.1"
 def parse_parameters(args):
     """
     Parse the release ID and auth token from the provided arguments
-    :param args: sys.argv which should contain the release ID and auth token
+    :param args: sys.argv which should contain the release ID and auth token (args[0] is not used)
     :return: tuple containing the two parameters or None if there was an error
     """
     try:
@@ -77,9 +77,10 @@ def print_response_info(response):
     Prints additional infomration from the title of the response e.g. to show when the token has expired
     :param response: the response object returned by the request
     """
-    info = fromstring(response.content).findtext('.//title')
-    if info:
-        print(info)
+    if response.content:
+        info = fromstring(response.content).findtext('.//title')
+        if info:
+            print(info)
 
 
 def get_failed_tests(run_ids, request_url, auth_token):
@@ -135,7 +136,7 @@ def attach_screenshots(project, args):
     Get the details of the failed tests from a given release and attach the screenshots using Microsoft API calls
     :param project: the Azure project name e.g. "nhsuk.contact-us"
     :param args: sys.argv which should contain the release ID and auth token
-    :return: integer: 1 if there were errors, otherwise 0
+    :return: integer: a return value of 0 indicates success, 1 means that any screenshot could not be attached
     """
     # Get the release ID and auth token from the passed arguments
     params = parse_parameters(args)
@@ -164,6 +165,9 @@ def attach_screenshots(project, args):
 
     print(f"Failed tests found: {failed_tests}")
 
+    # A return value of 0 indicates success, 1 means that any screenshot could not be attached
+    return_value = 0
+
     # Attach the relevant screenshots
     for failed_test in failed_tests:
         # Get all of the file names of screenshots for this test
@@ -172,6 +176,7 @@ def attach_screenshots(project, args):
 
         if not file_names:
             print(f"Could not find any screenshot files in folder: {screenshots_path}")
+            return_value = 1
             continue
 
         # Attach any screenshots found for this test
@@ -180,6 +185,7 @@ def attach_screenshots(project, args):
 
             if not image_b64:
                 print(f"Could not convert file to Base64: {screenshots_path}/{file_name}")
+                return_value = 1
                 continue
 
             run_id = failed_test[0]
@@ -200,4 +206,7 @@ def attach_screenshots(project, args):
 
             print(f"Attach screenshot {file_name} - response {response.status_code}")
 
-    return 0
+            if not response.status_code == 200:
+                return_value = 1
+
+    return return_value
