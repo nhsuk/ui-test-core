@@ -106,17 +106,17 @@ class Interrogator:
 
         return self.driver.execute_script(script, element)
 
-    def is_element_visible(self, page_element, waiter=None):
+    def is_element_visible(self, page_element, wait=None):
         """
         Check that an element is visible
         using find_elements so there is no exception here
         :param page_element: PageElement instance representing the element
-        :param waiter: optional Waiter object used to wait before interrogating
+        :param wait: optional Waiter object used to wait before interrogating
         :return: bool
         """
-        if waiter:
+        if wait:
             try:
-                waiter.for_element_to_be_visible(page_element)
+                wait.for_element_to_be_visible(page_element)
             except TimeoutException:
                 pass
 

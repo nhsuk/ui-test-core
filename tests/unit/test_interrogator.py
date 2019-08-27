@@ -124,9 +124,9 @@ def test_is_element_visible_with_wait():
     ]
     finder = MockFinder(list_of_elements_to_return=elements)
     test_interrogator = Interrogator("", "logger", finder)
-    waiter = MockWaiter()
+    wait = MockWaiter()
 
-    test_interrogator.is_element_visible(PageElement(By.ID, "some_id"), waiter)
-    assert_that(waiter.for_element_to_be_visible_called, is_(1),
+    test_interrogator.is_element_visible(PageElement(By.ID, "some_id"), wait)
+    assert_that(wait.for_element_to_be_visible_called, is_(1),
                 "for_element_to_be_visible was not called the expected amount of times")
     assert_that(elements[0].is_displayed_called, is_(1), "is_displayed was not called the expected amount of times")
