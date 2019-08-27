@@ -83,7 +83,9 @@ def test_switch_to_new_window(mock_driver):
     finder = Finder(mock_driver, "logger")
     interrogator = Interrogator(mock_driver, "logger", finder)
     waiter = Waiter(mock_driver, "logger", finder)
+
     test_interactor = Interactor(mock_driver, MagicMock(name="logger"), finder, interrogator, waiter)
+    mock_driver.window_handles = ["window0", "window1"]
 
     test_interactor.switch_to_next_window()
 
@@ -96,7 +98,7 @@ def test_close_current_window_with_2_windows(mock_driver):
     interrogator = Interrogator(mock_driver, "logger", finder)
     waiter = Waiter(mock_driver, "logger", finder)
     test_interactor = Interactor(mock_driver, MagicMock(name="logger"), finder, interrogator, waiter)
-    mock_driver.window_handles.len = 2
+    mock_driver.window_handles = ["window0", "window1"]
 
     test_interactor.close_current_window()
 
@@ -110,7 +112,7 @@ def test_close_current_window_with_1_window(mock_driver):
     interrogator = Interrogator(mock_driver, "logger", finder)
     waiter = Waiter(mock_driver, "logger", finder)
     test_interactor = Interactor(mock_driver, MagicMock(name="logger"), finder, interrogator, waiter)
-    mock_driver.window_handles.len = 1
+    mock_driver.window_handles = ["window0"]
 
     test_interactor.close_current_window()
 
