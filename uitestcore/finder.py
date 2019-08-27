@@ -21,6 +21,18 @@ class Finder:
         """
         return self.driver.find_elements(page_element.locator_type, page_element.locator_value)
 
+    def element(self, page_element):
+        """
+        Find a single element matching the given page element object
+        If no element found, will return None
+        :param page_element: PageElement instance representing the element
+        :return: single WebElement or None
+        """
+        try:
+            return self.elements(page_element)[0]
+        except IndexError:
+            return None
+
     def visible_elements(self, page_element):
         """
         Find the elements matching the given page element object, only returning the visible ones
@@ -35,18 +47,6 @@ class Finder:
                 visible_elements.append(element)
 
         return visible_elements
-
-    def element(self, page_element):
-        """
-        Find a single element matching the given page element object
-        If no element found, will return None
-        :param page_element: PageElement instance representing the element
-        :return: single WebElement or None
-        """
-        try:
-            return self.elements(page_element)[0]
-        except IndexError:
-            return None
 
     def number_of_elements(self, page_element):
         """
