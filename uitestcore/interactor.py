@@ -1,8 +1,5 @@
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
-from uitestcore.finder import Finder
-from uitestcore.interrogator import Interrogator
-from uitestcore.waiter import Waiter
 
 
 class Interactor:
@@ -11,7 +8,7 @@ class Interactor:
     If you're expecting a return value, such as the Element or True/False look in the Finder or Interrogator
     """
 
-    def __init__(self, driver, logger, finder: Finder, interrogator: Interrogator, waiter: Waiter):
+    def __init__(self, driver, logger, finder, interrogator, waiter):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
