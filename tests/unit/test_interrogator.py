@@ -1,7 +1,14 @@
-from hamcrest import assert_that, equal_to, contains
+from unittest import mock
+from unittest.mock import MagicMock
 
+from hamcrest import assert_that, equal_to, contains, is_
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
+
+from tests.unit.unit_test_utils import check_mocked_functions_called
 from uitestcore.finder import Finder
 from uitestcore.interrogator import Interrogator
+from uitestcore.page_element import PageElement
 
 
 class MockDriver(object):
@@ -21,6 +28,34 @@ class MockDriver(object):
     def refresh(self):
         self.refresh_count += 1
 
+
+class MockFinder(object):
+
+    def __init__(self, list_of_elements_to_return=None):
+        self.list_of_elements_to_return = list_of_elements_to_return
+
+    def elements(self, page_element):
+        return self.list_of_elements_to_return
+
+
+class MockElement(object):
+
+    def __init__(self, visibility):
+        self.visibility = visibility
+        self.is_displayed_called = 0
+
+    def is_displayed(self):
+        self.is_displayed_called += 1
+        return self.visibility
+
+
+class MockWaiter(object):
+
+    def __init__(self):
+        self.for_element_to_be_visible_called = 0
+
+    def for_element_to_be_visible(self, page_element):
+        self.for_element_to_be_visible_called += 1
 
 def test_get_value_from_cookie_with_empty_string():
     finder = Finder("driver", "logger")
@@ -70,3 +105,28 @@ def test_clear_cookie_and_refresh_page_performs_a_refresh():
     name = "Banner717"
     test_interrogator.clear_cookie_and_refresh_page(name)
     assert_that(driver.refresh_count, equal_to(1), "The cookie  should be refreshed once")
+
+
+def test_is_element_visible():
+    elements = [
+        MockElement("true")
+    ]
+    finder = MockFinder(list_of_elements_to_return=elements)
+    test_interrogator = Interrogator("", "logger", finder)
+
+    test_interrogator.is_element_visible(PageElement(By.ID, "some_id"))
+    assert_that(elements[0].is_displayed_called, is_(1), "is_displayed was not called the expected amount of times")
+
+
+def test_is_element_visible_with_wait():
+    elements = [
+        MockElement("true")
+    ]
+    finder = MockFinder(list_of_elements_to_return=elements)
+    test_interrogator = Interrogator("", "logger", finder)
+    waiter = MockWaiter()
+
+    test_interrogator.is_element_visible(PageElement(By.ID, "some_id"), waiter)
+    assert_that(waiter.for_element_to_be_visible_called, is_(1),
+                "for_element_to_be_visible was not called the expected amount of times")
+    assert_that(elements[0].is_displayed_called, is_(1), "is_displayed was not called the expected amount of times")

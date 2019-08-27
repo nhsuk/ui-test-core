@@ -11,7 +11,7 @@ class Interactor:
     If you're expecting a return value, such as the Element or True/False look in the Finder or Interrogator
     """
 
-    def __init__(self, driver, logger, finder: Finder, interrogator: Interrogator, waiter: Waiter):
+    def __init__(self, driver, logger, finder, interrogator, waiter):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver

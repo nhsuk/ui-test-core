@@ -1,4 +1,5 @@
 import requests
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
 from uitestcore.finder import Finder
@@ -11,7 +12,7 @@ class Interrogator:
     And get_attribute -> String
     """
 
-    def __init__(self, driver, logger, finder: Finder):
+    def __init__(self, driver, logger, finder):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
@@ -107,13 +108,20 @@ class Interrogator:
 
         return self.driver.execute_script(script, element)
 
-    def is_element_visible(self, page_element):
+    def is_element_visible(self, page_element, waiter=None):
         """
         Check that an element is visible
         using find_elements so there is no exception here
         :param page_element: PageElement instance representing the element
+        :param waiter: optional Waiter object used to wait before interrogating
         :return: bool
         """
+        if waiter:
+            try:
+                waiter.for_element_to_be_visible(page_element)
+            except TimeoutException:
+                pass
+
         elements = self.find.elements(page_element)
         return len(elements) > 0 and elements[0].is_displayed()
 
