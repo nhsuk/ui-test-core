@@ -2,8 +2,6 @@ import requests
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
-from uitestcore.finder import Finder
-
 
 class Interrogator:
     """

@@ -1,8 +1,5 @@
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
-from uitestcore.finder import Finder
-from uitestcore.interrogator import Interrogator
-from uitestcore.waiter import Waiter
 
 
 class Interactor:
