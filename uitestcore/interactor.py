@@ -114,8 +114,8 @@ class Interactor:
         :return: None
         """
         self.driver.close()
-        if self.driver.window_handles.len > 1:
-            self.driver.switch_to_window(self.driver.window_handles[self.driver.window_handles.len -1])
+        if len(self.driver.window_handles) > 1:
+            self.driver.switch_to_window(self.driver.window_handles[len(self.driver.window_handles) - 1])
 
     def scroll_into_view(self, page_element):
         """
@@ -132,7 +132,7 @@ class Interactor:
         Switch the control to a new page that opens up
         :return: None
         """
-        new_window = self.driver.window_handles[self.driver.window_handles.len -1]
+        new_window = self.driver.window_handles[len(self.driver.window_handles) - 1]
         self.logger.log(20, "Switching to next window")
         self.driver.switch_to_window(new_window)
         self.logger.log(20, "Switched to next window")
