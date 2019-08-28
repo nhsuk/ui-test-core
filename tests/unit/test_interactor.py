@@ -1,8 +1,7 @@
 from unittest import mock
 from unittest.mock import MagicMock
-
 from selenium.webdriver.common.by import By
-
+from tests.unit.unit_test_utils import check_mocked_functions_called
 from uitestcore.finder import Finder
 from uitestcore.interactor import Interactor
 from uitestcore.interrogator import Interrogator
@@ -118,3 +117,12 @@ def test_close_current_window_with_1_window(mock_driver):
 
     mock_driver.close.assert_called_once()
     mock_driver.switch_to_window.assert_not_called()
+
+
+@mock.patch("selenium.webdriver")
+def test_switch_to_default_content(mock_driver):
+    interact = Interactor(mock_driver, None, None, None, None)
+
+    interact.switch_to_default_content()
+
+    check_mocked_functions_called(mock_driver.switch_to.default_content)

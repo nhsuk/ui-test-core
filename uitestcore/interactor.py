@@ -174,3 +174,9 @@ class Interactor:
         :return: None
         """
         self.driver.switch_to.alert.send_keys(text)
+
+    def switch_to_default_content(self):
+        """
+        Switch focus to the default frame
+        """
+        self.driver.switch_to.default_content()
