@@ -5,7 +5,7 @@ with open("README.md", "r") as readme_file:
 
 setup(
     name="uitestcore",
-    version="2.6.0",
+    version="3.0.0",
     description="Package providing common functionality for UI automation test packs",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -13,12 +13,9 @@ setup(
     homepage="https://pypi.org/project/uitestcore/",
     packages=["uitestcore", "uitestcore.utilities"],
     install_requires=[
-        "behave==1.2.6",
         "certifi==2019.6.16",
         "chardet==3.0.4",
         "idna==2.8",
-        "parse==1.12.0",
-        "parse-type==0.5.2",
         "pyhamcrest==1.9.0",
         "python-dateutil==2.8.0",
         "requests==2.21.0",
