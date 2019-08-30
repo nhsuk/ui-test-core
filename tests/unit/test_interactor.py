@@ -1,6 +1,8 @@
 from unittest import mock
 from unittest.mock import MagicMock
+from hamcrest import assert_that, equal_to
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from tests.unit.unit_test_utils import check_mocked_functions_called
 from uitestcore.finder import Finder
 from uitestcore.interactor import Interactor
@@ -9,36 +11,243 @@ from uitestcore.page_element import PageElement
 from uitestcore.waiter import Waiter
 
 
-@mock.patch("selenium.webdriver")
-def test_switch_to_frame(mock_driver):
+class MockFinder:
+    def __init__(self, driver=None, logger=None):
+        self.driver = driver
+        self.logger = logger
+        self.mock_element = MockWebElement()
+
+    def element(self, page_element):
+        self.mock_element.page_element = page_element
+        return self.mock_element
+
+
+class MockWebElement:
+    def __init__(self):
+        self.page_element = None
+        self.clicked_elements = []
+        self.tag_name = "select"
+        self.text = ""
+
+    def click(self):
+        self.clicked_elements.append(self.page_element)
+
+    @staticmethod
+    def get_attribute(*_args):
+        return None
+
+    def send_keys(self, value):
+        self.text += value
+
+    def clear(self):
+        self.text = ""
+
+
+class MockInterrogator:
+    def __init__(self, current_url):
+        self.current_url = current_url
+
+    def get_current_url(self):
+        return self.current_url
+
+
+def test_click_element():
+    find = MockFinder()
+    interact = Interactor(None, None, find, None, None)
+    page_element = PageElement(By.ID, "test-id")
+
+    interact.click_element(page_element)
+
+    assert_that(len(find.mock_element.clicked_elements), equal_to(1), "The element should have been clicked once")
+    assert_that(find.mock_element.clicked_elements[0], equal_to(page_element), "Incorrect element clicked")
+
+
+def test_execute_click_with_java_script():
+    mock_driver = MagicMock(name="driver")
+    find = MockFinder()
+    interact = Interactor(mock_driver, None, find, None, None)
+    page_element = PageElement(By.ID, "test-id")
+
+    interact.execute_click_with_java_script(page_element)
+
+    mock_driver.execute_script.assert_called_once_with("arguments[0].click();", find.mock_element)
+
+
+@mock.patch("selenium.webdriver.support.select.Select.select_by_visible_text")
+def test_select_by_visible_text(mock_select_by_visible_text):
+    find = MockFinder()
+    interact = Interactor(None, None, find, None, None)
+    page_element = PageElement(By.ID, "test-id")
+
+    interact.select_by_visible_text(page_element, "text to check")
+
+    mock_select_by_visible_text.assert_called_once_with("text to check")
+
+
+@mock.patch("selenium.webdriver.support.select.Select.select_by_value")
+def test_select_by_value(mock_select_by_value):
+    find = MockFinder()
+    interact = Interactor(None, None, find, None, None)
+    page_element = PageElement(By.ID, "test-id")
+
+    interact.select_by_value(page_element, "value to check")
+
+    mock_select_by_value.assert_called_once_with("value to check")
+
+
+@mock.patch("selenium.webdriver.support.select.Select.select_by_index")
+def test_select_by_index(mock_select_by_index):
+    find = MockFinder()
+    interact = Interactor(None, None, find, None, None)
+    page_element = PageElement(By.ID, "test-id")
+
+    interact.select_by_index(page_element, "index to check")
+
+    mock_select_by_index.assert_called_once_with("index to check")
+
+
+def test_enter_text():
+    find = MockFinder()
+    interact = Interactor(None, None, find, None, None)
+    page_element = PageElement(By.ID, "test-id")
+
+    interact.enter_text(page_element, "abcd", False)
+
+    assert_that(find.mock_element.text, equal_to("abcd"), "Text not sent to element correctly")
+
+
+def test_enter_text_clears_first():
+    find = MockFinder()
+    interact = Interactor(None, None, find, None, None)
+    page_element = PageElement(By.ID, "test-id")
+    find.mock_element.text = "1234"
+
+    interact.enter_text(page_element, "abcd", True)
+
+    assert_that(find.mock_element.text, equal_to("abcd"), "Text not cleared before sending")
+
+
+def test_send_keys():
+    find = MockFinder()
+    interact = Interactor(None, None, find, None, None)
+    page_element = PageElement(By.ID, "test-id")
+
+    interact.send_keys(page_element, Keys.ARROW_LEFT)
+
+    assert_that(find.mock_element.text, equal_to(""), "Key not sent to element correctly")
+
+
+def test_open_url():
+    mock_driver = MagicMock(name="driver")
+    mock_waiter = MagicMock(name="wait")
+    interact = Interactor(mock_driver, MagicMock(name="log"), None, None, mock_waiter)
+
+    interact.open_url("test/url")
+
+    mock_driver.get.assert_called_once_with("test/url")
+    mock_waiter.for_page_to_load.assert_called_once()
+
+
+def test_append_and_open_url():
+    mock_driver = MagicMock(name="driver")
+    mock_waiter = MagicMock(name="wait")
+    interact = Interactor(mock_driver, MagicMock(name="log"), None, MockInterrogator("test/url"), mock_waiter)
+
+    interact.append_and_open_url("/extra")
+
+    mock_driver.get.assert_called_once_with("test/url/extra")
+
+
+def test_close_current_window():
+    mock_driver = MagicMock(name="driver")
+    mock_driver.window_handles = []
+    interact = Interactor(mock_driver, None, None, None, None)
+
+    interact.close_current_window()
+
+    mock_driver.close.assert_called_once()
+
+
+def test_close_current_window_switch_to_a_remaining_window():
+    mock_driver = MagicMock(name="driver")
+    mock_driver.window_handles = ["window_0", "window_1"]
+    interact = Interactor(mock_driver, None, None, None, None)
+
+    interact.close_current_window()
+
+    mock_driver.close.assert_called_once()
+    mock_driver.switch_to_window.assert_called_once_with("window_1")
+
+
+def test_close_current_window_with_one_window():
+    mock_driver = MagicMock(name="driver")
+    mock_driver.window_handles = ["window_0"]
+    interact = Interactor(mock_driver, None, None, None, None)
+
+    interact.close_current_window()
+
+    mock_driver.close.assert_called_once()
+    mock_driver.switch_to_window.assert_not_called()
+
+
+def test_scroll_into_view():
+    mock_driver = MagicMock(name="driver")
+    find = MockFinder()
+    interact = Interactor(mock_driver, MagicMock(name="log"), find, None, None)
+    page_element = PageElement(By.ID, "test-id")
+
+    interact.scroll_into_view(page_element)
+
+    mock_driver.execute_script.assert_called_once_with("arguments[0].scrollIntoView();", find.mock_element)
+
+
+def test_switch_to_next_window():
+    mock_driver = MagicMock(name="driver")
+    mock_driver.window_handles = ["window_0", "window_1"]
+    interact = Interactor(mock_driver, MagicMock(name="log"), None, None, None)
+
+    interact.switch_to_next_window()
+
+    mock_driver.switch_to_window.assert_called_once_with("window_1")
+
+
+def test_switch_to_original_window():
+    mock_driver = MagicMock(name="driver")
+    mock_driver.window_handles = ["window_0", "window_1"]
+    interact = Interactor(mock_driver, None, None, None, None)
+
+    interact.switch_to_original_window()
+
+    mock_driver.switch_to_window.assert_called_once_with("window_0")
+
+
+def test_switch_to_frame():
+    mock_driver = MagicMock(name="driver")
     finder = Finder(mock_driver, "logger")
     interrogator = Interrogator(mock_driver, "logger", finder)
     waiter = Waiter(mock_driver, "logger", finder)
     test_interactor = Interactor(mock_driver, "logger", finder, interrogator, waiter)
     frame_to_find = PageElement(By.ID, "frame_id")
-    mock_driver.switch_to.frame = MagicMock(name="frame")
-    finder.element = MagicMock(name="element", value=frame_to_find)
 
     test_interactor.switch_to_frame(frame_to_find)
 
     mock_driver.switch_to.frame.assert_called_once_with(finder.element(frame_to_find))
 
 
-@mock.patch("selenium.webdriver")
-def test_accept_alert(mock_driver):
+def test_accept_alert():
+    mock_driver = MagicMock(name="driver")
     finder = Finder(mock_driver, "logger")
     interrogator = Interrogator(mock_driver, "logger", finder)
     waiter = Waiter(mock_driver, "logger", finder)
     test_interactor = Interactor(mock_driver, "logger", finder, interrogator, waiter)
-    mock_driver.switch_to.alert.accept = MagicMock(name="accept")
 
     test_interactor.accept_alert()
 
     mock_driver.switch_to.alert.accept.assert_called_once()
 
 
-@mock.patch("selenium.webdriver")
-def test_dismiss_alert(mock_driver):
+def test_dismiss_alert():
+    mock_driver = MagicMock(name="driver")
     finder = Finder(mock_driver, "logger")
     interrogator = Interrogator(mock_driver, "logger", finder)
     waiter = Waiter(mock_driver, "logger", finder)
@@ -50,13 +259,12 @@ def test_dismiss_alert(mock_driver):
     mock_driver.switch_to.alert.dismiss.assert_called_once()
 
 
-@mock.patch("selenium.webdriver")
-def test_enter_text_into_alert(mock_driver):
+def test_enter_text_into_alert():
+    mock_driver = MagicMock(name="driver")
     finder = Finder(mock_driver, "logger")
     interrogator = Interrogator(mock_driver, "logger", finder)
     waiter = Waiter(mock_driver, "logger", finder)
     test_interactor = Interactor(mock_driver, "logger", finder, interrogator, waiter)
-    mock_driver.switch_to.alert.send_keys = MagicMock(name="send_keys")
     text = "my text value"
 
     test_interactor.enter_text_into_alert(text)
@@ -64,63 +272,8 @@ def test_enter_text_into_alert(mock_driver):
     mock_driver.switch_to.alert.send_keys.assert_called_once_with(text)
 
 
-@mock.patch("selenium.webdriver")
-def test_switch_to_original_window(mock_driver):
-    finder = Finder(mock_driver, "logger")
-    interrogator = Interrogator(mock_driver, "logger", finder)
-    waiter = Waiter(mock_driver, "logger", finder)
-    test_interactor = Interactor(mock_driver, "logger", finder, interrogator, waiter)
-    mock_driver.window_handles = ["window_0", "window_1"]
-
-    test_interactor.switch_to_original_window()
-
-    mock_driver.switch_to_window_with("window_0")
-
-
-@mock.patch("selenium.webdriver")
-def test_switch_to_new_window(mock_driver):
-    finder = Finder(mock_driver, "logger")
-    interrogator = Interrogator(mock_driver, "logger", finder)
-    waiter = Waiter(mock_driver, "logger", finder)
-
-    test_interactor = Interactor(mock_driver, MagicMock(name="logger"), finder, interrogator, waiter)
-    mock_driver.window_handles = ["window0", "window1"]
-
-    test_interactor.switch_to_next_window()
-
-    mock_driver.switch_to_window.assert_called_once()
-
-
-@mock.patch("selenium.webdriver")
-def test_close_current_window_with_2_windows(mock_driver):
-    finder = Finder(mock_driver, "logger")
-    interrogator = Interrogator(mock_driver, "logger", finder)
-    waiter = Waiter(mock_driver, "logger", finder)
-    test_interactor = Interactor(mock_driver, MagicMock(name="logger"), finder, interrogator, waiter)
-    mock_driver.window_handles = ["window0", "window1"]
-
-    test_interactor.close_current_window()
-
-    mock_driver.close.assert_called_once()
-    mock_driver.switch_to_window.assert_called_once()
-
-
-@mock.patch("selenium.webdriver")
-def test_close_current_window_with_1_window(mock_driver):
-    finder = Finder(mock_driver, "logger")
-    interrogator = Interrogator(mock_driver, "logger", finder)
-    waiter = Waiter(mock_driver, "logger", finder)
-    test_interactor = Interactor(mock_driver, MagicMock(name="logger"), finder, interrogator, waiter)
-    mock_driver.window_handles = ["window0"]
-
-    test_interactor.close_current_window()
-
-    mock_driver.close.assert_called_once()
-    mock_driver.switch_to_window.assert_not_called()
-
-
-@mock.patch("selenium.webdriver")
-def test_switch_to_default_content(mock_driver):
+def test_switch_to_default_content():
+    mock_driver = MagicMock(name="driver")
     interact = Interactor(mock_driver, None, None, None, None)
 
     interact.switch_to_default_content()

@@ -46,9 +46,8 @@ def test_for_element_to_have_attribute_not_exists(mock_element_has_attribute, _m
 
 
 @mock.patch("uitestcore.waiter.alert_is_present")
-@mock.patch("selenium.webdriver")
-def test_for_alert_to_be_present(mock_driver, mock_alert_is_present):
-    test_waiter = Waiter(mock_driver, MagicMock(), "finder", 0)
+def test_for_alert_to_be_present(mock_alert_is_present):
+    test_waiter = Waiter(MagicMock(), MagicMock(), "finder", 0)
 
     test_waiter.for_alert_to_be_present()
 

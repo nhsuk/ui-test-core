@@ -87,6 +87,16 @@ class Interactor:
         """
         self.enter_text(page_element, key, False)
 
+    def open_url(self, url):
+        """
+        open any given url
+        :param url:
+        :return: None
+        """
+        self.driver.get(url)
+        self.wait.for_page_to_load()
+        self.logger.log(20, f"PASS: Navigated to the URL - {url}")
+
     def append_and_open_url(self, additional_url):
         """
         Adds additional data to URL e.g. query string
@@ -95,17 +105,6 @@ class Interactor:
         url = self.interrogate.get_current_url()
         url += additional_url
         self.open_url(url)
-
-    def open_url(self, url):
-        """
-        open any given url
-        :param url:
-        :return: None
-        """
-
-        self.driver.get(url)
-        self.wait.for_page_to_load()
-        self.logger.log(20, f"PASS: Navigated to the URL - {url}")
 
     def close_current_window(self):
         """
