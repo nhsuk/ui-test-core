@@ -21,7 +21,7 @@ class Interrogator:
         self.logger = logger
         self.find = finder
 
-    def is_table_empty(self, page_element, min_list_length=5):
+    def table_is_not_empty(self, page_element, min_list_length=5):
         """
         check if a table is empty using by counting the rows as found in get_table_row_count(page_element)
         :param page_element: PageElement instance representing the element
@@ -42,7 +42,7 @@ class Interrogator:
         self.logger.log(20, "table data is not empty")
         return True
 
-    def is_list_empty(self, page_element, min_list_length=1):
+    def list_is_not_empty(self, page_element, min_list_length=1):
         """
         check if a list is empty by counting the number of li tags
         :param page_element: PageElement instance representing the element
@@ -71,7 +71,6 @@ class Interrogator:
         :param page_element: PageElement instance representing the element
         :return: bool
         """
-
         src_url = self.get_attribute(page_element, "src")
         if src_url is None:
             return True
@@ -174,7 +173,8 @@ class Interrogator:
         """
         # Check for element using find_elements so there is no exception here
         elements = self.find.elements(page_element)
-        return elements and (elements[0].is_displayed() or elements[0].find_element(By.XPATH, "./..").is_displayed())
+        return len(elements) > 0 and (elements[0].is_displayed() or
+                                      elements[0].find_element(By.XPATH, "./..").is_displayed())
 
     def is_element_selected(self, page_element):
         """
@@ -183,7 +183,7 @@ class Interrogator:
         :return: boolean representing whether the element was selected
         """
         elements = self.find.elements(page_element)
-        return elements and elements[0].is_selected()
+        return len(elements) > 0 and elements[0].is_selected()
 
     def is_element_enabled(self, page_element):
         """
@@ -193,7 +193,7 @@ class Interrogator:
         """
         # Check for element using find_elements so there is no exception here
         elements = self.find.elements(page_element)
-        return elements and elements[0].is_enabled()
+        return len(elements) > 0 and elements[0].is_enabled()
 
     def is_element_visible_and_contains_text(self, page_element, expected_text):
         """
@@ -276,7 +276,7 @@ class Interrogator:
         :return: boolean representing whether the class was found on the element
         """
         elements = self.find.elements(page_element)
-        return elements and elements[0].is_displayed() and expected_class in elements[0].get_attribute("class")
+        return len(elements) > 0 and elements[0].is_displayed() and expected_class in elements[0].get_attribute("class")
 
     def element_parent_has_class(self, page_element, expected_class):
         """
@@ -302,7 +302,7 @@ class Interrogator:
         if elements:
             siblings_with_class = elements[0].find_elements(By.XPATH,
                                                             "./../*[contains(@class,'" + expected_class + "')]")
-            return siblings_with_class and siblings_with_class[0].is_displayed()
+            return len(siblings_with_class) > 0 and siblings_with_class[0].is_displayed()
         return False
 
     def element_contains_link(self, page_element, expected_url):
