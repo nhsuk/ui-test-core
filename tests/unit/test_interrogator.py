@@ -1,6 +1,5 @@
 from unittest import mock
 from unittest.mock import MagicMock
-
 import requests
 from hamcrest import assert_that, equal_to, contains, is_
 from selenium.webdriver.common.by import By
