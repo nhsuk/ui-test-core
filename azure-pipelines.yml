@@ -22,14 +22,15 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -e .
-    pip install pylint-fail-under==0.2.0
     pip install pytest==4.5
+    pip install pytest-cov==2.7.1
+    pip install pylint-fail-under==0.2.0
     pip install wheel
   displayName: 'Install dependencies'
 
 - script: |
-    pytest --junitxml='reports/junit/unit-tests.xml'
-  displayName: 'pytest'
+    pytest --cov=uitestcore --cov-fail-under=95 --cov-report term-missing --junitxml='reports/junit/unit-tests.xml'
+  displayName: 'Unit tests with coverage'
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
@@ -39,7 +40,7 @@ steps:
 
 - script: |
     pylint-fail-under --fail_under 9.5 uitestcore
-  displayName: 'pylint'
+  displayName: 'Pylint'
 
 - script: python setup.py sdist bdist_wheel
   displayName: 'Build sdist'
