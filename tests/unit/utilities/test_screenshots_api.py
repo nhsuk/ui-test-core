@@ -1,5 +1,5 @@
 from unittest import mock
-from hamcrest import equal_to, less_than, starts_with
+from hamcrest import equal_to, less_than, starts_with, calling, is_not, raises
 from tests.unit.unit_test_utils import *
 from uitestcore.utilities.datetime_handler import get_date_altered_by_days
 from uitestcore.utilities.screenshots_api import *
@@ -50,6 +50,14 @@ class MockBuiltIn:
         return "test data".encode()
 
 
+def mock_list_dir(file_path):
+    if file_path == "test/folder":
+        return ["file1.png", "file2.png", "file2.png"]
+    elif file_path == "test/folder_with_no_files":
+        return []
+    raise FileNotFoundError
+
+
 @mock.patch("builtins.print")
 def test_print_response_info_prints_response_title(mock_print):
     response = MockResponse("<body><title>Access Denied: The Personal Access Token used has expired.</title></body>")
@@ -86,8 +94,8 @@ def test_parse_parameters_handles_invalid_number_of_arguments(mock_print):
     params = parse_parameters(args)
 
     assert_that(params, equal_to(None), "No parameters should be returned when arguments are invalid")
-    expected_message = "Error: Unable to parse required parameters - ensure they are passed correctly. " \
-                       "Expected release ID and auth token."
+    expected_message = "##vso[task.logissue type=error]Unable to parse required parameters - " \
+                       "ensure they are passed correctly. Expected release ID and auth token."
     mock_print.assert_called_with(expected_message)
 
 
@@ -137,7 +145,7 @@ def test_get_run_ids_returns_no_ids_when_request_fails(mock_print, mock_get):
 
     check_mocked_functions_called(mock_get, mock_print)
     assert_that(run_ids, equal_to([]), "Run IDs should not be returned when the request failed")
-    mock_print.assert_called_with("Could not get run IDs for release 100")
+    mock_print.assert_called_with("##vso[task.logissue type=error]Could not get run IDs for release 100")
 
 
 @mock.patch("requests.get", side_effect=lambda *args, **kwargs: MockResponse("", 400, "get_failed_tests"))
@@ -148,7 +156,7 @@ def test_get_failed_tests_returns_no_failed_tests_when_request_fails(mock_print,
     check_mocked_functions_called(mock_get, mock_print)
     assert_that(failed_tests, equal_to([]), "Failed tests should not be returned when the request failed")
     request_failed_message = mock_print.call_args[0][0]
-    assert_that(request_failed_message, starts_with("No failed tests were found"))
+    assert_that(request_failed_message, starts_with("##vso[task.logissue type=warning]No failed tests were found"))
 
 
 @mock.patch("requests.get", side_effect=lambda *args, **kwargs: MockResponse("", 200, "get_failed_tests"))
@@ -280,3 +288,58 @@ def test_attach_screenshots_performs_the_correct_request(mock_get_failed_tests, 
     assert_that(request_args[1]["data"], equal_to("{\"attachmentType\": \"GeneralAttachment\", \"comment\": "
                                                   "\"Example screenshot\", \"fileName\": \"test2\", \"stream\": "
                                                   "\"test-base64-string\"}"), "Incorrect request body")
+
+
+@mock.patch("uitestcore.utilities.screenshots_api.listdir", side_effect=mock_list_dir)
+def test_append_file_names(mock_listdir):
+    file_names = []
+    result = append_file_names(file_names, "test/folder")
+
+    assert_that(result, equal_to(0), "Result should be success when files found")
+    assert_that(file_names, equal_to(["file1.png", "file2.png", "file2.png"]), "File names list incorrect")
+    mock_listdir.assert_called_once_with("test/folder")
+
+
+def test_append_file_names_handles_folder_not_found():
+    file_names = []
+    assert_that(calling(append_file_names).with_args(file_names, "test/folder_not_exists"),
+                is_not(raises(FileNotFoundError)),
+                "Errors should be handled when the folder is not found")
+
+
+@mock.patch("builtins.print")
+def test_append_file_names_outputs_a_warning_message_and_does_not_fail_when_folder_not_found(mock_print):
+    file_names = []
+    result = append_file_names(file_names, "test/folder_not_exists")
+
+    expected_message = "##vso[task.logissue type=warning]Folder not found: test/folder_not_exists - " \
+                       "this could have happened due to failed tests in a previous deployment attempt"
+    assert_that(result, equal_to(0), "Result should be success when there is only a warning")
+    mock_print.assert_called_once_with(expected_message)
+
+
+@mock.patch("builtins.print")
+@mock.patch("uitestcore.utilities.screenshots_api.listdir", side_effect=mock_list_dir)
+def test_append_file_names_outputs_an_error_message_and_fails_when_files_not_found_in_folder(mock_listdir, mock_print):
+    file_names = []
+    result = append_file_names(file_names, "test/folder_with_no_files")
+
+    assert_that(result, equal_to(1), "Result should be failure when there is an error")
+    assert_that(file_names, equal_to([]), "File names list should be empty when there was an error")
+    mock_print.assert_called_once_with("##vso[task.logissue type=error]Could not find any screenshot files in folder: "
+                                       "test/folder_with_no_files")
+    mock_listdir.assert_called_once_with("test/folder_with_no_files")
+
+
+@mock.patch("builtins.print")
+def test_print_azure_error(mock_print):
+    print_azure_error("test-error")
+
+    mock_print.assert_called_once_with("##vso[task.logissue type=error]test-error")
+
+
+@mock.patch("builtins.print")
+def test_print_azure_warning(mock_print):
+    print_azure_warning("test-warning")
+
+    mock_print.assert_called_once_with("##vso[task.logissue type=warning]test-warning")

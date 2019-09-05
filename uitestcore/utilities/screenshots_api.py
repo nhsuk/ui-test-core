@@ -16,6 +16,88 @@ AZURE_API_VERSION_GET = "5.0"
 AZURE_API_VERSION_POST = "5.0-preview.1"
 
 
+def attach_screenshots(project, args):
+    """
+    Get the details of the failed tests from a given release and attach the screenshots using Microsoft API calls
+    :param project: the Azure project name e.g. "nhsuk.contact-us"
+    :param args: sys.argv which should contain the release ID and auth token
+    :return: integer: a return value of 0 indicates success, 1 means that any screenshot could not be attached
+    """
+    # Get the release ID and auth token from the passed arguments
+    params = parse_parameters(args)
+    if not params:
+        return 1
+    release_id = params[0]
+    auth_token = params[1]
+
+    # Set the URL for the required API
+    request_url = f"https://dev.azure.com/nhsuk/{project}/_apis/test/runs"
+
+    # Get the run IDs for the given release
+    run_ids = get_run_ids(release_id, request_url, auth_token)
+
+    if not run_ids:
+        print_azure_error(f"No test runs found for release {release_id}")
+        return 1
+
+    print(f"Run IDs found for release {release_id}: {run_ids}")
+
+    # Get the list of failed tests
+    failed_tests = get_failed_tests(run_ids, request_url, auth_token)
+
+    if not failed_tests:
+        return 1
+
+    print(f"Failed tests found (run ID, test case result ID, test name): {failed_tests}")
+
+    # A return value of 0 indicates success, 1 means that any screenshot could not be attached
+    return_value = 0
+
+    # Attach the relevant screenshots
+    for failed_test in failed_tests:
+        # Get all of the file names of screenshots for this test
+        screenshots_path = "screenshots/" + remove_invalid_characters(failed_test[2])
+        file_names = []
+
+        if append_file_names(file_names, screenshots_path) == 1:
+            return_value = 1
+
+        if not file_names:
+            continue
+
+        # Attach any screenshots found for this test
+        for file_name in file_names:
+            image_b64 = get_image_base64(f"{screenshots_path}/{file_name}")
+
+            if not image_b64:
+                print_azure_error(f"Could not convert file to Base64: {screenshots_path}/{file_name}")
+                return_value = 1
+                continue
+
+            run_id = failed_test[0]
+            test_case_result_id = failed_test[1]
+
+            response = requests.post(
+                f"{request_url}/{run_id}/Results/{test_case_result_id}/attachments",
+                params={"api-version": AZURE_API_VERSION_POST},
+                auth=("", auth_token),
+                headers={"Content-Type": "application/json"},
+                data=json.dumps({
+                    "attachmentType": "GeneralAttachment",
+                    "comment": "Example screenshot",
+                    "fileName": file_name,
+                    "stream": image_b64.decode("utf-8")
+                })
+            )
+
+            print(f"Attach screenshot {file_name} - response {response.status_code}")
+
+            if not response.status_code == 200:
+                return_value = 1
+
+    return return_value
+
+
 def parse_parameters(args):
     """
     Parse the release ID and auth token from the provided arguments
@@ -26,8 +108,8 @@ def parse_parameters(args):
         params = args[1], args[2]
 
     except IndexError:
-        print("Error: Unable to parse required parameters - ensure they are passed correctly. "
-              "Expected release ID and auth token.")
+        print_azure_error("Unable to parse required parameters - ensure they are passed correctly. "
+                          "Expected release ID and auth token.")
         return None
 
     else:
@@ -59,7 +141,7 @@ def get_run_ids(release_id, request_url, auth_token):
     print(f"Get run IDs for release {release_id} - response {response.status_code}")
 
     if not response.status_code == 200:
-        print(f"Could not get run IDs for release {release_id}")
+        print_azure_error(f"Could not get run IDs for release {release_id}")
         print_response_info(response)
         return []
 
@@ -103,7 +185,7 @@ def get_failed_tests(run_ids, request_url, auth_token):
         print(f"Get failed tests for run ID {run_id} - response {response.status_code}")
 
         if not response.status_code == 200:
-            print(f"Could not get failed test IDs for run {run_id}")
+            print_azure_error(f"Could not get failed test IDs for run {run_id}")
             continue
 
         response_json = response.json()
@@ -113,8 +195,9 @@ def get_failed_tests(run_ids, request_url, auth_token):
                 failed_tests.append((run_id, test_result["id"], test_result["testCase"]["name"]))
 
     if not failed_tests:
-        print("No failed tests were found. If this is because all of the tests passed, this task should be configured "
-              "to be skipped by setting the 'Run this task' option to 'Only when a previous task has failed'")
+        print_azure_warning("No failed tests were found. If this is because all of the tests passed, "
+                            "this task should be configured to be skipped by setting the 'Run this task' option to "
+                            "'Only when a previous task has failed'")
 
     return failed_tests
 
@@ -131,82 +214,36 @@ def get_image_base64(file_path):
     return base64_string
 
 
-def attach_screenshots(project, args):
+def append_file_names(file_names, folder_path):
     """
-    Get the details of the failed tests from a given release and attach the screenshots using Microsoft API calls
-    :param project: the Azure project name e.g. "nhsuk.contact-us"
-    :param args: sys.argv which should contain the release ID and auth token
-    :return: integer: a return value of 0 indicates success, 1 means that any screenshot could not be attached
+    Get a list of file names inside a folder with the given path
+    :param file_names: the list of file names to append to
+    :param folder_path: the path to the folder to look in
+    :return: 0: success (or only a warning), 1: failure
     """
-    # Get the release ID and auth token from the passed arguments
-    params = parse_parameters(args)
-    if not params:
-        return 1
-    release_id = params[0]
-    auth_token = params[1]
+    try:
+        files_in_folder = listdir(folder_path)
 
-    # Set the URL for the required API
-    request_url = f"https://dev.azure.com/nhsuk/{project}/_apis/test/runs"
+    except FileNotFoundError:
+        # The folder might not be found due to the API returning a test which didn't fail in the current deployment,
+        # so this is only considered a warning
+        print_azure_warning(f"Folder not found: {folder_path} - "
+                            f"this could have happened due to failed tests in a previous deployment attempt")
+        return 0
 
-    # Get the run IDs for the given release
-    run_ids = get_run_ids(release_id, request_url, auth_token)
-
-    if not run_ids:
-        print(f"No test runs found for release {release_id}")
+    if not files_in_folder:
+        print_azure_error("Could not find any screenshot files in folder: " + folder_path)
         return 1
 
-    print(f"Run IDs found for release {release_id}: {run_ids}")
+    for file in files_in_folder:
+        file_names.append(file)
 
-    # Get the list of failed tests
-    failed_tests = get_failed_tests(run_ids, request_url, auth_token)
+    return 0
 
-    if not failed_tests:
-        return 1
 
-    print(f"Failed tests found: {failed_tests}")
+def print_azure_error(error_message):
+    print("##vso[task.logissue type=error]" + error_message)
 
-    # A return value of 0 indicates success, 1 means that any screenshot could not be attached
-    return_value = 0
 
-    # Attach the relevant screenshots
-    for failed_test in failed_tests:
-        # Get all of the file names of screenshots for this test
-        screenshots_path = "screenshots/" + remove_invalid_characters(failed_test[2])
-        file_names = listdir(screenshots_path)
-
-        if not file_names:
-            print(f"Could not find any screenshot files in folder: {screenshots_path}")
-            return_value = 1
-            continue
-
-        # Attach any screenshots found for this test
-        for file_name in file_names:
-            image_b64 = get_image_base64(f"{screenshots_path}/{file_name}")
-
-            if not image_b64:
-                print(f"Could not convert file to Base64: {screenshots_path}/{file_name}")
-                return_value = 1
-                continue
-
-            run_id = failed_test[0]
-            test_case_result_id = failed_test[1]
-
-            response = requests.post(
-                f"{request_url}/{run_id}/Results/{test_case_result_id}/attachments",
-                params={"api-version": AZURE_API_VERSION_POST},
-                auth=("", auth_token),
-                headers={"Content-Type": "application/json"},
-                data=json.dumps({
-                    "attachmentType": "GeneralAttachment",
-                    "comment": "Example screenshot",
-                    "fileName": file_name,
-                    "stream": image_b64.decode("utf-8")
-                })
-            )
-
-            print(f"Attach screenshot {file_name} - response {response.status_code}")
-
-            if not response.status_code == 200:
-                return_value = 1
-
-    return return_value
+def print_azure_warning(warning_message):
+    print("##vso[task.logissue type=warning]" + warning_message)
