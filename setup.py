@@ -5,7 +5,7 @@ with open("README.md", "r") as readme_file:
 
 setup(
     name="uitestcore",
-    version="3.2.4",
+    version="3.3.0",
     description="Package providing common functionality for UI automation test packs",
     long_description=readme,
     long_description_content_type="text/markdown",
