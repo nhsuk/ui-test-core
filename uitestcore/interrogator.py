@@ -329,11 +329,3 @@ class Interrogator:
             if x['name'] == name_to_find:
                 return x['value']
         return ""
-
-    def clear_cookie_and_refresh_page(self, cookie_name):
-        """
-        Delete a single cookie and refresh the related page. The name of the cookie must be supplied and matched.
-        :param cookie_name: The name of the cookie to search for and to delete
-        """
-        self.driver.delete_cookie(cookie_name)
-        self.driver.refresh()

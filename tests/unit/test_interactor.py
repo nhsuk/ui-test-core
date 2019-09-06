@@ -1,6 +1,6 @@
 from unittest import mock
 from unittest.mock import MagicMock
-from hamcrest import assert_that, equal_to
+from hamcrest import assert_that, equal_to, contains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from tests.unit.unit_test_utils import check_mocked_functions_called
@@ -49,6 +49,25 @@ class MockInterrogator:
 
     def get_current_url(self):
         return self.current_url
+
+class MockDriver(object):
+    def __init__(self, deleted_cookies=None):
+        if deleted_cookies is None:
+            deleted_cookies = []
+        self.deleted_cookies = deleted_cookies
+        self.refresh_count = 0
+
+    @staticmethod
+    def get_cookies():
+        mock_cookies = [{"name": "nhsuk-cookie-consent", "value": "%7B%22preferences%22%3Atrue%7D"},
+                        {"name": "s_getNewRepeat", "value": "1564127000350-Repeat"}]
+        return mock_cookies
+
+    def delete_cookie(self, cookie_name):
+        self.deleted_cookies.append(cookie_name)
+
+    def refresh(self):
+        self.refresh_count += 1
 
 
 def test_click_element():
@@ -279,3 +298,19 @@ def test_switch_to_default_content():
     interact.switch_to_default_content()
 
     check_mocked_functions_called(mock_driver.switch_to.default_content)
+
+
+def test_clear_cookie_and_refresh_page_deletes_the_cookie():
+    driver = MockDriver()
+    interact = Interactor(driver, None, None, None, None)
+    name = "Banner717"
+    interact.clear_cookie_and_refresh_page(name)
+    assert_that(driver.deleted_cookies, contains("Banner717"), "The cookie should be deleted")
+
+
+def test_clear_cookie_and_refresh_page_performs_a_refresh():
+    driver = MockDriver()
+    interact = Interactor(driver, None, None, None, None)
+    name = "Banner717"
+    interact.clear_cookie_and_refresh_page(name)
+    assert_that(driver.refresh_count, equal_to(1), "The cookie should be refreshed once")
