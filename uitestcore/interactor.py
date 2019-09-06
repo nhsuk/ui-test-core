@@ -179,3 +179,11 @@ class Interactor:
         Switch focus to the default frame
         """
         self.driver.switch_to.default_content()
+
+    def clear_cookie_and_refresh_page(self, cookie_name):
+        """
+        Delete a single cookie and refresh the related page. The name of the cookie must be supplied and matched.
+        :param cookie_name: The name of the cookie to search for and to delete
+        """
+        self.driver.delete_cookie(cookie_name)
+        self.driver.refresh()
