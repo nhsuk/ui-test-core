@@ -177,19 +177,22 @@ def test_append_and_open_url():
     mock_driver.get.assert_called_once_with("test/url/extra")
 
 
-def test_close_current_window():
+def test_close_current_window_switch_to_a_remaining_window():
     mock_driver = MagicMock(name="driver")
-    mock_driver.window_handles = []
+    mock_driver.window_handles = ["window_0", "window_1"]
+    mock_driver.current_window_handle = "window_1"
     interact = Interactor(mock_driver, None, None, None, None)
 
     interact.close_current_window()
 
     mock_driver.close.assert_called_once()
+    mock_driver.switch_to_window.assert_called_once_with("window_0")
 
 
-def test_close_current_window_switch_to_a_remaining_window():
+def test_close_current_window_switch_to_next_window():
     mock_driver = MagicMock(name="driver")
     mock_driver.window_handles = ["window_0", "window_1"]
+    mock_driver.current_window_handle = "window_0"
     interact = Interactor(mock_driver, None, None, None, None)
 
     interact.close_current_window()
@@ -201,6 +204,7 @@ def test_close_current_window_switch_to_a_remaining_window():
 def test_close_current_window_with_one_window():
     mock_driver = MagicMock(name="driver")
     mock_driver.window_handles = ["window_0"]
+    mock_driver.current_window_handle = "window_0"
     interact = Interactor(mock_driver, None, None, None, None)
 
     interact.close_current_window()
