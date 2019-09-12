@@ -112,9 +112,12 @@ class Interactor:
         Then will switch to a remaining window if available
         :return: None
         """
-        self.driver.close()
+        next_window = ""
         if len(self.driver.window_handles) > 1:
-            self.driver.switch_to_window(self.driver.window_handles[len(self.driver.window_handles) - 1])
+            next_window = self.driver.window_handles[len(self.driver.window_handles) - 2]
+        self.driver.close()
+        if next_window:
+            self.driver.switch_to_window(next_window)
 
     def scroll_into_view(self, page_element):
         """
