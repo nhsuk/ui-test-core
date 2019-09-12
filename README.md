@@ -40,13 +40,14 @@ class MyLoginPage(BasePage):
 The "BasePage" class is provided so that any page classes in the test pack can inherit from it, giving access to many useful functions which are separated into "find", "interrogate", "interact" and "wait". The "PageElement" class is used to define any elements which your tests need to interact with, so they can be reused without needing to remember whether you're looking for a class, ID etc (all Selenium selector types are supported).<br><br>
 The above page class could then be used in the test steps to perform any required actions and assertions.
 
-### Unit tests and linting
+### Installation
+This package is located on PyPI: https://pypi.org/project/uitestcore/ - it can be installed in the usual way i.e. `pip install uitestcore`
 
-The unit tests for this package can be found in the tests folder and are written using PyTest. Pylint is being used to ensure code quality.
+The easiest way to include this package in your project is by adding it to your requirements.txt. 
+Here is an example of the line which should be added to this file, we recommend using a specific version but it's your call: 
 
-### Versioning
+`uitestcore==3.3.0`
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the tags on the repository. 
 
 ### License
 
@@ -66,3 +67,8 @@ requests - https://github.com/psf/requests/blob/master/LICENSE<br>
 selenium - https://github.com/SeleniumHQ/selenium/blob/master/LICENSE<br>
 six - https://github.com/benjaminp/six/blob/master/LICENSE<br>
 urllib3 - https://github.com/urllib3/urllib3/blob/master/LICENSE.txt
+
+
+## Contribute
+
+Read our [contributing guidelines](CONTRIBUTING.md) to contribute to UiTestCore.
