@@ -95,7 +95,7 @@ class Interactor:
         """
         self.driver.get(url)
         self.wait.for_page_to_load()
-        self.logger.log(20, f"PASS: Navigated to the URL - {url}")
+        self.logger.log(20, f"Navigated to the URL - {url}")
 
     def append_and_open_url(self, additional_url):
         """
