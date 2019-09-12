@@ -44,7 +44,7 @@ The above page class could then be used in the test steps to perform any require
 This package is located on PyPI: https://pypi.org/project/uitestcore/ - it can be installed in the usual way i.e. `pip install uitestcore`
 
 The easiest way to include this package in your project is by adding it to your requirements.txt. 
-Here is an example of the line which should be added to this file, we recommend using named versions but it's your call: 
+Here is an example of the line which should be added to this file, we recommend using a specific version but it's your call: 
 
 `uitestcore==3.3.0`
 
