@@ -117,9 +117,10 @@ def test_set_browser_size_not_maximized():
     assert_that(not context.browser.browser_is_maximised, "Browser was maximized but should not be")
 
 
+@mock.patch("builtins.print")
 @mock.patch("uitestcore.utilities.logger.Logger.create_log_file",
             side_effect=MockLogger.create_log_file)
-def test_prepare_browser_enable_logger(mock_create_log_file):
+def test_prepare_browser_enable_logger(mock_create_log_file, _mock_print):
     context = MockContext(logging_flag=True)
     context.config = MockConfig()
 
@@ -130,7 +131,8 @@ def test_prepare_browser_enable_logger(mock_create_log_file):
     assert_that(context.logger.log_file_exists, "The log file was not created")
 
 
-def test_prepare_browser_disable_logger():
+@mock.patch("builtins.print")
+def test_prepare_browser_disable_logger(_mock_print):
     context = MockContext(logging_flag=False)
     context.config = MockConfig()
 
