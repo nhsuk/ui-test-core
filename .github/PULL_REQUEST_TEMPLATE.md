@@ -27,6 +27,8 @@ Provide a general summary of your changes in the Title
 ## Checklist
 <!-- Ensure each of the points below have been considered and completed where applicable -->
 - [ ] New and/or updated tests
-- [ ] All the [unit tests](../docs/contributing/unittesting.md) are passing
-- [ ] [Linting](../docs/contributing/linting.md) score remains above threshold
+- [ ] All the [unit tests](../docs/contributing/unittesting.md) are passing. 
+_This is enforced automatically as part of the pull request, but we'd appreciate you running locally first._
+- [ ] [Linting](../docs/contributing/linting.md) score remains above threshold.
+_This is enforced automatically as part of the pull request, but we'd appreciate you running locally first._
 - [ ] Changes log in [`CHANGELOG`](../CHANGELOG.md)
