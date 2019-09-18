@@ -72,7 +72,7 @@ class MockDriver(object):
 
 def test_click_element():
     find = MockFinder()
-    interact = Interactor(None, None, find, None, None)
+    interact = Interactor(None, find, None, None, None)
     page_element = PageElement(By.ID, "test-id")
 
     interact.click_element(page_element)
@@ -84,7 +84,7 @@ def test_click_element():
 def test_execute_click_with_java_script():
     mock_driver = MagicMock(name="driver")
     find = MockFinder()
-    interact = Interactor(mock_driver, None, find, None, None)
+    interact = Interactor(mock_driver, find, None, None, None)
     page_element = PageElement(By.ID, "test-id")
 
     interact.execute_click_with_java_script(page_element)
@@ -95,7 +95,7 @@ def test_execute_click_with_java_script():
 @mock.patch("selenium.webdriver.support.select.Select.select_by_visible_text")
 def test_select_by_visible_text(mock_select_by_visible_text):
     find = MockFinder()
-    interact = Interactor(None, None, find, None, None)
+    interact = Interactor(None, find, None, None, None)
     page_element = PageElement(By.ID, "test-id")
 
     interact.select_by_visible_text(page_element, "text to check")
@@ -106,7 +106,7 @@ def test_select_by_visible_text(mock_select_by_visible_text):
 @mock.patch("selenium.webdriver.support.select.Select.select_by_value")
 def test_select_by_value(mock_select_by_value):
     find = MockFinder()
-    interact = Interactor(None, None, find, None, None)
+    interact = Interactor(None, find, None, None, None)
     page_element = PageElement(By.ID, "test-id")
 
     interact.select_by_value(page_element, "value to check")
@@ -117,7 +117,7 @@ def test_select_by_value(mock_select_by_value):
 @mock.patch("selenium.webdriver.support.select.Select.select_by_index")
 def test_select_by_index(mock_select_by_index):
     find = MockFinder()
-    interact = Interactor(None, None, find, None, None)
+    interact = Interactor(None, find, None, None, None)
     page_element = PageElement(By.ID, "test-id")
 
     interact.select_by_index(page_element, "index to check")
@@ -127,7 +127,7 @@ def test_select_by_index(mock_select_by_index):
 
 def test_enter_text():
     find = MockFinder()
-    interact = Interactor(None, None, find, None, None)
+    interact = Interactor(None, find, None, None, None)
     page_element = PageElement(By.ID, "test-id")
 
     interact.enter_text(page_element, "abcd", False)
@@ -137,7 +137,7 @@ def test_enter_text():
 
 def test_enter_text_clears_first():
     find = MockFinder()
-    interact = Interactor(None, None, find, None, None)
+    interact = Interactor(None, find, None, None, None)
     page_element = PageElement(By.ID, "test-id")
     find.mock_element.text = "1234"
 
@@ -148,7 +148,7 @@ def test_enter_text_clears_first():
 
 def test_send_keys():
     find = MockFinder()
-    interact = Interactor(None, None, find, None, None)
+    interact = Interactor(None, find, None, None, None)
     page_element = PageElement(By.ID, "test-id")
 
     interact.send_keys(page_element, Keys.ARROW_LEFT)
@@ -159,7 +159,7 @@ def test_send_keys():
 def test_open_url():
     mock_driver = MagicMock(name="driver")
     mock_waiter = MagicMock(name="wait")
-    interact = Interactor(mock_driver, MagicMock(name="log"), None, None, mock_waiter)
+    interact = Interactor(mock_driver, None, None, mock_waiter, MagicMock(name="log"))
 
     interact.open_url("test/url")
 
@@ -170,7 +170,7 @@ def test_open_url():
 def test_append_and_open_url():
     mock_driver = MagicMock(name="driver")
     mock_waiter = MagicMock(name="wait")
-    interact = Interactor(mock_driver, MagicMock(name="log"), None, MockInterrogator("test/url"), mock_waiter)
+    interact = Interactor(mock_driver, None, MockInterrogator("test/url"), mock_waiter, MagicMock(name="log"))
 
     interact.append_and_open_url("/extra")
 
@@ -216,7 +216,7 @@ def test_close_current_window_with_one_window():
 def test_scroll_into_view():
     mock_driver = MagicMock(name="driver")
     find = MockFinder()
-    interact = Interactor(mock_driver, MagicMock(name="log"), find, None, None)
+    interact = Interactor(mock_driver, find, None, None, MagicMock(name="log"))
     page_element = PageElement(By.ID, "test-id")
 
     interact.scroll_into_view(page_element)
@@ -227,7 +227,7 @@ def test_scroll_into_view():
 def test_switch_to_next_window():
     mock_driver = MagicMock(name="driver")
     mock_driver.window_handles = ["window_0", "window_1"]
-    interact = Interactor(mock_driver, MagicMock(name="log"), None, None, None)
+    interact = Interactor(mock_driver, None, None, None, MagicMock(name="log"))
 
     interact.switch_to_next_window()
 
@@ -247,9 +247,9 @@ def test_switch_to_original_window():
 def test_switch_to_frame():
     mock_driver = MagicMock(name="driver")
     finder = Finder(mock_driver, "logger")
-    interrogator = Interrogator(mock_driver, "logger", finder)
-    waiter = Waiter(mock_driver, "logger", finder)
-    test_interactor = Interactor(mock_driver, "logger", finder, interrogator, waiter)
+    interrogator = Interrogator(mock_driver, finder, "logger")
+    waiter = Waiter(mock_driver, finder, "logger")
+    test_interactor = Interactor(mock_driver, finder, interrogator, waiter, "logger")
     frame_to_find = PageElement(By.ID, "frame_id")
 
     test_interactor.switch_to_frame(frame_to_find)
@@ -260,9 +260,9 @@ def test_switch_to_frame():
 def test_accept_alert():
     mock_driver = MagicMock(name="driver")
     finder = Finder(mock_driver, "logger")
-    interrogator = Interrogator(mock_driver, "logger", finder)
-    waiter = Waiter(mock_driver, "logger", finder)
-    test_interactor = Interactor(mock_driver, "logger", finder, interrogator, waiter)
+    interrogator = Interrogator(mock_driver, finder, "logger")
+    waiter = Waiter(mock_driver, finder, "logger")
+    test_interactor = Interactor(mock_driver, finder, interrogator, waiter, "logger")
 
     test_interactor.accept_alert()
 
@@ -272,9 +272,9 @@ def test_accept_alert():
 def test_dismiss_alert():
     mock_driver = MagicMock(name="driver")
     finder = Finder(mock_driver, "logger")
-    interrogator = Interrogator(mock_driver, "logger", finder)
-    waiter = Waiter(mock_driver, "logger", finder)
-    test_interactor = Interactor(mock_driver, "logger", finder, interrogator, waiter)
+    interrogator = Interrogator(mock_driver, finder, "logger")
+    waiter = Waiter(mock_driver, finder, "logger")
+    test_interactor = Interactor(mock_driver, finder, interrogator, waiter, "logger")
     mock_driver.switch_to.alert.dismiss = MagicMock(name="dismiss")
 
     test_interactor.dismiss_alert()
@@ -285,9 +285,9 @@ def test_dismiss_alert():
 def test_enter_text_into_alert():
     mock_driver = MagicMock(name="driver")
     finder = Finder(mock_driver, "logger")
-    interrogator = Interrogator(mock_driver, "logger", finder)
-    waiter = Waiter(mock_driver, "logger", finder)
-    test_interactor = Interactor(mock_driver, "logger", finder, interrogator, waiter)
+    interrogator = Interrogator(mock_driver, finder, "logger")
+    waiter = Waiter(mock_driver, finder, "logger")
+    test_interactor = Interactor(mock_driver, finder, interrogator, waiter, "logger")
     text = "my text value"
 
     test_interactor.enter_text_into_alert(text)

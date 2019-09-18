@@ -1,3 +1,5 @@
+import logging
+
 import requests
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -10,16 +12,17 @@ class Interrogator:
     And get_attribute -> String
     """
 
-    def __init__(self, driver, logger, finder):
+    def __init__(self, driver, finder, logger=None):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
-        :param logger: logger object used to save information to a log file
         :param finder: Finder used to find elements before interrogating
+        :param logger: logger object used to save information to a log file
+
         """
         self.driver = driver
-        self.logger = logger
         self.find = finder
+        self.logger = logger or logging.getLogger(__name__)
 
     def table_is_not_empty(self, page_element, min_list_length=5):
         """
@@ -32,14 +35,11 @@ class Interrogator:
         table_body = self.find.element(page_element)
 
         if table_body is None:
-            self.logger.log(20, "the table data is empty ")
             return False
 
         if self.get_table_row_count(table_body) < min_list_length:
-            self.logger.log(20, f"the row count doesn't exceed the minimum value of {min_list_length}")
             return False
 
-        self.logger.log(20, "table data is not empty")
         return True
 
     def list_is_not_empty(self, page_element, min_list_length=1):
@@ -52,7 +52,6 @@ class Interrogator:
         """
         list_unsorted_tag_result = (self.find.element(page_element)).find_elements_by_tag_name('li')
         if (len(list_unsorted_tag_result)) > min_list_length:
-            self.logger.log(20, "list found and it is not empty")
             return True
         return False
 

@@ -1,27 +1,28 @@
+import logging
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 
 
-class Interactor:
+class Interactor():
     """
     Interact with elements without returning a value, such as clicking, sending keys, or performing Actions
     If you're expecting a return value, such as the Element or True/False look in the Finder or Interrogator
     """
 
-    def __init__(self, driver, logger, finder, interrogator, waiter):
+    def __init__(self, driver, finder, interrogator, waiter, existing_logger=None):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
-        :param logger: logger object used to save information to a log file
         :param finder: Finder
         :param interrogator: Interrogator
         :param waiter: Waiter
+        :param existing_logger: logger object used to save information to a log file
         """
         self.driver = driver
-        self.logger = logger
         self.find = finder
         self.interrogate = interrogator
         self.wait = waiter
+        self.logger = existing_logger or logging.getLogger(__name__)
 
     def click_element(self, page_element):
         """
@@ -95,7 +96,7 @@ class Interactor:
         """
         self.driver.get(url)
         self.wait.for_page_to_load()
-        self.logger.log(20, f"Navigated to the URL - {url}")
+        self.logger.info(f"Navigated to the URL - {url}")
 
     def append_and_open_url(self, additional_url):
         """
@@ -124,7 +125,7 @@ class Interactor:
         :param page_element:
         :return:
         """
-        self.logger.log(20, f"Scrolling to {page_element.locator_value}")
+        self.logger.info(f"Scrolling to {page_element.locator_value}")
         element: WebElement = self.find.element(page_element)
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
@@ -134,9 +135,9 @@ class Interactor:
         :return: None
         """
         new_window = self.driver.window_handles[len(self.driver.window_handles) - 1]
-        self.logger.log(20, "Switching to next window")
+        self.logger.info("Switching to next window")
         self.driver.switch_to_window(new_window)
-        self.logger.log(20, "Switched to next window")
+        self.logger.info("Switched to next window")
 
     def switch_to_original_window(self):
         """

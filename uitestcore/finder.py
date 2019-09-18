@@ -1,17 +1,20 @@
+import logging
+
+
 class Finder:
     """
     Selenium based find methods
     Use this class to first find an element(s) before interacting with it
     """
 
-    def __init__(self, driver, logger):
+    def __init__(self, driver, logger=None):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
         :param logger: logger object used to save information to a log file
         """
         self.driver = driver
-        self.logger = logger
+        self.logger = logger or logging.getLogger(__name__)
 
     def elements(self, page_element):
         """
