@@ -1,7 +1,14 @@
+"""
+You can create your own logger and pass it into the uitestcore
+However if you don't want to, and just want something simple, you might find this useful
+"""
 import logging
 import logging.config
 import os
+import string
 import time
+
+from uitestcore.utilities.string_util import generate_random_string
 
 
 def init_unique_log_file_logger(file_path=os.path.abspath('logs'), level=logging.INFO, format='%(asctime)s - %(levelname)s - %(name)s: %(message)s'):
@@ -23,3 +30,35 @@ def init_unique_log_file_logger(file_path=os.path.abspath('logs'), level=logging
     file_name = os.path.join(file_path, time.strftime('%Y%m%d-%H%M%S') + '.log')
     logging.basicConfig(filename=file_name, filemode='w', level=level, format=format)
     logging.debug(f"initialised logger to write to file {file_name} with level {level} and format {format}")
+
+
+def auto_log(logger_name):
+    """
+    A decorator that wraps the passed in function, logs entering and exiting the function,
+    and logs exceptions should one occur. Exceptions are reraised.
+    Tag each method or function with @auto_log(__name__) to automatically log calls.
+    Logs these calls at DEBUG level.
+
+    :param logger_name: The class or module name of the calling method. Use __name__
+    """
+
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            logger = logging.getLogger(logger_name)
+            log_identifier = generate_random_string(6, chars=string.digits)
+            entry_message = f"Entering function {func.__name__} (Function call ID {log_identifier}) with args {args} and kwargs {kwargs}"
+            exit_message = f"Exited function {func.__name__} (Function call ID {log_identifier})"
+            try:
+                logger.debug(entry_message)
+                func(*args, **kwargs)
+                logger.debug(exit_message)
+            except Exception as e:
+                # log the exception
+                err = f"There was an exception thrown in function {func.__name__} (Function call ID {log_identifier})"
+                logger.exception(err)
+
+                # re-raise the exception
+                raise e
+
+        return wrapper
+    return decorator

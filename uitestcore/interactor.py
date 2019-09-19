@@ -2,6 +2,8 @@ import logging
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 
+from uitestcore.utilities.logger_handler import auto_log
+
 
 class Interactor():
     """
@@ -88,6 +90,7 @@ class Interactor():
         """
         self.enter_text(page_element, key, False)
 
+    @auto_log(__name__)
     def open_url(self, url):
         """
         open any given url
