@@ -11,7 +11,9 @@ import time
 from uitestcore.utilities.string_util import generate_random_string
 
 
-def init_unique_log_file_logger(file_path=os.path.abspath('logs'), level=logging.INFO, format='%(asctime)s - %(levelname)s - %(name)s: %(message)s'):
+def init_unique_log_file_logger(file_path=os.path.abspath('logs'),
+                                level=logging.INFO,
+                                log_format='%(asctime)s - %(levelname)s - %(name)s: %(message)s'):
     """
     Setting up the basic config for the logging module. Creates a log file in the specified location.
     File name will be time.strftime('%Y%m%d-%H%M%S') + '.log'
@@ -19,7 +21,7 @@ def init_unique_log_file_logger(file_path=os.path.abspath('logs'), level=logging
 
     :param file_path: default os.path.abspath('logs')
     :param level: default logging.INFO
-    :param format: default '%(asctime)s - %(levelname)s - %(name)s: %(message)s'
+    :param log_format: default '%(asctime)s - %(levelname)s - %(name)s: %(message)s'
     """
     if not os.path.exists(file_path):
         os.makedirs(file_path)
@@ -28,8 +30,9 @@ def init_unique_log_file_logger(file_path=os.path.abspath('logs'), level=logging
         logging.root.removeHandler(handler)
 
     file_name = os.path.join(file_path, time.strftime('%Y%m%d-%H%M%S') + '.log')
-    logging.basicConfig(filename=file_name, filemode='w', level=level, format=format)
-    logging.debug(f"initialised logger to write to file {file_name} with level {level} and format {format}")
+    logging.basicConfig(filename=file_name, filemode='w', level=level, format=log_format)
+    logging.debug("initialised logger to write to file %s with level %s and format %s",
+                  file_name, level, log_format)
 
 
 def auto_log(logger_name):
@@ -47,16 +50,18 @@ def auto_log(logger_name):
             logger = logging.getLogger(logger_name)
             log_identifier = generate_random_string(6, chars=string.digits)
             try:
-                entry_message = f"Entering function {func.__name__} (Function call ID {log_identifier}) with args {args} and kwargs {kwargs}"
-                logger.debug(entry_message)
+                entry_message = "Entering function %s (Function call ID %s) " \
+                    "with args %s and kwargs %s"
+                logger.debug(entry_message, func.__name__, log_identifier, args, kwargs)
                 return_value = func(*args, **kwargs)
-                exit_message = f"Exited function {func.__name__} (Function call ID {log_identifier}) with return value {return_value}"
-                logger.debug(exit_message)
+                exit_message = "Exited function %s (Function call ID %s) " \
+                    "with return value %s"
+                logger.debug(exit_message, func.__name__, log_identifier, return_value)
                 return return_value
             except Exception as e:
                 # log the exception
-                err = f"There was an exception thrown in function {func.__name__} (Function call ID {log_identifier})"
-                logger.exception(err)
+                err = "There was an exception thrown in function %s (Function call ID %s)"
+                logger.exception(err, func.__name__, log_identifier)
 
                 # re-raise the exception
                 raise e

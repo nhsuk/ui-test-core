@@ -62,10 +62,14 @@ def test_auto_log(mock_logging):
     dummy_method()
     mock_logging.getLogger.assert_called_once()
 
-    assert_that(mock_logger.mock_calls[1][1][0], contains_string("Entering function dummy_method"),
+    assert_that(mock_logger.mock_calls[1][1][0], contains_string("Entering function %s"),
                 "Expected to find entry message in logs")
-    assert_that(mock_logger.mock_calls[2][1][0], contains_string("Exited function dummy_method"),
+    assert_that(mock_logger.mock_calls[1][1][1], contains_string("dummy_method"),
+                "Expected to find method name in entry message in logs")
+    assert_that(mock_logger.mock_calls[2][1][0], contains_string("Exited function %s"),
                 "Expected to find exit message in logs")
+    assert_that(mock_logger.mock_calls[2][1][1], contains_string("dummy_method"),
+                "Expected to find method name in exit message in logs")
 
 
 @mock.patch("uitestcore.utilities.logger_handler.logging")
@@ -98,11 +102,14 @@ def test_auto_log_exception_handling(mock_logging):
 
     assert_that(str(excinfo.value), contains_string("Throwing value exception as part of test"),
                 "Unexpected exception thrown")
-    assert_that(mock_logger.mock_calls[1][1][0], contains_string("Entering function dummy_method"),
+    assert_that(mock_logger.mock_calls[1][1][0], contains_string("Entering function %s"),
                 "Expected to find entry message in logs")
     assert_that(mock_logger.mock_calls[2][1][0],
-                contains_string("There was an exception thrown in function dummy_method"),
+                contains_string("There was an exception thrown in function %s"),
                 "Expected to find exception thrown message from the auto_log decorator in logs")
+    assert_that(mock_logger.mock_calls[2][1][1],
+                contains_string("dummy_method"),
+                "Expected to find method name in exception thrown message from the auto_log decorator in logs")
     assert_that(mock_logger.mock_calls[2][0], contains_string("exception"),
                 "Exception log message not logged at expected level")
 
@@ -115,7 +122,9 @@ def test_auto_log_return_value(mock_logging):
     val_returned = dummy_method(do_return=True)
 
     assert_that(val_returned, equal_to(return_value))
-    assert_that(mock_logger.mock_calls[2][1][0], contains_string(f"with return value {return_value}"),
+    assert_that(mock_logger.mock_calls[2][1][0], contains_string(f"with return value %s"),
+                "Expected to find return value in exit message in logs")
+    assert_that(mock_logger.mock_calls[2][1][3], contains_string(return_value),
                 "Expected to find return value in exit message in logs")
 
 
@@ -127,5 +136,7 @@ def test_auto_log_none_return_value(mock_logging):
     val_returned = dummy_method(do_return=False)
 
     assert_that(val_returned, equal_to(None))
-    assert_that(mock_logger.mock_calls[2][1][0], contains_string("with return value None"),
+    assert_that(mock_logger.mock_calls[2][1][0], contains_string("with return value %s"),
+                "Expected to find blank return value in exit message in logs")
+    assert_that(mock_logger.mock_calls[2][1][3], equal_to(None),
                 "Expected to find blank return value in exit message in logs")

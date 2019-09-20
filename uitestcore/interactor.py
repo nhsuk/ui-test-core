@@ -106,7 +106,7 @@ class Interactor():
         """
         self.driver.get(url)
         self.wait.for_page_to_load()
-        self.logger.info(f"Navigated to the URL - {url}")
+        self.logger.info("Navigated to the URL - %s", url)
 
     @auto_log(__name__)
     def append_and_open_url(self, additional_url):
@@ -138,7 +138,7 @@ class Interactor():
         :param page_element:
         :return:
         """
-        self.logger.info(f"Scrolling to {page_element.locator_value}")
+        self.logger.info("Scrolling to %s", page_element.locator_value)
         element: WebElement = self.find.element(page_element)
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 

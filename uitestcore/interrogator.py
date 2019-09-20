@@ -325,7 +325,8 @@ class Interrogator:
         if elements:
             siblings_with_class = elements[0].find_elements(By.XPATH,
                                                             "./../*[contains(@class,'" + expected_class + "')]")
-            return len(siblings_with_class) > 0 and siblings_with_class[0].is_displayed()
+            number_of_siblings_with_class = len(siblings_with_class)
+            return number_of_siblings_with_class > 0 and siblings_with_class[0].is_displayed()
         return False
 
     @auto_log(__name__)
