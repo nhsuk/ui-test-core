@@ -75,7 +75,7 @@ def test_auto_log_class_name_is_correct(mock_logging):
     mock_logging.getLogger.assert_called_once_with(test_class_name)
 
 
-@mock.patch("tests.unit.utilities.test_logger_handler.logging")
+@mock.patch(__name__+".logging")
 @mock.patch("uitestcore.utilities.logger_handler.logging")
 def test_auto_log_inner_function_logging(mock_logging, mock_test_logging, capsys):
     mock_logger1 = MagicMock(name="mock_logger1")
