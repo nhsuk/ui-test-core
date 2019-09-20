@@ -78,8 +78,9 @@ def test_auto_log_class_name_is_correct(mock_logging):
 @mock.patch("tests.unit.utilities.test_logger_handler.logging")
 @mock.patch("uitestcore.utilities.logger_handler.logging")
 def test_auto_log_inner_function_logging(mock_logging, mock_test_logging, capsys):
+    mock_logger1 = MagicMock(name="mock_logger1")
     mock_logger = MagicMock(name="mock_logger")
-    mock_logging.getLogger = mock_logger
+    mock_logging.getLogger = mock_logger1
     mock_test_logging.getLogger = mock_logger
 
     dummy_method(do_logging=True)
@@ -90,9 +91,9 @@ def test_auto_log_inner_function_logging(mock_logging, mock_test_logging, capsys
             print(str(i))
         print("Finished printing the contents of the mock_logger.mock_calls")
 
-    assert_that(mock_logger.mock_calls[3][1][0], contains_string("Test inner method log message"),
+    assert_that(mock_logger.mock_calls[1][1][0], contains_string("Test inner method log message"),
                 "Expected to find the logged message from inside the dummy_method function")
-    assert_that(mock_logger.mock_calls[3][0], contains_string("info"),
+    assert_that(mock_logger.mock_calls[1][0], contains_string("info"),
                 "Logged message from within function not logged at expected level")
 
 
