@@ -1,5 +1,7 @@
 import logging
 
+from uitestcore.utilities.logger_handler import auto_log
+
 
 class Finder:
     """
@@ -16,6 +18,7 @@ class Finder:
         self.driver = driver
         self.logger = logger or logging.getLogger(__name__)
 
+    # @auto_log(__name__)
     def elements(self, page_element):
         """
         Find the elements matching the given page element object
@@ -24,6 +27,7 @@ class Finder:
         """
         return self.driver.find_elements(page_element.locator_type, page_element.locator_value)
 
+    @auto_log(__name__)
     def element(self, page_element):
         """
         Find a single element matching the given page element object
@@ -36,6 +40,7 @@ class Finder:
         except IndexError:
             return None
 
+    @auto_log(__name__)
     def visible_elements(self, page_element):
         """
         Find the elements matching the given page element object, only returning the visible ones
@@ -51,6 +56,7 @@ class Finder:
 
         return visible_elements
 
+    @auto_log(__name__)
     def number_of_elements(self, page_element):
         """
         Count the number of matching elements on the page

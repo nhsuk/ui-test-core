@@ -9,6 +9,7 @@ from selenium.webdriver.support.expected_conditions import visibility_of_element
 from selenium.webdriver.support.wait import WebDriverWait
 from uitestcore import custom_expected_conditions
 from uitestcore.custom_expected_conditions import ElementHasAttribute
+from uitestcore.utilities.logger_handler import auto_log
 
 
 class Waiter:
@@ -30,6 +31,7 @@ class Waiter:
         self.wait_time = wait_time
         self.logger = logger or logging.getLogger(__name__)
 
+    @auto_log(__name__)
     def for_page_to_load(self):
         """
         Wait for browser to load using custom expected condition BrowserIsReady
@@ -42,6 +44,7 @@ class Waiter:
         WebDriverWait(self.driver, self.wait_time).until(custom_expected_conditions.BrowserIsReady())
         self.logger.info("Finished waiting for browser")
 
+    @auto_log(__name__)
     def for_element_to_be_visible(self, page_element):
         """
         Wait for element to be visible, using selenium expected condition class
@@ -51,8 +54,9 @@ class Waiter:
         self.logger.info("Waiting for element to be visible")
         WebDriverWait(self.driver, self.wait_time).until(visibility_of_element_located(
             (page_element.locator_type, page_element.locator_value)))
-        self.logger.info("found element")
+        self.logger.info("Found element")
 
+    @auto_log(__name__)
     def for_element_to_be_present(self, page_element):
         """
         Wait for element to be present, using selenium expected condition class
@@ -61,8 +65,9 @@ class Waiter:
         self.logger.info("Waiting for element to be present")
         WebDriverWait(self.driver, self.wait_time).until(presence_of_element_located(
             (page_element.locator_type, page_element.locator_value)))
-        self.logger.info("found element")
+        self.logger.info("Found element")
 
+    @auto_log(__name__)
     def for_element_to_have_attribute(self, page_element, attribute_name, expected_attribute_value):
         """
         Wait for an element to have a specific attribute value e.g. to check if an animation has finished
@@ -73,10 +78,11 @@ class Waiter:
         WebDriverWait(self.driver, self.wait_time).until(ElementHasAttribute(self.find, page_element,
                                                                              attribute_name, expected_attribute_value))
 
+    @auto_log(__name__)
     def for_alert_to_be_present(self):
         """
         Wait for alert to be present, using selenium expected condition class
         """
         self.logger.info("Waiting for alert to be present")
         WebDriverWait(self.driver, self.wait_time).until(alert_is_present())
-        self.logger.info("switched to alert")
+        self.logger.info("Switched to alert")

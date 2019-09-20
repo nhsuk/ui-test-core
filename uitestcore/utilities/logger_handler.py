@@ -46,12 +46,13 @@ def auto_log(logger_name):
         def wrapper(*args, **kwargs):
             logger = logging.getLogger(logger_name)
             log_identifier = generate_random_string(6, chars=string.digits)
-            entry_message = f"Entering function {func.__name__} (Function call ID {log_identifier}) with args {args} and kwargs {kwargs}"
-            exit_message = f"Exited function {func.__name__} (Function call ID {log_identifier})"
             try:
+                entry_message = f"Entering function {func.__name__} (Function call ID {log_identifier}) with args {args} and kwargs {kwargs}"
                 logger.debug(entry_message)
-                func(*args, **kwargs)
+                return_value = func(*args, **kwargs)
+                exit_message = f"Exited function {func.__name__} (Function call ID {log_identifier}) with return value {return_value}"
                 logger.debug(exit_message)
+                return return_value
             except Exception as e:
                 # log the exception
                 err = f"There was an exception thrown in function {func.__name__} (Function call ID {log_identifier})"

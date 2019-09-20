@@ -26,6 +26,7 @@ class Interactor():
         self.wait = waiter
         self.logger = existing_logger or logging.getLogger(__name__)
 
+    @auto_log(__name__)
     def click_element(self, page_element):
         """
         Finds and clicks on an element on the page
@@ -33,6 +34,7 @@ class Interactor():
         """
         self.find.element(page_element).click()
 
+    @auto_log(__name__)
     def execute_click_with_java_script(self, page_element):
         """
         execute the click on the element using javascript.
@@ -42,6 +44,7 @@ class Interactor():
         element: WebElement = self.find.element(page_element)
         return self.driver.execute_script("arguments[0].click();", element)
 
+    @auto_log(__name__)
     def select_by_visible_text(self, page_element, visible_text_to_select):
         """
         Select all options that display text matching the visible_text_to_select argument.
@@ -51,6 +54,7 @@ class Interactor():
         element: WebElement = self.find.element(page_element)
         Select(element).select_by_visible_text(visible_text_to_select)
 
+    @auto_log(__name__)
     def select_by_value(self, page_element, value):
         """
         Select all options that have a value matching the argument
@@ -60,6 +64,7 @@ class Interactor():
         element: WebElement = self.find.element(page_element)
         Select(element).select_by_value(value)
 
+    @auto_log(__name__)
     def select_by_index(self, page_element, index):
         """
         Select the option at the given index. This is done by examining the "index" attribute of an
@@ -70,6 +75,7 @@ class Interactor():
         element: WebElement = self.find.element(page_element)
         Select(element).select_by_index(index)
 
+    @auto_log(__name__)
     def enter_text(self, page_element, field_input, clear_first=True):
         """
         Writes the given text to an element on the page - only to be used with editable text fields
@@ -82,6 +88,7 @@ class Interactor():
             element.clear()
         element.send_keys(field_input)
 
+    @auto_log(__name__)
     def send_keys(self, page_element, key):
         """
         Send a Key action to an element
@@ -101,6 +108,7 @@ class Interactor():
         self.wait.for_page_to_load()
         self.logger.info(f"Navigated to the URL - {url}")
 
+    @auto_log(__name__)
     def append_and_open_url(self, additional_url):
         """
         Adds additional data to URL e.g. query string
@@ -110,6 +118,7 @@ class Interactor():
         url += additional_url
         self.open_url(url)
 
+    @auto_log(__name__)
     def close_current_window(self):
         """
         Close the current window/tab
@@ -122,6 +131,7 @@ class Interactor():
         if remaining_windows:
             self.driver.switch_to_window(remaining_windows[len(remaining_windows)-1])
 
+    @auto_log(__name__)
     def scroll_into_view(self, page_element):
         """
         scroll an element into view using javascript
@@ -132,6 +142,7 @@ class Interactor():
         element: WebElement = self.find.element(page_element)
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
+    @auto_log(__name__)
     def switch_to_next_window(self):
         """
         Switch the control to a new page that opens up
@@ -142,6 +153,7 @@ class Interactor():
         self.driver.switch_to_window(new_window)
         self.logger.info("Switched to next window")
 
+    @auto_log(__name__)
     def switch_to_original_window(self):
         """
         Switch the control to the original window with a window_handle index of 0
@@ -150,6 +162,7 @@ class Interactor():
         old_window = self.driver.window_handles[0]
         self.driver.switch_to_window(old_window)
 
+    @auto_log(__name__)
     def switch_to_frame(self, page_element):
         """
         Switch the control into an iframe
@@ -158,6 +171,7 @@ class Interactor():
         """
         self.driver.switch_to.frame(self.find.element(page_element))
 
+    @auto_log(__name__)
     def accept_alert(self):
         """
         Accept an alert using built in selenium
@@ -165,6 +179,7 @@ class Interactor():
         """
         self.driver.switch_to.alert.accept()
 
+    @auto_log(__name__)
     def dismiss_alert(self):
         """
         Dismisses an alert using built in selenium
@@ -172,6 +187,7 @@ class Interactor():
         """
         self.driver.switch_to.alert.dismiss()
 
+    @auto_log(__name__)
     def enter_text_into_alert(self, text):
         """
         Sends keys to the alert using Selenium
@@ -180,12 +196,14 @@ class Interactor():
         """
         self.driver.switch_to.alert.send_keys(text)
 
+    @auto_log(__name__)
     def switch_to_default_content(self):
         """
         Switch focus to the default frame
         """
         self.driver.switch_to.default_content()
 
+    @auto_log(__name__)
     def clear_cookie_and_refresh_page(self, cookie_name):
         """
         Delete a single cookie and refresh the related page. The name of the cookie must be supplied and matched.

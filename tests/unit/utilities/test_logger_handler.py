@@ -8,10 +8,11 @@ from tests.unit.unit_test_utils import check_mocked_functions_called
 from uitestcore.utilities.logger_handler import init_unique_log_file_logger, auto_log
 
 test_class_name = "test_class"
+return_value = "my return value"
 
 
 @auto_log(test_class_name)
-def dummy_method(throw_exception=False, do_logging=False):
+def dummy_method(throw_exception=False, do_logging=False, do_return=False):
 
     if throw_exception:
         raise ValueError("Throwing value exception as part of test")
@@ -19,6 +20,9 @@ def dummy_method(throw_exception=False, do_logging=False):
     if do_logging:
         logger = logging.getLogger(test_class_name)
         logger.info("Test inner method log message")
+
+    if do_return:
+        return return_value
 
     # method itself doesn't need to do anything
 
@@ -103,3 +107,27 @@ def test_auto_log_exception_handling(mock_logging):
                 "Expected to find exception thrown message from the auto_log decorator in logs")
     assert_that(mock_logger.mock_calls[2][0], contains_string("exception"),
                 "Exception log message not logged at expected level")
+
+
+@mock.patch("uitestcore.utilities.logger_handler.logging")
+def test_auto_log_return_value(mock_logging):
+    mock_logger = MagicMock(name="mock_logger")
+    mock_logging.getLogger = mock_logger
+
+    val_returned = dummy_method(do_return=True)
+
+    assert_that(val_returned, equal_to(return_value))
+    assert_that(mock_logger.mock_calls[2][1][0], contains_string(f"with return value {return_value}"),
+                "Expected to find return value in exit message in logs")
+
+
+@mock.patch("uitestcore.utilities.logger_handler.logging")
+def test_auto_log_none_return_value(mock_logging):
+    mock_logger = MagicMock(name="mock_logger")
+    mock_logging.getLogger = mock_logger
+
+    val_returned = dummy_method(do_return=False)
+
+    assert_that(val_returned, equal_to(None))
+    assert_that(mock_logger.mock_calls[2][1][0], contains_string("with return value None"),
+                "Expected to find blank return value in exit message in logs")
