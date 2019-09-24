@@ -56,6 +56,7 @@ class BrowserHandler:
         Save a screenshot of the browser window - should be used after a test fails
         :param driver: the browser driver
         :param description: information about the screenshot to be added to the file name
+        :return: boolean representing whether saving the screenshot succeeded
         """
         window_width = driver.get_window_size()["width"]
         window_height = driver.get_window_size()["height"]
@@ -69,6 +70,8 @@ class BrowserHandler:
         if not os.path.exists(SCREENSHOTS_PATH):
             os.makedirs(SCREENSHOTS_PATH)
 
+        # TODO - try doing remove_invalid_characters only on description, that can contain // but we don't want to remove the / in the file path
+
         # Create a file name and ensure it is not too long
         timestamp = get_current_datetime().strftime("%Y-%m-%d_%H.%M.%S.%f")
         file_name = f"{SCREENSHOTS_PATH}/{timestamp}_{description}"
@@ -76,11 +79,13 @@ class BrowserHandler:
         file_name = (file_name[:100] + "---.png") if len(file_name) > 100 else file_name + ".png"
 
         # Save the screenshot
-        driver.save_screenshot(file_name)
+        result = driver.save_screenshot(file_name)
 
         # Reset the browser size if it was changed
         if scroll_height > window_height:
             driver.set_window_size(window_width, window_height)
+
+        return result
 
     @staticmethod
     def move_screenshots_to_folder(folder_name):
