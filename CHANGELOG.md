@@ -1,3 +1,7 @@
+4.1.0 / 2019-09-24
+===================
+- Update screenshots code to handle slashes in file name
+
 4.0.0 / 2019-09-20
 ===================
 - Changed logging so that it was an optional argument when instantiating BasePage

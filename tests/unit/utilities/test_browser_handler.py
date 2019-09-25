@@ -46,10 +46,11 @@ class MockLogger:
 
 
 class MockDriver(object):
-    def __init__(self, window_width, window_height, scroll_height):
+    def __init__(self, window_width, window_height, scroll_height, save_screenshot_success=True):
         self.window_width = window_width
         self.window_height = window_height
         self.scroll_height = scroll_height
+        self.save_screenshot_success = save_screenshot_success
         self.screenshot_filename = ""
         self.num_resizes = 0
 
@@ -69,6 +70,7 @@ class MockDriver(object):
 
     def save_screenshot(self, file_name):
         self.screenshot_filename = file_name
+        return self.save_screenshot_success
 
 
 class MockBuiltIn:
@@ -121,13 +123,37 @@ def test_set_browser_size_not_maximized():
 @mock.patch("os.makedirs")
 @mock.patch("uitestcore.utilities.browser_handler.get_current_datetime",
             side_effect=lambda *args: datetime.strptime("2019-02-15_00.00.00.000000", "%Y-%m-%d_%H.%M.%S.%f"))
-def test_take_screenshot_save_file(mock_get_current_datetime, mock_makedirs, mock_path_exists):
-    driver = MockDriver(1024, 768, 2000)
+def test_take_screenshot_save_file_success(mock_get_current_datetime, mock_makedirs, mock_path_exists):
+    driver = MockDriver(1024, 768, 2000, True)
 
-    BrowserHandler.take_screenshot(driver, "test_screenshot")
+    result = BrowserHandler.take_screenshot(driver, "test_screenshot")
 
     check_mocked_functions_called(mock_path_exists, mock_makedirs, mock_get_current_datetime)
     assert_that(driver.screenshot_filename, equal_to("screenshots/2019-02-15_00.00.00.000000_test_screenshot.png"),
+                "The screenshot filename was incorrect")
+    assert_that(result, equal_to(True), "The screenshot should have been saved successfully")
+
+
+def test_take_screenshot_save_file_fail():
+    driver = MockDriver(1024, 768, 2000, False)
+
+    result = BrowserHandler.take_screenshot(driver, "test_screenshot")
+
+    check_mocked_functions_called()
+    assert_that(result, equal_to(False), "The screenshot should have failed to save")
+
+
+@mock.patch("os.path.exists", side_effect=lambda *args: False)
+@mock.patch("os.makedirs")
+@mock.patch("uitestcore.utilities.browser_handler.get_current_datetime",
+            side_effect=lambda *args: datetime.strptime("2019-02-15_00.00.00.000000", "%Y-%m-%d_%H.%M.%S.%f"))
+def test_take_screenshot_save_file_with_invalid_characters(mock_get_current_datetime, mock_makedirs, mock_path_exists):
+    driver = MockDriver(1024, 768, 2000)
+
+    BrowserHandler.take_screenshot(driver, "abc://test_screenshot")
+
+    check_mocked_functions_called(mock_path_exists, mock_makedirs, mock_get_current_datetime)
+    assert_that(driver.screenshot_filename, equal_to("screenshots/2019-02-15_00.00.00.000000_abc__test_screenshot.png"),
                 "The screenshot filename was incorrect")
 
 
