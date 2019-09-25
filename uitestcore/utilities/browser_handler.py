@@ -4,7 +4,6 @@ import shutil
 from selenium import webdriver
 from uitestcore.utilities.config_handler import parse_config_data
 from uitestcore.utilities.datetime_handler import get_current_datetime
-from uitestcore.utilities.logger import Logger
 from uitestcore.utilities.string_util import remove_invalid_characters
 
 SCREENSHOTS_PATH = "screenshots"
@@ -42,13 +41,6 @@ class BrowserHandler:
 
         # Check if Maximize Browser Flag has been activated
         BrowserHandler.set_browser_size(context)
-
-        # If the logging flag is false, disable the logger
-        if not context.logging_flag:
-            context.logger.disabled = True
-        else:
-            # Create the file to write logs to
-            context.logger = Logger.create_log_file()
 
     @staticmethod
     def take_screenshot(driver, description):

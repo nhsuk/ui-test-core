@@ -25,6 +25,13 @@ class PageElement:
         """
         return PageElement(self.locator_type, self.locator_value + value)
 
+    def __str__(self):
+        """
+        Provides a string representation of the PageElement
+        :return: String
+        """
+        return f"PageElement {self.locator_type}='{self.locator_value}'"
+
 
 class FieldTypes(Enum):
     text_box = "text"
