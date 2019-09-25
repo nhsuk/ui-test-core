@@ -131,7 +131,7 @@ def test_for_element_to_be_present_is_not_present(mock_presence_of_element_locat
 
 @mock.patch("uitestcore.waiter.ElementHasAttribute", side_effect=MockElementHasAttribute)
 def test_for_element_to_have_attribute_exists(mock_element_has_attribute):
-    test_waiter = Waiter("driver", "finder", 0, "logger")
+    test_waiter = Waiter("driver", "finder", 0, MagicMock(name="logger"))
     page_element = PageElement(By.ID, "id_exists")
 
     assert_that(calling(test_waiter.for_element_to_have_attribute).with_args(
@@ -144,7 +144,7 @@ def test_for_element_to_have_attribute_exists(mock_element_has_attribute):
 @mock.patch("time.sleep")
 @mock.patch("uitestcore.waiter.ElementHasAttribute", side_effect=MockElementHasAttribute)
 def test_for_element_to_have_attribute_not_exists(mock_element_has_attribute, mock_sleep):
-    test_waiter = Waiter("driver", "finder", 0, "logger")
+    test_waiter = Waiter("driver", "finder", 0, MagicMock(name="logger"))
     page_element = PageElement(By.ID, "id_exists")
 
     assert_that(calling(test_waiter.for_element_to_have_attribute).with_args(

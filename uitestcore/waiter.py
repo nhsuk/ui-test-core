@@ -18,18 +18,18 @@ class Waiter:
     Uses both standard and custom expected conditions
     """
 
-    def __init__(self, driver, finder, wait_time=10, logger=None):
+    def __init__(self, driver, finder, wait_time=10, existing_logger=None):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
         :param finder: Finder used to find elements before waiting for them
         :param wait_time: number of seconds as an Integer, defaults to 10
-        :param logger: logger object used to save information to a log file
+        :param existing_logger: logger object used to save information to a log file
         """
         self.driver = driver
         self.find = finder
         self.wait_time = wait_time
-        self.logger = logger or logging.getLogger(__name__)
+        self.logger = existing_logger or logging.getLogger(__name__)
 
     @auto_log(__name__)
     def for_page_to_load(self):
@@ -51,7 +51,7 @@ class Waiter:
         :param page_element: PageElement instance representing the element
         :return:
         """
-        self.logger.info("Waiting for element to be visible")
+        self.logger.info("Waiting for %s to be visible", page_element)
         WebDriverWait(self.driver, self.wait_time).until(visibility_of_element_located(
             (page_element.locator_type, page_element.locator_value)))
         self.logger.info("Found element")
@@ -62,7 +62,7 @@ class Waiter:
         Wait for element to be present, using selenium expected condition class
         :param page_element: PageElement instance representing the element
         """
-        self.logger.info("Waiting for element to be present")
+        self.logger.info("Waiting for %s to be present", page_element)
         WebDriverWait(self.driver, self.wait_time).until(presence_of_element_located(
             (page_element.locator_type, page_element.locator_value)))
         self.logger.info("Found element")
@@ -75,8 +75,10 @@ class Waiter:
         :param attribute_name: the name of the attribute whose value you want e.g. 'type'
         :param expected_attribute_value: the string value which is expected for the attribute
         """
+        self.logger.info("Waiting for %s to be have attribute %s=$s", page_element, attribute_name, expected_attribute_value)
         WebDriverWait(self.driver, self.wait_time).until(ElementHasAttribute(self.find, page_element,
                                                                              attribute_name, expected_attribute_value))
+        self.logger.info("Found element with expected attribute")
 
     @auto_log(__name__)
     def for_alert_to_be_present(self):

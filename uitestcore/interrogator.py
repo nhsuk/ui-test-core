@@ -14,17 +14,17 @@ class Interrogator:
     And get_attribute -> String
     """
 
-    def __init__(self, driver, finder, logger=None):
+    def __init__(self, driver, finder, existing_logger=None):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
         :param finder: Finder used to find elements before interrogating
-        :param logger: logger object used to save information to a log file
+        :param existing_logger: logger object used to save information to a log file
 
         """
         self.driver = driver
         self.find = finder
-        self.logger = logger or logging.getLogger(__name__)
+        self.logger = existing_logger or logging.getLogger(__name__)
 
     @auto_log(__name__)
     def table_is_not_empty(self, page_element, min_list_length=5):
