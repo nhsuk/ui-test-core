@@ -70,12 +70,10 @@ class BrowserHandler:
         if not os.path.exists(SCREENSHOTS_PATH):
             os.makedirs(SCREENSHOTS_PATH)
 
-        # TODO - try doing remove_invalid_characters only on description, that can contain // but we don't want to remove the / in the file path
-
         # Create a file name and ensure it is not too long
         timestamp = get_current_datetime().strftime("%Y-%m-%d_%H.%M.%S.%f")
+        description = remove_invalid_characters(description)
         file_name = f"{SCREENSHOTS_PATH}/{timestamp}_{description}"
-        file_name = remove_invalid_characters(file_name)
         file_name = (file_name[:100] + "---.png") if len(file_name) > 100 else file_name + ".png"
 
         # Save the screenshot
