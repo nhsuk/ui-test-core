@@ -1,6 +1,10 @@
+import logging
+
 import requests
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
+
+from uitestcore.utilities.logger_handler import auto_log
 
 
 class Interrogator:
@@ -10,17 +14,19 @@ class Interrogator:
     And get_attribute -> String
     """
 
-    def __init__(self, driver, logger, finder):
+    def __init__(self, driver, finder, existing_logger=None):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
-        :param logger: logger object used to save information to a log file
         :param finder: Finder used to find elements before interrogating
+        :param existing_logger: logger object used to save information to a log file
+
         """
         self.driver = driver
-        self.logger = logger
         self.find = finder
+        self.logger = existing_logger or logging.getLogger(__name__)
 
+    @auto_log(__name__)
     def table_is_not_empty(self, page_element, min_list_length=5):
         """
         check if a table is empty using by counting the rows as found in get_table_row_count(page_element)
@@ -32,16 +38,14 @@ class Interrogator:
         table_body = self.find.element(page_element)
 
         if table_body is None:
-            self.logger.log(20, "the table data is empty ")
             return False
 
         if self.get_table_row_count(table_body) < min_list_length:
-            self.logger.log(20, f"the row count doesn't exceed the minimum value of {min_list_length}")
             return False
 
-        self.logger.log(20, "table data is not empty")
         return True
 
+    @auto_log(__name__)
     def list_is_not_empty(self, page_element, min_list_length=1):
         """
         check if a list is empty by counting the number of li tags
@@ -52,10 +56,10 @@ class Interrogator:
         """
         list_unsorted_tag_result = (self.find.element(page_element)).find_elements_by_tag_name('li')
         if (len(list_unsorted_tag_result)) > min_list_length:
-            self.logger.log(20, "list found and it is not empty")
             return True
         return False
 
+    @auto_log(__name__)
     def is_image_visible_by_checking_src(self, page_element):
         """
         Scrape the src attribute from the element
@@ -81,6 +85,7 @@ class Interrogator:
         status_code = requests.get(src_url).status_code
         return status_code == 200
 
+    @auto_log(__name__)
     def is_image_visible_by_javascript(self, page_element):
         """
         This method is used to verify if an image content is displayed
@@ -105,6 +110,7 @@ class Interrogator:
 
         return self.driver.execute_script(script, element)
 
+    @auto_log(__name__)
     def is_element_visible(self, page_element, wait=None):
         """
         Check that an element is visible
@@ -122,6 +128,7 @@ class Interrogator:
         elements = self.find.elements(page_element)
         return len(elements) > 0 and elements[0].is_displayed()
 
+    @auto_log(__name__)
     def are_elements_visible(self, page_element):
         """
         Finds a list of elements using the page_element passed in, and iterates over them to check they are all visible
@@ -141,6 +148,7 @@ class Interrogator:
 
         return True
 
+    @auto_log(__name__)
     def is_radio_button_visible(self, page_element):
         """
         Check that a radio button is visible - also need to check visibility of parent element for these
@@ -149,6 +157,7 @@ class Interrogator:
         """
         return self.is_element_or_parent_visible(page_element)
 
+    @auto_log(__name__)
     def is_checkbox_visible(self, page_element):
         """
         Check that a checkbox is visible - also need to check visibility of parent element for these
@@ -157,6 +166,7 @@ class Interrogator:
         """
         return self.is_element_or_parent_visible(page_element)
 
+    @auto_log(__name__)
     def is_checkbox_selected(self, page_element):
         """
         Check that a checkbox element is selected (ticked)
@@ -165,6 +175,7 @@ class Interrogator:
         """
         return self.find.element(page_element).is_selected()
 
+    @auto_log(__name__)
     def is_element_or_parent_visible(self, page_element):
         """
         Check if an element or its parent is visible - sometimes the visibility is only set on the parent e.g. checkbox
@@ -176,6 +187,7 @@ class Interrogator:
         return len(elements) > 0 and (elements[0].is_displayed() or
                                       elements[0].find_element(By.XPATH, "./..").is_displayed())
 
+    @auto_log(__name__)
     def is_element_selected(self, page_element):
         """
         Check if an element such as a radio button is selected
@@ -185,6 +197,7 @@ class Interrogator:
         elements = self.find.elements(page_element)
         return len(elements) > 0 and elements[0].is_selected()
 
+    @auto_log(__name__)
     def is_element_enabled(self, page_element):
         """
         Check if an element is enabled using the given Selenium locator
@@ -195,6 +208,7 @@ class Interrogator:
         elements = self.find.elements(page_element)
         return len(elements) > 0 and elements[0].is_enabled()
 
+    @auto_log(__name__)
     def is_element_visible_and_contains_text(self, page_element, expected_text):
         """
         Check that an element is visible on the page and contains the expected text
@@ -209,6 +223,7 @@ class Interrogator:
                 return True
         return False
 
+    @auto_log(__name__)
     def get_number_of_elements(self, page_element):
         """
         Count the number of matching elements on the page
@@ -218,6 +233,7 @@ class Interrogator:
         elements = self.find.elements(page_element)
         return len(elements)
 
+    @auto_log(__name__)
     def get_number_of_elements_with_background_url(self, page_element):
         """
         Count number of elements with CSS background e.g. check that a required image is displayed
@@ -234,12 +250,14 @@ class Interrogator:
 
         return element_counter
 
+    @auto_log(__name__)
     def get_current_url(self):
         """
         :return: the url of the current page
         """
         return self.driver.current_url
 
+    @auto_log(__name__)
     def get_table_row_count(self, page_element):
         """
         Finds the page element, and then finds the number of tr tags
@@ -248,6 +266,7 @@ class Interrogator:
         """
         return len(self.find.element(page_element).find_elements_by_tag_name('tr'))
 
+    @auto_log(__name__)
     def get_attribute(self, page_element, attribute):
         """
          Get any attribute on an element
@@ -260,6 +279,7 @@ class Interrogator:
             return ""
         return elements[0].get_attribute(attribute)
 
+    @auto_log(__name__)
     def get_text(self, page_element):
         """
         Return the text value of an element
@@ -268,6 +288,7 @@ class Interrogator:
         """
         return self.find.element(page_element).text
 
+    @auto_log(__name__)
     def element_has_class(self, page_element, expected_class):
         """
         Find an element and check it has the correct class
@@ -278,6 +299,7 @@ class Interrogator:
         elements = self.find.elements(page_element)
         return len(elements) > 0 and elements[0].is_displayed() and expected_class in elements[0].get_attribute("class")
 
+    @auto_log(__name__)
     def element_parent_has_class(self, page_element, expected_class):
         """
         Find an element and check its parent has the correct class
@@ -291,6 +313,7 @@ class Interrogator:
             return parent.is_displayed() and expected_class in parent.get_attribute("class")
         return False
 
+    @auto_log(__name__)
     def element_sibling_has_class(self, page_element, expected_class):
         """
         Find an element and check that any of its sibling elements has the correct class
@@ -302,9 +325,11 @@ class Interrogator:
         if elements:
             siblings_with_class = elements[0].find_elements(By.XPATH,
                                                             "./../*[contains(@class,'" + expected_class + "')]")
-            return len(siblings_with_class) > 0 and siblings_with_class[0].is_displayed()
+            number_of_siblings_with_class = len(siblings_with_class)
+            return number_of_siblings_with_class > 0 and siblings_with_class[0].is_displayed()
         return False
 
+    @auto_log(__name__)
     def element_contains_link(self, page_element, expected_url):
         """
         Check if an element contains a link to the given URL
@@ -317,6 +342,7 @@ class Interrogator:
             return elements[0].is_displayed() and expected_url in elements[0].get_attribute("href")
         return False
 
+    @auto_log(__name__)
     def get_value_from_cookie(self, name_to_find):
         """
         Return the value of a named cookie. The name of the cookie must be supplied and matched
