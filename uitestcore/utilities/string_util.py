@@ -23,7 +23,6 @@ def remove_invalid_characters(input_string):
     :param input_string: the string which needs to be altered
     :return: edited string
     """
-    # return input_string.replace(" ", "_").replace(",", "").replace("'", "").replace("\n", "")
     return input_string.replace(" ", "_").replace(",", "").replace("'", "")\
                        .replace("\n", "").replace("/", "_").replace(":", "")
 
