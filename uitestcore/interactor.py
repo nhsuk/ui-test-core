@@ -138,7 +138,7 @@ class Interactor():
         :param page_element:
         :return:
         """
-        self.logger.info("Scrolling to %s", page_element.locator_value)
+        self.logger.info("Scrolling to %s", page_element)
         element: WebElement = self.find.element(page_element)
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
