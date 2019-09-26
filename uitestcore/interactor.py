@@ -211,3 +211,11 @@ class Interactor():
         """
         self.driver.delete_cookie(cookie_name)
         self.driver.refresh()
+
+    @auto_log(__name__)
+    def clear_all_cookies(self):
+        """
+        Delete all cookies for the current page
+        """
+        self.driver.delete_all_cookies()
+        # self.driver.refresh()
