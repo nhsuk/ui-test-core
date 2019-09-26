@@ -215,7 +215,6 @@ class Interactor():
     @auto_log(__name__)
     def clear_all_cookies(self):
         """
-        Delete all cookies for the current page
+        Delete all cookies for the current page - this does not refresh the page
         """
         self.driver.delete_all_cookies()
-        # self.driver.refresh()
