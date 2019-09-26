@@ -50,6 +50,7 @@ class MockInterrogator:
     def get_current_url(self):
         return self.current_url
 
+
 class MockDriver(object):
     def __init__(self, deleted_cookies=None):
         if deleted_cookies is None:
@@ -318,3 +319,12 @@ def test_clear_cookie_and_refresh_page_performs_a_refresh():
     name = "Banner717"
     interact.clear_cookie_and_refresh_page(name)
     assert_that(driver.refresh_count, equal_to(1), "The cookie should be refreshed once")
+
+
+def test_clear_all_cookies():
+    driver = MagicMock()
+    interact = Interactor(driver, None, None, None, None)
+
+    interact.clear_all_cookies()
+
+    driver.delete_all_cookies.assert_called_once()

@@ -343,15 +343,23 @@ class Interrogator:
         return False
 
     @auto_log(__name__)
+    def get_all_cookies(self):
+        """
+        Gets all of the cookies from the current page
+        :return: list of dictionaries corresponding to cookies visible in the current session
+        """
+        return self.driver.get_cookies()
+
+    @auto_log(__name__)
     def get_value_from_cookie(self, name_to_find):
         """
         Return the value of a named cookie. The name of the cookie must be supplied and matched
         :param name_to_find: The name of the cookie to search for and return
         :return: The value of the named cookie or an empty string
         """
-        dictionary_from_cookie = self.driver.get_cookies()
+        all_cookies = self.get_all_cookies()
 
-        for x in dictionary_from_cookie:
-            if x['name'] == name_to_find:
-                return x['value']
+        for cookie in all_cookies:
+            if cookie['name'] == name_to_find:
+                return cookie['value']
         return ""

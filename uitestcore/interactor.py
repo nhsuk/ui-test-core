@@ -5,7 +5,7 @@ from selenium.webdriver.support.select import Select
 from uitestcore.utilities.logger_handler import auto_log
 
 
-class Interactor():
+class Interactor:
     """
     Interact with elements without returning a value, such as clicking, sending keys, or performing Actions
     If you're expecting a return value, such as the Element or True/False look in the Finder or Interrogator
@@ -211,3 +211,10 @@ class Interactor():
         """
         self.driver.delete_cookie(cookie_name)
         self.driver.refresh()
+
+    @auto_log(__name__)
+    def clear_all_cookies(self):
+        """
+        Delete all cookies for the current page - this does not refresh the page
+        """
+        self.driver.delete_all_cookies()

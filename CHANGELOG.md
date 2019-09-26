@@ -1,3 +1,7 @@
+4.2.0 / 2019-09-26
+===================
+- Add function to interactor to clear all cookies
+
 4.1.0 / 2019-09-24
 ===================
 - Update screenshots code to handle slashes in file name
