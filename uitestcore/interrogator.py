@@ -346,7 +346,7 @@ class Interrogator:
     def get_all_cookies(self):
         """
         Gets all of the cookies from the current page
-        :return: set of dictionaries corresponding to cookies visible in the current session
+        :return: list of dictionaries corresponding to cookies visible in the current session
         """
         return self.driver.get_cookies()
 
