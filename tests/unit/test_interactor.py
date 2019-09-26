@@ -50,6 +50,7 @@ class MockInterrogator:
     def get_current_url(self):
         return self.current_url
 
+
 class MockDriver(object):
     def __init__(self, deleted_cookies=None):
         if deleted_cookies is None:

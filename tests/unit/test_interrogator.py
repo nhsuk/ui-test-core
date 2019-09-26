@@ -1,13 +1,12 @@
 from unittest import mock
 from unittest.mock import MagicMock
 import requests
-from hamcrest import assert_that, equal_to, contains, is_
+from hamcrest import assert_that, equal_to, is_
 from selenium.webdriver.common.by import By
 from tests.unit.unit_test_utils import check_mocked_functions_called
 from uitestcore.finder import Finder
 from uitestcore.interrogator import Interrogator
 from uitestcore.page_element import PageElement
-
 
 default_page_element = PageElement(By.ID, "test-id")
 
@@ -747,3 +746,15 @@ def test_get_value_from_cookie_with_wrong_key_value():
     name = "nhsuk-consent"
     result = test_interrogator.get_value_from_cookie(name)
     assert_that(result, equal_to(""), f"Incorrect cookie value when searching for name: '{name}'")
+
+
+def test_get_all_cookies():
+    driver = MagicMock()
+    driver.get_cookies.return_value = "test_cookie"
+
+    interrogate = Interrogator(driver, None, None)
+
+    cookies = interrogate.get_all_cookies()
+
+    driver.get_cookies.assert_called_once()
+    assert_that(cookies, equal_to("test_cookie"), "Cookies not returned correctly")

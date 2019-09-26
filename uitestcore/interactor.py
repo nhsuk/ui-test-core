@@ -5,7 +5,7 @@ from selenium.webdriver.support.select import Select
 from uitestcore.utilities.logger_handler import auto_log
 
 
-class Interactor():
+class Interactor:
     """
     Interact with elements without returning a value, such as clicking, sending keys, or performing Actions
     If you're expecting a return value, such as the Element or True/False look in the Finder or Interrogator
