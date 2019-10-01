@@ -15,7 +15,7 @@ class MockDriver(object):
 
     @staticmethod
     def get_cookies():
-        mock_cookies = [{"name": "nhsuk-cookie-consent", "value": "%7B%22preferences%22%3Atrue%7D"},
+        mock_cookies = [{"name": "cookie-consent", "value": "%7B%22preferences%22%3Atrue%7D"},
                         {"name": "s_getNewRepeat", "value": "1564127000350-Repeat"}]
         return mock_cookies
 
@@ -734,7 +734,7 @@ def test_get_value_from_cookie_with_none_value():
 def test_get_value_from_cookie_with_correct_value():
     finder = Finder("driver", "logger")
     test_interrogator = Interrogator(MockDriver(), finder, "logger")
-    name = "nhsuk-cookie-consent"
+    name = "cookie-consent"
     result = test_interrogator.get_value_from_cookie(name)
     assert_that(result, equal_to("%7B%22preferences%22%3Atrue%7D"),
                 f"Incorrect cookie value when searching for name: '{name}'")
@@ -743,7 +743,7 @@ def test_get_value_from_cookie_with_correct_value():
 def test_get_value_from_cookie_with_wrong_key_value():
     finder = Finder("driver", "logger")
     test_interrogator = Interrogator(MockDriver(), finder, "logger")
-    name = "nhsuk-consent"
+    name = "consent"
     result = test_interrogator.get_value_from_cookie(name)
     assert_that(result, equal_to(""), f"Incorrect cookie value when searching for name: '{name}'")
 

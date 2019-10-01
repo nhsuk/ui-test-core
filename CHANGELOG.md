@@ -1,3 +1,8 @@
+5.0.0 / 2019-10-01
+===================
+TODO
+- Change screenshot API
+
 4.2.0 / 2019-09-26
 ===================
 - Add function to interactor to clear all cookies
