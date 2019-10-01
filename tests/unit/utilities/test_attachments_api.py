@@ -186,8 +186,8 @@ def test_get_failed_tests_performs_the_correct_request(mock_get, _mock_print):
 
 
 @mock.patch("builtins.open", side_effect=MockBuiltIn)
-def test_get_image_base64(mock_open):
-    image_b64 = get_image_base64("test/file")
+def test_get_file_base64(mock_open):
+    image_b64 = get_file_base64("test/file")
 
     check_mocked_functions_called(mock_open)
     assert_that(image_b64, equal_to(b"dGVzdCBkYXRh"), "Incorrect base 64 string")
@@ -224,8 +224,7 @@ def test_attach_files_fails_when_there_are_no_failed_tests(mock_get_failed_tests
 @mock.patch("uitestcore.utilities.attachments_api.listdir", side_effect=lambda *args: None)
 @mock.patch("uitestcore.utilities.attachments_api.get_failed_tests", side_effect=lambda *args: [[10, 100, "test1"],
                                                                                                 [11, 101, "test2"]])
-def test_attach_files_fails_when_there_are_no_files(mock_get_failed_tests, mock_listdir,
-                                                                     mock_get_run_ids, _mock_print):
+def test_attach_files_fails_when_there_are_no_files(mock_get_failed_tests, mock_listdir, mock_get_run_ids, _mock_print):
     result = attach_files("test-org", "test-project", "screenshots", [None, "100", "test-token"])
 
     check_mocked_functions_called(mock_listdir, mock_get_failed_tests, mock_get_run_ids)
@@ -235,29 +234,42 @@ def test_attach_files_fails_when_there_are_no_files(mock_get_failed_tests, mock_
 @mock.patch("builtins.print")
 @mock.patch("uitestcore.utilities.attachments_api.get_run_ids", side_effect=lambda *args: [10, 11])
 @mock.patch("uitestcore.utilities.attachments_api.listdir", side_effect=lambda *args: ["test1", "test2"])
-@mock.patch("uitestcore.utilities.attachments_api.get_image_base64", side_effect=lambda *args: None)
+@mock.patch("uitestcore.utilities.attachments_api.get_file_base64", side_effect=lambda *args: None)
 @mock.patch("uitestcore.utilities.attachments_api.get_failed_tests", side_effect=lambda *args: [[10, 100, "test1"],
                                                                                                 [11, 101, "test2"]])
-def test_attach_files_fails_when_there_base64_conversion_fails(mock_get_failed_tests, mock_get_image_base64,
-                                                                     mock_listdir, mock_get_run_ids, _mock_print):
+def test_attach_files_fails_when_there_base64_conversion_fails(mock_get_failed_tests, mock_get_file_base64,
+                                                               mock_listdir, mock_get_run_ids, _mock_print):
     result = attach_files("test-org", "test-project", "screenshots", [None, "100", "test-token"])
 
-    check_mocked_functions_called(mock_get_failed_tests, mock_get_image_base64, mock_listdir, mock_get_run_ids)
+    check_mocked_functions_called(mock_get_failed_tests, mock_get_file_base64, mock_listdir, mock_get_run_ids)
     assert_that(result, equal_to(1), "Result should be a failure when base64 conversion fails")
 
 
 @mock.patch("builtins.print")
 @mock.patch("uitestcore.utilities.attachments_api.get_run_ids", side_effect=lambda *args: [10, 11])
+@mock.patch("uitestcore.utilities.attachments_api.listdir", side_effect=lambda *args: ["file1"])
+@mock.patch("uitestcore.utilities.attachments_api.get_file_base64", side_effect=lambda *args: None)
+@mock.patch("uitestcore.utilities.attachments_api.get_failed_tests", side_effect=lambda *args: [[10, 100, "test1"]])
+def test_attach_files_gets_the_base64_of_the_correct_file(mock_get_failed_tests, mock_get_file_base64,
+                                                          mock_listdir, mock_get_run_ids, _mock_print):
+    attach_files("test-org", "test-project", "screenshots", [None, "100", "test-token"])
+
+    check_mocked_functions_called(mock_get_failed_tests, mock_listdir, mock_get_run_ids)
+    mock_get_file_base64.assert_called_with("screenshots/test1/file1")
+
+
+@mock.patch("builtins.print")
+@mock.patch("uitestcore.utilities.attachments_api.get_run_ids", side_effect=lambda *args: [10, 11])
 @mock.patch("uitestcore.utilities.attachments_api.listdir", side_effect=lambda *args: ["test1", "test2"])
-@mock.patch("uitestcore.utilities.attachments_api.get_image_base64", side_effect=lambda *args: b"test-base64-string")
+@mock.patch("uitestcore.utilities.attachments_api.get_file_base64", side_effect=lambda *args: b"test-base64-string")
 @mock.patch("requests.post", side_effect=lambda *args, **kwargs: MockResponse("", 400))
 @mock.patch("uitestcore.utilities.attachments_api.get_failed_tests", side_effect=lambda *args: [[10, 100, "test1"],
                                                                                                 [11, 101, "test2"]])
-def test_attach_files_fails_when_the_request_fails(mock_get_failed_tests, mock_post, mock_get_image_base64,
-                                                         mock_listdir, mock_get_run_ids, _mock_print):
+def test_attach_files_fails_when_the_request_fails(mock_get_failed_tests, mock_post, mock_get_file_base64,
+                                                   mock_listdir, mock_get_run_ids, _mock_print):
     result = attach_files("test-org", "test-project", "screenshots", [None, "100", "test-token"])
 
-    check_mocked_functions_called(mock_get_failed_tests, mock_post, mock_get_image_base64,
+    check_mocked_functions_called(mock_get_failed_tests, mock_post, mock_get_file_base64,
                                   mock_listdir, mock_get_run_ids)
     assert_that(result, equal_to(1), "Result should be a failure when the request fails")
 
@@ -265,15 +277,15 @@ def test_attach_files_fails_when_the_request_fails(mock_get_failed_tests, mock_p
 @mock.patch("builtins.print")
 @mock.patch("uitestcore.utilities.attachments_api.get_run_ids", side_effect=lambda *args: [10, 11])
 @mock.patch("uitestcore.utilities.attachments_api.listdir", side_effect=lambda *args: ["test1", "test2"])
-@mock.patch("uitestcore.utilities.attachments_api.get_image_base64", side_effect=lambda *args: b"test-base64-string")
+@mock.patch("uitestcore.utilities.attachments_api.get_file_base64", side_effect=lambda *args: b"test-base64-string")
 @mock.patch("requests.post", side_effect=lambda *args, **kwargs: MockResponse("", 200))
 @mock.patch("uitestcore.utilities.attachments_api.get_failed_tests", side_effect=lambda *args: [[10, 100, "test1"],
                                                                                                 [11, 101, "test2"]])
-def test_attach_files_succeeds(mock_get_failed_tests, mock_post, mock_get_image_base64,
-                                     mock_listdir, mock_get_run_ids, _mock_print):
+def test_attach_files_succeeds(mock_get_failed_tests, mock_post, mock_get_file_base64,
+                               mock_listdir, mock_get_run_ids, _mock_print):
     result = attach_files("test-org", "test-project", "screenshots", [None, "100", "test-token"])
 
-    check_mocked_functions_called(mock_get_failed_tests, mock_post, mock_get_image_base64,
+    check_mocked_functions_called(mock_get_failed_tests, mock_post, mock_get_file_base64,
                                   mock_listdir, mock_get_run_ids)
     assert_that(result, equal_to(0), "Result should be a success when everything works")
 
@@ -281,15 +293,15 @@ def test_attach_files_succeeds(mock_get_failed_tests, mock_post, mock_get_image_
 @mock.patch("builtins.print")
 @mock.patch("uitestcore.utilities.attachments_api.get_run_ids", side_effect=lambda *args: [10, 11])
 @mock.patch("uitestcore.utilities.attachments_api.listdir", side_effect=lambda *args: ["test1", "test2"])
-@mock.patch("uitestcore.utilities.attachments_api.get_image_base64", side_effect=lambda *args: b"test-base64-string")
+@mock.patch("uitestcore.utilities.attachments_api.get_file_base64", side_effect=lambda *args: b"test-base64-string")
 @mock.patch("requests.post", side_effect=lambda *args, **kwargs: MockResponse("", 200))
 @mock.patch("uitestcore.utilities.attachments_api.get_failed_tests", side_effect=lambda *args: [[10, 100, "test1"],
                                                                                                 [11, 101, "test2"]])
-def test_attach_files_performs_the_correct_request(mock_get_failed_tests, mock_post, mock_get_image_base64,
-                                                         mock_listdir, mock_get_run_ids, _mock_print):
+def test_attach_files_performs_the_correct_request(mock_get_failed_tests, mock_post, mock_get_file_base64,
+                                                   mock_listdir, mock_get_run_ids, _mock_print):
     attach_files("test-org", "test-project", "screenshots", [None, "100", "test-token"])
 
-    check_mocked_functions_called(mock_get_failed_tests, mock_post, mock_get_image_base64,
+    check_mocked_functions_called(mock_get_failed_tests, mock_post, mock_get_file_base64,
                                   mock_listdir, mock_get_run_ids)
     request_args = mock_post.call_args
 

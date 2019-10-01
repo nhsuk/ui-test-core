@@ -74,10 +74,10 @@ def attach_files(organisation, project, attachment_file_path, args):
 
         # Attach any files found for this test
         for file_name in file_names:
-            image_b64 = get_image_base64(f"{file_path}{file_name}")
+            file_b64 = get_file_base64(f"{file_path}/{file_name}")
 
-            if not image_b64:
-                print_azure_error(f"Could not convert file to Base64: {file_path}{file_name}")
+            if not file_b64:
+                print_azure_error(f"Could not convert file to Base64: {file_path}/{file_name}")
                 return_value = 1
                 continue
 
@@ -93,7 +93,7 @@ def attach_files(organisation, project, attachment_file_path, args):
                     "attachmentType": "GeneralAttachment",
                     "comment": "Attached by UiTestCore",
                     "fileName": file_name,
-                    "stream": image_b64.decode("utf-8")
+                    "stream": file_b64.decode("utf-8")
                 })
             )
 
@@ -209,14 +209,14 @@ def get_failed_tests(run_ids, request_url, auth_token):
     return failed_tests
 
 
-def get_image_base64(file_path):
+def get_file_base64(file_path):
     """
     Get the Base64 encoded string for a given file
     :param file_path: the file path to a file to be attached
     :return: the Base64 string
     """
-    with open(file_path, "rb") as image_file:
-        base64_string = base64.b64encode(image_file.read())
+    with open(file_path, "rb") as the_file:
+        base64_string = base64.b64encode(the_file.read())
 
     return base64_string
 
