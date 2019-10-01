@@ -60,7 +60,7 @@ class MockDriver(object):
 
     @staticmethod
     def get_cookies():
-        mock_cookies = [{"name": "nhsuk-cookie-consent", "value": "%7B%22preferences%22%3Atrue%7D"},
+        mock_cookies = [{"name": "cookie-consent", "value": "%7B%22preferences%22%3Atrue%7D"},
                         {"name": "s_getNewRepeat", "value": "1564127000350-Repeat"}]
         return mock_cookies
 

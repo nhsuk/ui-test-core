@@ -1,5 +1,5 @@
 """
-This module handles attaching screenshots to test result records on Azure DevOps
+This module handles attaching files to test result records on Azure DevOps
 Uses Azure DevOps Services REST API:
 https://docs.microsoft.com/en-us/rest/api/azure/devops/test/attachments?view=azure-devops-rest-5.0
 """
@@ -16,12 +16,15 @@ AZURE_API_VERSION_GET = "5.0"
 AZURE_API_VERSION_POST = "5.0-preview.1"
 
 
-def attach_screenshots(project, args):
+def attach_files(organisation, project, attachment_file_path, args):
     """
-    Get the details of the failed tests from a given release and attach the screenshots using Microsoft API calls
-    :param project: the Azure project name e.g. "nhsuk.contact-us"
+    Get the details of the failed tests from a given release and attach the files using Microsoft API calls
+    The organisation and project names can be found in the project URL e.g. dev.azure.com/organisation/project
+    :param organisation: the Azure organisation name
+    :param project: the Azure project name
+    :param attachment_file_path: the file path to the directory containing the files to attach
     :param args: sys.argv which should contain the release ID and auth token
-    :return: integer: a return value of 0 indicates success, 1 means that any screenshot could not be attached
+    :return: integer: a return value of 0 indicates success, 1 means that any file could not be attached
     """
     # Get the release ID and auth token from the passed arguments
     params = parse_parameters(args)
@@ -31,7 +34,7 @@ def attach_screenshots(project, args):
     auth_token = params[1]
 
     # Set the URL for the required API
-    request_url = f"https://dev.azure.com/nhsuk/{project}/_apis/test/runs"
+    request_url = f"https://dev.azure.com/{organisation}/{project}/_apis/test/runs"
 
     # Get the run IDs for the given release
     run_ids = get_run_ids(release_id, request_url, auth_token)
@@ -50,27 +53,31 @@ def attach_screenshots(project, args):
 
     print(f"Failed tests found (run ID, test case result ID, test name): {failed_tests}")
 
-    # A return value of 0 indicates success, 1 means that any screenshot could not be attached
+    # A return value of 0 indicates success, 1 means that any file could not be attached
     return_value = 0
 
-    # Attach the relevant screenshots
+    # Ensure that the file path ends with a "/"
+    if not attachment_file_path.endswith("/"):
+        attachment_file_path += "/"
+
+    # Attach the relevant files
     for failed_test in failed_tests:
-        # Get all of the file names of screenshots for this test
-        screenshots_path = "screenshots/" + remove_invalid_characters(failed_test[2])
+        # Get all of the file names to attach for this test
+        file_path = attachment_file_path + remove_invalid_characters(failed_test[2])
         file_names = []
 
-        if append_file_names(file_names, screenshots_path) == 1:
+        if append_file_names(file_names, file_path) == 1:
             return_value = 1
 
         if not file_names:
             continue
 
-        # Attach any screenshots found for this test
+        # Attach any files found for this test
         for file_name in file_names:
-            image_b64 = get_image_base64(f"{screenshots_path}/{file_name}")
+            file_b64 = get_file_base64(f"{file_path}/{file_name}")
 
-            if not image_b64:
-                print_azure_error(f"Could not convert file to Base64: {screenshots_path}/{file_name}")
+            if not file_b64:
+                print_azure_error(f"Could not convert file to Base64: {file_path}/{file_name}")
                 return_value = 1
                 continue
 
@@ -84,13 +91,13 @@ def attach_screenshots(project, args):
                 headers={"Content-Type": "application/json"},
                 data=json.dumps({
                     "attachmentType": "GeneralAttachment",
-                    "comment": "Example screenshot",
+                    "comment": "Attached by UiTestCore",
                     "fileName": file_name,
-                    "stream": image_b64.decode("utf-8")
+                    "stream": file_b64.decode("utf-8")
                 })
             )
 
-            print(f"Attach screenshot {file_name} - response {response.status_code}")
+            print(f"Attach file {file_name} - response {response.status_code}")
 
             if not response.status_code == 200:
                 return_value = 1
@@ -202,14 +209,14 @@ def get_failed_tests(run_ids, request_url, auth_token):
     return failed_tests
 
 
-def get_image_base64(file_path):
+def get_file_base64(file_path):
     """
-    Get the Base64 encoded string for a given screenshot file
-    :param file_path: the file path to a screenshot
+    Get the Base64 encoded string for a given file
+    :param file_path: the file path to a file to be attached
     :return: the Base64 string
     """
-    with open(file_path, "rb") as image_file:
-        base64_string = base64.b64encode(image_file.read())
+    with open(file_path, "rb") as the_file:
+        base64_string = base64.b64encode(the_file.read())
 
     return base64_string
 
@@ -232,7 +239,7 @@ def append_file_names(file_names, folder_path):
         return 0
 
     if not files_in_folder:
-        print_azure_error("Could not find any screenshot files in folder: " + folder_path)
+        print_azure_error("Could not find any files in folder: " + folder_path)
         return 1
 
     for file in files_in_folder:
