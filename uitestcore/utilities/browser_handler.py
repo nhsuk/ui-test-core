@@ -29,7 +29,6 @@ class BrowserHandler:
         Set up the browser based on the config options
         :param context: the test context instance
         """
-
         # Check if we have any command line parameters to parse
         parse_config_data(context)
 
@@ -104,8 +103,14 @@ def open_browser(context):
     if context.browser.lower() == "chrome":
         open_chrome(context)
 
+    elif context.browser.lower() == "firefox":
+        open_firefox(context)
+
     elif context.browser.lower() == "browserstack":
         start_browserstack(context)
+
+    else:
+        raise ValueError(f"Browser '{context.browser}' not supported")
 
 
 def open_chrome(context):
@@ -124,6 +129,24 @@ def open_chrome(context):
         chrome_options.add_argument("--disable-gpu")
         # no need to specify the executable as we're using one installed via pip in Dockerfile
         context.browser = webdriver.Chrome(chrome_options=chrome_options)
+
+    BrowserHandler.set_browser_size(context)
+
+
+def open_firefox(context):
+    """
+    Open the Firefox browser
+    :param context: the test context instance
+    """
+    if os.name == 'nt':
+        context.browser = webdriver.Firefox(executable_path=r"browser_executables/geckodriver.exe")
+
+    else:
+        firefox_options = webdriver.FirefoxOptions()
+        firefox_options.add_argument("--headless")
+        # TODO - need to make sure the geckodriver will be available in Docker, or install it somehow
+        context.browser = webdriver.Firefox(executable_path=r"browser_executables/geckodriver",
+                                            firefox_options=firefox_options)
 
     BrowserHandler.set_browser_size(context)
 
