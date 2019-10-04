@@ -1,6 +1,6 @@
 from datetime import datetime
 from unittest import mock
-from hamcrest import equal_to
+from hamcrest import equal_to, raises, calling
 from tests.unit.unit_test_utils import *
 from uitestcore.utilities.browser_handler import *
 
@@ -214,26 +214,54 @@ def test_move_screenshots_to_folder(mock_move, mock_path_exists, mock_listdir):
 
 @mock.patch("uitestcore.utilities.browser_handler.open_chrome")
 @mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
-def test_open_browser_chrome(mock_start_browserstack, mock_open_chrome):
+@mock.patch("uitestcore.utilities.browser_handler.open_firefox")
+def test_open_browser_chrome(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
     context = MockContext()
     context.browser.name = "chrome"
 
     open_browser(context)
 
     check_mocked_functions_called(mock_open_chrome)
-    check_mocked_functions_not_called(mock_start_browserstack)
+    check_mocked_functions_not_called(mock_open_firefox, mock_start_browserstack)
 
 
 @mock.patch("uitestcore.utilities.browser_handler.open_chrome")
 @mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
-def test_open_browser_browserstack(mock_start_browserstack, mock_open_chrome):
+@mock.patch("uitestcore.utilities.browser_handler.open_firefox")
+def test_open_browser_firefox(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
+    context = MockContext()
+    context.browser.name = "firefox"
+
+    open_browser(context)
+
+    check_mocked_functions_called(mock_open_firefox)
+    check_mocked_functions_not_called(mock_open_chrome, mock_start_browserstack)
+
+
+@mock.patch("uitestcore.utilities.browser_handler.open_chrome")
+@mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
+@mock.patch("uitestcore.utilities.browser_handler.open_firefox")
+def test_open_browser_browserstack(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
     context = MockContext()
     context.browser.name = "browserstack"
 
     open_browser(context)
 
     check_mocked_functions_called(mock_start_browserstack)
-    check_mocked_functions_not_called(mock_open_chrome)
+    check_mocked_functions_not_called(mock_open_chrome, mock_open_firefox)
+
+
+@mock.patch("uitestcore.utilities.browser_handler.open_chrome")
+@mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
+@mock.patch("uitestcore.utilities.browser_handler.open_firefox")
+def test_open_browser_not_supported(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
+    context = MockContext()
+    context.browser = "ie"
+
+    assert_that(calling(open_browser).with_args(context), raises(ValueError),
+                "A ValueError should occur when the desired browser is not supported")
+
+    check_mocked_functions_not_called(mock_open_chrome, mock_start_browserstack, mock_open_firefox)
 
 
 @mock.patch("os.name", "nt")

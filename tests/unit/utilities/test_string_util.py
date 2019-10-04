@@ -55,7 +55,7 @@ def test_decode_url_string_with_empty_input():
 def test_decode_url_string_with_none_input():
     none_url_string = None
     assert_that(calling(decode_url_string).with_args(none_url_string), raises(TypeError),
-                "A JSONDecodeError should occur with a None value ")
+                "A JSONDecodeError should occur with a None value")
 
 
 def test_decode_url_string_with_invalid_input():

@@ -103,7 +103,7 @@ def open_browser(context):
     if context.browser.lower() == "chrome":
         open_chrome(context)
 
-    if context.browser.lower() == "firefox":
+    elif context.browser.lower() == "firefox":
         open_firefox(context)
 
     elif context.browser.lower() == "browserstack":
