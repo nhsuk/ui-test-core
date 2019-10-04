@@ -119,6 +119,20 @@ def test_set_browser_size_not_maximized():
     assert_that(not context.browser.browser_is_maximised, "Browser was maximized but should not be")
 
 
+@mock.patch("uitestcore.utilities.browser_handler.parse_config_data")
+@mock.patch("uitestcore.utilities.browser_handler.open_browser")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_prepare_browser(mock_set_browser_size, mock_open_browser, mock_parse_config_data):
+    context = MockContext(implicit_wait=10)
+
+    BrowserHandler.prepare_browser(context)
+
+    mock_parse_config_data.assert_called_once_with(context)
+    mock_open_browser.assert_called_once_with(context)
+    mock_set_browser_size.assert_called_once_with(context)
+    assert_that(context.browser.implicit_wait, equal_to(10), "Implicit wait not set correctly")
+
+
 @mock.patch("os.path.exists", side_effect=lambda *args: False)
 @mock.patch("os.makedirs")
 @mock.patch("uitestcore.utilities.browser_handler.get_current_datetime",
@@ -292,6 +306,33 @@ def test_open_chrome_non_windows(mock_set_browser_size, mock_add_argument, mock_
     mock_add_argument.assert_any_call("--headless")
     mock_add_argument.assert_any_call("--disable-gpu")
     check_mocked_functions_called(mock_chrome, mock_set_browser_size)
+
+
+@mock.patch("os.name", "nt")
+@mock.patch("selenium.webdriver.Firefox", side_effect=lambda **kwargs: "mock_firefox")
+@mock.patch("selenium.webdriver.FirefoxOptions")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_firefox_windows(mock_set_browser_size, mock_firefoxoptions, mock_firefox):
+    context = MockContext()
+
+    open_firefox(context)
+
+    check_mocked_functions_called(mock_firefox, mock_set_browser_size)
+    check_mocked_functions_not_called(mock_firefoxoptions)
+
+
+@mock.patch("os.name", "ubuntu")
+@mock.patch("selenium.webdriver.Firefox", side_effect=lambda **kwargs: "mock_firefox")
+@mock.patch("selenium.webdriver.FirefoxOptions.add_argument")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_firefox_non_windows(mock_set_browser_size, mock_add_argument, mock_firefox):
+    context = MockContext()
+
+    open_firefox(context)
+
+    assert_that(mock_add_argument.call_count, equal_to(1), "Incorrect number of arguments added to firefox")
+    mock_add_argument.assert_any_call("--headless")
+    check_mocked_functions_called(mock_firefox, mock_set_browser_size)
 
 
 @mock.patch("os.environ", browserstack_data)

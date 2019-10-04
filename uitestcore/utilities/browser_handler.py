@@ -148,6 +148,8 @@ def open_firefox(context):
         context.browser = webdriver.Firefox(executable_path=r"browser_executables/geckodriver",
                                             firefox_options=firefox_options)
 
+    BrowserHandler.set_browser_size(context)
+
 
 def start_browserstack(context):
     """
