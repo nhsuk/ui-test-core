@@ -1,3 +1,8 @@
+5.1.1 / 2019-10-07
+===================
+- Add support for Firefox
+- Handle unknown browser name when opening the browser
+
 5.0.0 / 2019-10-01
 ===================
 - Rename screenshots_api to attachments_api
