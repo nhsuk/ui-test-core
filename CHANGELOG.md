@@ -1,4 +1,4 @@
-5.1.0 / 2019-10-03
+5.1.1 / 2019-10-07
 ===================
 - Add support for Firefox
 - Handle unknown browser name when opening the browser
