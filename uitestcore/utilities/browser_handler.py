@@ -127,7 +127,8 @@ def open_chrome(context):
         chrome_options.add_argument("--window-size=1420,1080")
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
-        # no need to specify the executable as we're using one installed via pip in Dockerfile
+
+        # No need to specify the executable as we're using one installed via pip in Dockerfile
         context.browser = webdriver.Chrome(chrome_options=chrome_options)
 
     BrowserHandler.set_browser_size(context)
@@ -144,9 +145,9 @@ def open_firefox(context):
     else:
         firefox_options = webdriver.FirefoxOptions()
         firefox_options.add_argument("--headless")
-        # TODO - need to make sure the geckodriver will be available in Docker, or install it somehow
-        context.browser = webdriver.Firefox(executable_path=r"browser_executables/geckodriver",
-                                            firefox_options=firefox_options)
+
+        # The Firefox driver (geckodriver) must be located in the "firefox" folder when running in Docker
+        context.browser = webdriver.Firefox(executable_path=r"firefox/geckodriver", firefox_options=firefox_options)
 
     BrowserHandler.set_browser_size(context)
 
