@@ -270,7 +270,7 @@ def test_open_browser_browserstack(mock_open_firefox, mock_start_browserstack, m
 @mock.patch("uitestcore.utilities.browser_handler.open_firefox")
 def test_open_browser_not_supported(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
     context = MockContext()
-    context.browser = "ie"
+    context.browser.name = "ie"
 
     assert_that(calling(open_browser).with_args(context), raises(ValueError),
                 "A ValueError should occur when the desired browser is not supported")
@@ -282,7 +282,7 @@ def test_open_browser_not_supported(mock_open_firefox, mock_start_browserstack, 
 @mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
 @mock.patch("selenium.webdriver.ChromeOptions")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
-def test_open_chrome_windows(mock_set_browser_size, mock_chromeoptions, mock_chrome):
+def test_open_chrome_windows_os(mock_set_browser_size, mock_chromeoptions, mock_chrome):
     context = MockContext()
 
     open_chrome(context)
@@ -295,7 +295,7 @@ def test_open_chrome_windows(mock_set_browser_size, mock_chromeoptions, mock_chr
 @mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
 @mock.patch("selenium.webdriver.ChromeOptions.add_argument")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
-def test_open_chrome_non_windows(mock_set_browser_size, mock_add_argument, mock_chrome):
+def test_open_chrome_non_windows_os(mock_set_browser_size, mock_add_argument, mock_chrome):
     context = MockContext()
 
     open_chrome(context)
@@ -312,7 +312,7 @@ def test_open_chrome_non_windows(mock_set_browser_size, mock_add_argument, mock_
 @mock.patch("selenium.webdriver.Firefox", side_effect=lambda **kwargs: "mock_firefox")
 @mock.patch("selenium.webdriver.FirefoxOptions")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
-def test_open_firefox_windows(mock_set_browser_size, mock_firefoxoptions, mock_firefox):
+def test_open_firefox_windows_os(mock_set_browser_size, mock_firefoxoptions, mock_firefox):
     context = MockContext()
 
     open_firefox(context)
@@ -325,7 +325,7 @@ def test_open_firefox_windows(mock_set_browser_size, mock_firefoxoptions, mock_f
 @mock.patch("selenium.webdriver.Firefox", side_effect=lambda **kwargs: "mock_firefox")
 @mock.patch("selenium.webdriver.FirefoxOptions.add_argument")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
-def test_open_firefox_non_windows(mock_set_browser_size, mock_add_argument, mock_firefox):
+def test_open_firefox_non_windows_os(mock_set_browser_size, mock_add_argument, mock_firefox):
     context = MockContext()
 
     open_firefox(context)
