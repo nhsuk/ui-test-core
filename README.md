@@ -1,4 +1,4 @@
-# UiTestCore - test 1
+# UiTestCore - test 2
 
 This package helps with writing UI tests by providing a wrapper around Selenium and other useful functions. UiTestCore was designed with Page Object Model in mind, and makes it easy to create an acceptance test pack without the need to write any Selenium code.<br><br>
 The repository for this project can be found on GitHub: https://github.com/nhsuk/ui-test-core
