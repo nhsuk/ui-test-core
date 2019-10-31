@@ -46,7 +46,7 @@ class MockElementHasAttribute:
         self.expected_attribute_value = expected_attribute_value
 
     def __call__(self, *args):
-        if self.expected_attribute_value is "test_value_exists":
+        if self.expected_attribute_value == "test_value_exists":
             return True
         return False
 

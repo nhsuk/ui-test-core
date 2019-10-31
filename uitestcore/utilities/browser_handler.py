@@ -100,17 +100,17 @@ def open_browser(context):
     Open the required browser
     :param context: the test context instance
     """
-    if context.browser.lower() == "chrome":
+    if context.browser_name.lower() == "chrome":
         open_chrome(context)
 
-    elif context.browser.lower() == "firefox":
+    elif context.browser_name.lower() == "firefox":
         open_firefox(context)
 
-    elif context.browser.lower() == "browserstack":
+    elif context.browser_name.lower() == "browserstack":
         start_browserstack(context)
 
     else:
-        raise ValueError(f"Browser '{context.browser}' not supported")
+        raise ValueError(f"Browser '{context.browser_name}' not supported")
 
 
 def open_chrome(context):
