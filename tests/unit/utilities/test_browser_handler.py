@@ -231,7 +231,7 @@ def test_move_screenshots_to_folder(mock_move, mock_path_exists, mock_listdir):
 @mock.patch("uitestcore.utilities.browser_handler.open_firefox")
 def test_open_browser_chrome(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
     context = MockContext()
-    context.browser.name = "chrome"
+    context.browser_name = "chrome"
 
     open_browser(context)
 
@@ -244,7 +244,7 @@ def test_open_browser_chrome(mock_open_firefox, mock_start_browserstack, mock_op
 @mock.patch("uitestcore.utilities.browser_handler.open_firefox")
 def test_open_browser_firefox(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
     context = MockContext()
-    context.browser.name = "firefox"
+    context.browser_name = "firefox"
 
     open_browser(context)
 
@@ -257,7 +257,7 @@ def test_open_browser_firefox(mock_open_firefox, mock_start_browserstack, mock_o
 @mock.patch("uitestcore.utilities.browser_handler.open_firefox")
 def test_open_browser_browserstack(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
     context = MockContext()
-    context.browser.name = "browserstack"
+    context.browser_name = "browserstack"
 
     open_browser(context)
 
@@ -270,7 +270,7 @@ def test_open_browser_browserstack(mock_open_firefox, mock_start_browserstack, m
 @mock.patch("uitestcore.utilities.browser_handler.open_firefox")
 def test_open_browser_not_supported(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
     context = MockContext()
-    context.browser.name = "ie"
+    context.browser_name = "ie"
 
     assert_that(calling(open_browser).with_args(context), raises(ValueError),
                 "A ValueError should occur when the desired browser is not supported")

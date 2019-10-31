@@ -1,3 +1,10 @@
+6.0.0 / 2019-10-31
+===================
+- Fixed Bug #22 - context.browser can be both a browser name and a webdriver object
+- Required change in any test packs
+    - Whenever context.browser is expected to be a string e.g. when setting it from the config file, this should be
+    changed to context.browser_name
+
 5.1.1 / 2019-10-07
 ===================
 - Add support for Firefox
