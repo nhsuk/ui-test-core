@@ -247,7 +247,7 @@ def test_switch_to_original_window():
 
 def test_switch_to_frame():
     mock_driver = MagicMock(name="driver")
-    finder = Finder(mock_driver, "logger")
+    finder = Finder(mock_driver, MagicMock(name="logger"))
     interrogator = Interrogator(mock_driver, finder, "logger")
     waiter = Waiter(mock_driver, finder, "logger")
     test_interactor = Interactor(mock_driver, finder, interrogator, waiter, "logger")
