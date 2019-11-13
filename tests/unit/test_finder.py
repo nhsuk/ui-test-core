@@ -1,3 +1,4 @@
+from unittest.mock import MagicMock
 from hamcrest import assert_that, equal_to
 from selenium.webdriver.common.by import By
 from uitestcore.page_element import PageElement
@@ -40,6 +41,18 @@ def test_elements():
 
     assert_that(elements[0].info, equal_to("elements found by 'id' using value 'test-id'"),
                 "An element list should be found")
+
+
+def test_elements_logs_out_info():
+    driver = MockDriver()
+    logger = MagicMock()
+    find = Finder(driver, logger)
+
+    find.elements(PageElement(By.ID, "test-id"))
+
+    assert_that(logger.info.call_count, equal_to(2), "Two messages should have been logged")
+    logger.info.assert_any_call("Looking for elements matching PageElement id='test-id'")
+    logger.info.assert_any_call("Found 1 element(s)")
 
 
 def test_element():

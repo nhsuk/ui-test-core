@@ -1,3 +1,7 @@
+6.0.1 / 2019-11-13
+===================
+- Completed feature #16 - added logging when finding elements
+
 6.0.0 / 2019-10-31
 ===================
 - Fixed Bug #22 - context.browser can be both a browser name and a webdriver object

@@ -25,7 +25,10 @@ class Finder:
         :param page_element: PageElement instance representing the element
         :return: list of matching WebElements
         """
-        return self.driver.find_elements(page_element.locator_type, page_element.locator_value)
+        self.logger.info(f"Looking for elements matching {page_element}")
+        elements = self.driver.find_elements(page_element.locator_type, page_element.locator_value)
+        self.logger.info(f"Found {len(elements)} element(s)")
+        return elements
 
     @auto_log(__name__)
     def element(self, page_element):
