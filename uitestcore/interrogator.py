@@ -124,8 +124,14 @@ class Interrogator:
                 wait.for_element_to_be_visible(page_element)
             except TimeoutException:
                 pass
+        else:
+            self.driver.implicitly_wait(3)
 
         elements = self.find.elements(page_element)
+
+        if not wait:
+            self.driver.implicitly_wait(self.implicit_wait)
+
         return len(elements) > 0 and elements[0].is_displayed()
 
     @auto_log(__name__)
