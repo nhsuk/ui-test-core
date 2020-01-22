@@ -237,11 +237,12 @@ def test_is_image_visible_by_javascript_svg_no_src():
 
 
 def test_is_element_visible():
+    mock_driver = MagicMock()
     elements = [
         MockElement("true")
     ]
     finder = MockFinder(list_of_elements_to_return=elements)
-    test_interrogator = Interrogator("", finder, "logger")
+    test_interrogator = Interrogator(mock_driver, finder, "logger")
 
     test_interrogator.is_element_visible(PageElement(By.ID, "some_id"))
     assert_that(elements[0].is_displayed_called, is_(1), "is_displayed was not called the expected amount of times")
