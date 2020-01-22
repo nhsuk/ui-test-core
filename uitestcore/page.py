@@ -22,5 +22,5 @@ class BasePage:
         self.implicit_wait = wait_time
         self.find = Finder(driver, existing_logger)
         self.wait = Waiter(driver, self.find, wait_time, existing_logger)
-        self.interrogate = Interrogator(driver, self.find, existing_logger)
+        self.interrogate = Interrogator(driver, self.find, wait_time, existing_logger)
         self.interact = Interactor(driver, self.find, self.interrogate, self.wait, existing_logger)

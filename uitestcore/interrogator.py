@@ -14,16 +14,18 @@ class Interrogator:
     And get_attribute -> String
     """
 
-    def __init__(self, driver, finder, existing_logger=None):
+    def __init__(self, driver, finder, wait_time, existing_logger=None):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
         :param finder: Finder used to find elements before interrogating
+        :param wait_time: number of seconds as an Integer, defaults to 10
         :param existing_logger: logger object used to save information to a log file
 
         """
         self.driver = driver
         self.find = finder
+        self.wait_time = wait_time
         self.logger = existing_logger or logging.getLogger(__name__)
 
     @auto_log(__name__)
@@ -124,13 +126,14 @@ class Interrogator:
                 wait.for_element_to_be_visible(page_element)
             except TimeoutException:
                 pass
+        # If no wait is required, set the implicit wait to zero to ensure this check happens instantly
         else:
-            self.driver.implicitly_wait(3)
+            self.driver.implicitly_wait(0)
 
         elements = self.find.elements(page_element)
-
+        # The implicit wait is set back to the default time
         if not wait:
-            self.driver.implicitly_wait(self.implicit_wait)
+            self.driver.implicitly_wait(self.wait_time)
 
         return len(elements) > 0 and elements[0].is_displayed()
 
