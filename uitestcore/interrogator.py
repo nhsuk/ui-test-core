@@ -19,7 +19,7 @@ class Interrogator:
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
         :param finder: Finder used to find elements before interrogating
-        :param wait_time: number of seconds as an Integer
+        :param wait_time: number of seconds as an Integer, defaults to 10
         :param existing_logger: logger object used to save information to a log file
 
         """
