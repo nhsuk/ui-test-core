@@ -1,12 +1,7 @@
 7.0.0 / 2020-01-22
 ===================
-- Added logic for the is_element_visible function which reduces implicit wait when no wait parameter is passed to the
-function
-- Required change in any test packs
-    - When calling the is_element_visible function and expecting a return value of True, the user should pass both the
-    page_element and self.wait parameters
-    - When calling the is_element_visible function and expecting a return value of False, the user should only pass the
-    page_element
+- Added logic for the is_element_visible function which reduces implicit wait when no wait parameter is passed to the function
+- This might require a change in any test packs due to timing changes
 
 6.0.1 / 2019-11-13
 ===================

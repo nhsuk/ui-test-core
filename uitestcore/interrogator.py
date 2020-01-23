@@ -19,7 +19,7 @@ class Interrogator:
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
         :param finder: Finder used to find elements before interrogating
-        :param wait_time: number of seconds as an Integer, defaults to 10
+        :param wait_time: number of seconds as an Integer
         :param existing_logger: logger object used to save information to a log file
 
         """
@@ -126,11 +126,13 @@ class Interrogator:
                 wait.for_element_to_be_visible(page_element)
             except TimeoutException:
                 pass
+
         # If no wait is required, set the implicit wait to zero to ensure this check happens instantly
         else:
             self.driver.implicitly_wait(0)
 
         elements = self.find.elements(page_element)
+
         # The implicit wait is set back to the default time
         if not wait:
             self.driver.implicitly_wait(self.wait_time)

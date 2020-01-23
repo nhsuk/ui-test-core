@@ -247,7 +247,6 @@ def test_is_element_visible():
 
     test_interrogator.is_element_visible(PageElement(By.ID, "some_id"))
     assert_that(mock_driver.implicitly_wait.call_count, equal_to(2), "Expected two calls to implicitly_wait")
-    assert mock_driver.implicitly_wait.called, "Expected implicitly_wait to be called"
     assert_that(elements[0].is_displayed_called, is_(1), "is_displayed was not called the expected amount of times")
 
 
@@ -263,7 +262,6 @@ def test_is_element_visible_with_wait():
 
     test_interrogator.is_element_visible(PageElement(By.ID, "some_id"), wait)
     assert_that(mock_driver.implicitly_wait.call_count, equal_to(0), "Expected zero calls to implicitly_wait")
-    assert mock_driver.implicitly_wait.called is False, "implicitly_wait should NOT be called"
     assert_that(wait.for_element_to_be_visible_called, is_(1),
                 "for_element_to_be_visible was not called the expected amount of times")
     assert_that(elements[0].is_displayed_called, is_(1), "is_displayed was not called the expected amount of times")
