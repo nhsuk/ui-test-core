@@ -1,3 +1,8 @@
+7.0.0 / 2020-01-22
+===================
+- Added logic for the is_element_visible function which reduces implicit wait when no wait parameter is passed to the function
+- This might require a change in any test packs due to timing changes
+
 6.0.1 / 2019-11-13
 ===================
 - Completed feature #16 - added logging when finding elements
