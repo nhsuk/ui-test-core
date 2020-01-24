@@ -14,7 +14,7 @@ class Interrogator:
     And get_attribute -> String
     """
 
-    def __init__(self, driver, finder, wait_time, existing_logger=None):
+    def __init__(self, driver, finder, wait_time=10, existing_logger=None):
         """
         Default constructor which passes the control of webDriver to the current page
         :param driver: the Selenium web driver
