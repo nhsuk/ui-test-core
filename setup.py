@@ -18,10 +18,10 @@ setup(
         "idna==2.8",
         "pyhamcrest==1.9.0",
         "python-dateutil==2.8.0",
-        "requests==2.21.0",
+        "requests==2.25.1",
         "selenium==3.141.0",
         "six==1.12.0",
-        "urllib3==1.24.3"
+        "urllib3==1.26.5"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
