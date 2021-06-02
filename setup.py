@@ -21,7 +21,7 @@ setup(
         "requests==2.21.0",
         "selenium==3.141.0",
         "six==1.12.0",
-        "urllib3==1.24.3"
+        "urllib3==1.26.5"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
