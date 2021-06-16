@@ -1,3 +1,7 @@
+7.0.1 / 2021-06-16
+===================
+- Updated required packages to the latest versions in setup.py
+
 7.0.0 / 2020-01-22
 ===================
 - Added logic for the is_element_visible function which reduces implicit wait when no wait parameter is passed to the function
