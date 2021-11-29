@@ -1,3 +1,8 @@
+7.0.2 / 2021-11-29
+===================
+- Updated required packages to the latest versions in setup.py
+- Updated required packages to the latest versions in azure-pipelines.yml
+
 7.0.1 / 2021-06-16
 ===================
 - Updated required packages to the latest versions in setup.py
