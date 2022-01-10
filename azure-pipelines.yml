@@ -23,9 +23,9 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -e .
-    pip install pytest==4.5
-    pip install pytest-cov==2.7.1
-    pip install pylint-fail-under==0.2.0
+    pip install pytest==6.2.5
+    pip install pytest-cov==3.0.0
+    pip install pylint==2.12.1
     pip install wheel
   displayName: 'Install dependencies'
 
@@ -40,7 +40,7 @@ steps:
     testRunTitle: 'Publish test results for Python $(python.version)'
 
 - script: |
-    pylint-fail-under --fail_under 9.5 uitestcore
+    pylint --fail-under 9.5 uitestcore
   displayName: 'Pylint'
 
 - script: python setup.py sdist bdist_wheel
