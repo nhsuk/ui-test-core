@@ -98,7 +98,7 @@ class BrowserHandler:
     @staticmethod
     def run_axe_accessibility_report(context):
         """
-        write blurb here
+        Run Axe accessibility report on the current page and output a file containing violations if found
         :param context: the test context instance
         The context must include an instance of Axe (context.axe) and the Scenario name (context.scenario_name)
         """
