@@ -5,6 +5,7 @@ from selenium import webdriver
 from uitestcore.utilities.config_handler import parse_config_data
 from uitestcore.utilities.datetime_handler import get_current_datetime
 from uitestcore.utilities.string_util import remove_invalid_characters
+from pathlib import Path
 
 SCREENSHOTS_PATH = "screenshots"
 
@@ -93,6 +94,26 @@ class BrowserHandler:
         for file in files:
             if file.endswith(".png"):
                 shutil.move(source + file, destination)
+
+    @staticmethod
+    def run_axe_accessibility_report(context):
+        # Inject axe-core javascript into page
+        context.axe.inject()
+        # Run axe accessibility checks
+        results = context.axe.run()
+        # Checks for violations and adds them to a text file if they exist
+        if len(results["violations"]) > 0:
+            Path("axe_reports/violations").mkdir(parents=True, exist_ok=True)
+            with open("axe_reports/violations/violations.txt", "a+") as violations_file:
+                violations_file.write(f"{'=' * 75}\n\n\n"
+                                      f"Scenario name: {context.scenario_name}\n"
+                                      f"URL: {results['url']}\n"
+                                      f"Page title: {context.axe.selenium.title}\n"
+                                      f"Timestamp: {results['timestamp']}\n"
+                                      f"Browser: {context.axe.selenium.capabilities['browserName']} "
+                                      f"{context.axe.selenium.capabilities['browserVersion']}\n"
+                                      f"axe-core version: {results['testEngine']['version']}\n\n"
+                                      f"{context.axe.report(results['violations'])}")
 
 
 def open_browser(context):
