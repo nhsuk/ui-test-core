@@ -97,6 +97,21 @@ class BrowserHandler:
 
     @staticmethod
     def run_axe_accessibility_report(context):
+        """
+        write blurb here
+        :param context: the test context instance
+        The context must include an instance of Axe (context.axe) and the Scenario name (context.scenario_name)
+        """
+        try:
+            context.scenario_name
+        except AttributeError:
+            context.scenario_name = "No Scenario name passed to function"
+        try:
+            context.axe
+        except AttributeError:
+            print("\nNo instance of Axe assigned to test context")
+            return
+
         # Inject axe-core javascript into page
         context.axe.inject()
         # Run axe accessibility checks
