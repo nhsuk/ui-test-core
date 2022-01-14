@@ -291,6 +291,19 @@ def test_open_chrome_windows_os(mock_set_browser_size, mock_chromeoptions, mock_
     check_mocked_functions_not_called(mock_chromeoptions)
 
 
+@mock.patch("os.name", "posix")
+@mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
+@mock.patch("selenium.webdriver.ChromeOptions")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_chrome_mac_os(mock_set_browser_size, mock_chromeoptions, mock_chrome):
+    context = MockContext()
+
+    open_chrome(context)
+
+    check_mocked_functions_called(mock_chrome, mock_set_browser_size)
+    check_mocked_functions_not_called(mock_chromeoptions)
+
+
 @mock.patch("os.name", "ubuntu")
 @mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
 @mock.patch("selenium.webdriver.ChromeOptions.add_argument")
