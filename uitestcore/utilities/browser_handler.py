@@ -157,9 +157,6 @@ def open_chrome(context):
     if os.name == 'nt':
         context.browser = webdriver.Chrome(executable_path=r"./browser_executables/chromedriver.exe")
 
-    elif os.name == 'posix':
-        context.browser = webdriver.Chrome(executable_path=r"./browser_executables/chromedriver")
-
     else:
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--no-sandbox")
