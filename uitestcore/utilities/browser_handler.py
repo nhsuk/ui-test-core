@@ -103,7 +103,9 @@ class BrowserHandler:
         :param context: the test context instance
         The context must include an instance of Axe (context.axe) and the Scenario name (context.scenario_name)
         """
-        if not context.scenario_name:
+        try:
+            context.scenario_name
+        except AttributeError:
             context.scenario_name = "No Scenario name passed to function"
         if not context.axe:
             raise AttributeError()
