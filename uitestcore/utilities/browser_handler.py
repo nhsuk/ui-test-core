@@ -1,5 +1,6 @@
 import json
 import os
+import platform
 import shutil
 from selenium import webdriver
 from uitestcore.utilities.config_handler import parse_config_data
@@ -102,33 +103,32 @@ class BrowserHandler:
         :param context: the test context instance
         The context must include an instance of Axe (context.axe) and the Scenario name (context.scenario_name)
         """
-        try:
-            context.scenario_name
-        except AttributeError:
+        if not context.scenario_name:
             context.scenario_name = "No Scenario name passed to function"
-        try:
-            context.axe
-        except AttributeError:
-            print("\nNo instance of Axe assigned to test context")
-            return
+        if not context.axe:
+            raise AttributeError()
 
         # Inject axe-core javascript into page
         context.axe.inject()
         # Run axe accessibility checks
-        results = context.axe.run()
+        axe_results = context.axe.run()
         # Checks for violations and adds them to a text file if they exist
-        if len(results["violations"]) > 0:
-            Path("axe_reports/violations").mkdir(parents=True, exist_ok=True)
-            with open("axe_reports/violations/violations.txt", "a+") as violations_file:
-                violations_file.write(f"{'=' * 75}\n\n\n"
-                                      f"Scenario name: {context.scenario_name}\n"
-                                      f"URL: {results['url']}\n"
-                                      f"Page title: {context.axe.selenium.title}\n"
-                                      f"Timestamp: {results['timestamp']}\n"
-                                      f"Browser: {context.axe.selenium.capabilities['browserName']} "
-                                      f"{context.axe.selenium.capabilities['browserVersion']}\n"
-                                      f"axe-core version: {results['testEngine']['version']}\n\n"
-                                      f"{context.axe.report(results['violations'])}")
+        if len(axe_results["violations"]) > 0:
+            write_axe_violations_to_file(context, axe_results)
+
+
+def write_axe_violations_to_file(context, results):
+    Path("axe_reports/violations").mkdir(parents=True, exist_ok=True)
+    with open("axe_reports/violations/violations.txt", "a+") as violations_file:
+        violations_file.write(f"{'=' * 75}\n\n\n"
+                              f"Scenario name: {context.scenario_name}\n"
+                              f"URL: {results['url']}\n"
+                              f"Page title: {context.axe.selenium.title}\n"
+                              f"Timestamp: {results['timestamp']}\n"
+                              f"Browser: {context.axe.selenium.capabilities['browserName']} "
+                              f"{context.axe.selenium.capabilities['browserVersion']}\n"
+                              f"axe-core version: {results['testEngine']['version']}\n\n"
+                              f"{context.axe.report(results['violations'])}")
 
 
 def open_browser(context):
@@ -154,8 +154,11 @@ def open_chrome(context):
     Open the Chrome browser
     :param context: the test context instance
     """
-    if os.name == 'nt':
+    if platform.system() == 'Windows':
         context.browser = webdriver.Chrome(executable_path=r"./browser_executables/chromedriver.exe")
+
+    elif platform.system() == 'Darwin':
+        context.browser = webdriver.Chrome(executable_path=r"./browser_executables/chromedriver")
 
     else:
         chrome_options = webdriver.ChromeOptions()

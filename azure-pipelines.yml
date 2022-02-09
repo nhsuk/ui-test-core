@@ -30,7 +30,7 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-    pytest --cov=uitestcore --cov-fail-under=90 --cov-report term-missing --junitxml='reports/junit/unit-tests.xml'
+    pytest --cov=uitestcore --cov-fail-under=95 --cov-report term-missing --junitxml='reports/junit/unit-tests.xml'
   displayName: 'Unit tests with coverage'
 
 - task: PublishTestResults@2
