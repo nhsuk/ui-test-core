@@ -226,6 +226,13 @@ def test_move_screenshots_to_folder(mock_move, mock_path_exists, mock_listdir):
     mock_move.assert_any_call("screenshots/test4.png", "screenshots/test_folder")
 
 
+def test_run_axe_accessibility_report_no_axe_instance():
+    context = MockContext()
+
+    assert_that(calling(BrowserHandler.run_axe_accessibility_report).with_args(context), raises(AttributeError),
+                "An AttributeError should be raised when there is no context.axe value")
+
+
 @mock.patch("uitestcore.utilities.browser_handler.open_chrome")
 @mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
 @mock.patch("uitestcore.utilities.browser_handler.open_firefox")
@@ -278,11 +285,11 @@ def test_open_browser_not_supported(mock_open_firefox, mock_start_browserstack, 
     check_mocked_functions_not_called(mock_open_chrome, mock_start_browserstack, mock_open_firefox)
 
 
-@mock.patch("os.name", "nt")
+@mock.patch("platform.system", return_value="Windows")
 @mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
 @mock.patch("selenium.webdriver.ChromeOptions")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
-def test_open_chrome_windows_os(mock_set_browser_size, mock_chromeoptions, mock_chrome):
+def test_open_chrome_windows_os(mock_set_browser_size, mock_chromeoptions, mock_chrome, mock_platform):
     context = MockContext()
 
     open_chrome(context)
@@ -291,11 +298,24 @@ def test_open_chrome_windows_os(mock_set_browser_size, mock_chromeoptions, mock_
     check_mocked_functions_not_called(mock_chromeoptions)
 
 
-@mock.patch("os.name", "ubuntu")
+@mock.patch("platform.system", return_value="Darwin")
+@mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
+@mock.patch("selenium.webdriver.ChromeOptions")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_chrome_mac_os(mock_set_browser_size, mock_chromeoptions, mock_chrome, mock_platform):
+    context = MockContext()
+
+    open_chrome(context)
+
+    check_mocked_functions_called(mock_chrome, mock_set_browser_size)
+    check_mocked_functions_not_called(mock_chromeoptions)
+
+
+@mock.patch("platform.system", return_value="Linux")
 @mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
 @mock.patch("selenium.webdriver.ChromeOptions.add_argument")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
-def test_open_chrome_non_windows_os(mock_set_browser_size, mock_add_argument, mock_chrome):
+def test_open_chrome_non_windows_os(mock_set_browser_size, mock_add_argument, mock_chrome, mock_platform):
     context = MockContext()
 
     open_chrome(context)

@@ -1,3 +1,9 @@
+8.0.0 / 2022-03-15
+===================
+- Added Axe reporting functionality
+- Added ability to run non-headless tests on MacOS using Chrome 
+- Updated invalid characters to be replaced in 'remove_invalid_characters' function 
+
 7.0.2 / 2021-11-29
 ===================
 - Updated required packages to the latest versions in setup.py

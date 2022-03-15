@@ -1,9 +1,12 @@
+import io
+from unittest import mock
 from hamcrest import assert_that, equal_to
 from uitestcore.utilities.config_handler import parse_config_data
 
 
 class MockContext:
-    def __init__(self, maximize_browser=None, logging_flag=None):
+    def __init__(self, url=None, maximize_browser=None, logging_flag=None):
+        self.url = ""
         self.maximize_browser = maximize_browser
         self.logging_flag = logging_flag
         self.browser = ""
@@ -52,3 +55,27 @@ def test_parse_config_data_sets_browser_type():
     parse_config_data(context)
 
     assert_that(context.browser, equal_to("chrome"), "Expected browser type was not found")
+
+
+def test_parse_config_data_sets_base_url():
+    userdata = {
+        "base_url": "https://www.test.com"
+    }
+    context = MockContext()
+    context.config = MockConfig(userdata)
+
+    parse_config_data(context)
+
+    assert_that(context.url, equal_to("https://www.test.com"), "Expected url value was not found")
+
+
+@mock.patch('sys.stdout', new_callable=io.StringIO)
+def test_parse_config_data_no_command_line_params(mock_stdout):
+    userdata = {}
+    context = MockContext()
+    context.config = MockConfig(userdata)
+
+    parse_config_data(context)
+
+    assert_that(mock_stdout.getvalue(), equal_to("No Command line Params detected, using Config file values\n"),
+                "Unexpected print string")
