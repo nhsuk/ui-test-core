@@ -1,4 +1,4 @@
-8.0.0/ 2022-03-15
+8.0.0 / 2022-03-15
 ===================
 - Added Axe reporting functionality
 - Added ability to run non-headless tests on MacOS using Chrome 
