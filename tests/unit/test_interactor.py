@@ -33,7 +33,7 @@ class MockWebElement:
         self.clicked_elements.append(self.page_element)
 
     @staticmethod
-    def get_attribute(*_args):
+    def get_dom_attribute(*_args):
         return None
 
     def send_keys(self, value):
