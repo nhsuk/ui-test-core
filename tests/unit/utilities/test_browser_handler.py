@@ -234,55 +234,73 @@ def test_run_axe_accessibility_report_no_axe_instance():
 
 
 @mock.patch("uitestcore.utilities.browser_handler.open_chrome")
+@mock.patch("uitestcore.utilities.browser_handler.open_edge")
 @mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
 @mock.patch("uitestcore.utilities.browser_handler.open_firefox")
-def test_open_browser_chrome(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
+def test_open_browser_chrome(mock_open_firefox, mock_start_browserstack, mock_open_edge, mock_open_chrome):
     context = MockContext()
     context.browser_name = "chrome"
 
     open_browser(context)
 
     check_mocked_functions_called(mock_open_chrome)
-    check_mocked_functions_not_called(mock_open_firefox, mock_start_browserstack)
+    check_mocked_functions_not_called(mock_open_firefox, mock_start_browserstack, mock_open_edge)
 
 
 @mock.patch("uitestcore.utilities.browser_handler.open_chrome")
+@mock.patch("uitestcore.utilities.browser_handler.open_edge")
 @mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
 @mock.patch("uitestcore.utilities.browser_handler.open_firefox")
-def test_open_browser_firefox(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
+def test_open_browser_edge(mock_open_firefox, mock_start_browserstack, mock_open_edge, mock_open_chrome):
+    context = MockContext()
+    context.browser_name = "edge"
+
+    open_browser(context)
+
+    check_mocked_functions_called(mock_open_edge)
+    check_mocked_functions_not_called(mock_open_firefox, mock_start_browserstack, mock_open_chrome)
+
+
+@mock.patch("uitestcore.utilities.browser_handler.open_chrome")
+@mock.patch("uitestcore.utilities.browser_handler.open_edge")
+@mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
+@mock.patch("uitestcore.utilities.browser_handler.open_firefox")
+def test_open_browser_firefox(mock_open_firefox, mock_start_browserstack, mock_open_edge, mock_open_chrome):
     context = MockContext()
     context.browser_name = "firefox"
 
     open_browser(context)
 
     check_mocked_functions_called(mock_open_firefox)
-    check_mocked_functions_not_called(mock_open_chrome, mock_start_browserstack)
+    check_mocked_functions_not_called(mock_open_chrome, mock_start_browserstack, mock_open_edge)
 
 
 @mock.patch("uitestcore.utilities.browser_handler.open_chrome")
+@mock.patch("uitestcore.utilities.browser_handler.open_edge")
 @mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
 @mock.patch("uitestcore.utilities.browser_handler.open_firefox")
-def test_open_browser_browserstack(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
+def test_open_browser_browserstack(mock_open_firefox, mock_start_browserstack, mock_open_edge, mock_open_chrome):
     context = MockContext()
     context.browser_name = "browserstack"
 
     open_browser(context)
 
     check_mocked_functions_called(mock_start_browserstack)
-    check_mocked_functions_not_called(mock_open_chrome, mock_open_firefox)
+    check_mocked_functions_not_called(mock_open_chrome, mock_open_firefox, mock_open_edge)
 
 
 @mock.patch("uitestcore.utilities.browser_handler.open_chrome")
+@mock.patch("uitestcore.utilities.browser_handler.open_edge")
 @mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
 @mock.patch("uitestcore.utilities.browser_handler.open_firefox")
-def test_open_browser_not_supported(mock_open_firefox, mock_start_browserstack, mock_open_chrome):
+def test_open_browser_not_supported(mock_open_firefox, mock_start_browserstack, mock_open_edge, mock_open_chrome):
     context = MockContext()
     context.browser_name = "ie"
 
     assert_that(calling(open_browser).with_args(context), raises(ValueError),
                 "A ValueError should occur when the desired browser is not supported")
 
-    check_mocked_functions_not_called(mock_open_chrome, mock_start_browserstack, mock_open_firefox)
+    check_mocked_functions_not_called(mock_open_chrome, mock_open_edge, mock_start_browserstack, mock_open_firefox)
 
 
 @mock.patch("platform.system", return_value="Windows")
@@ -328,11 +346,54 @@ def test_open_chrome_non_windows_os(mock_set_browser_size, mock_add_argument, mo
     check_mocked_functions_called(mock_chrome, mock_set_browser_size)
 
 
-@mock.patch("os.name", "nt")
+@mock.patch("platform.system", return_value="Windows")
+@mock.patch("selenium.webdriver.Edge", side_effect=lambda **kwargs: "mock_edge")
+@mock.patch("selenium.webdriver.EdgeOptions")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_edge_windows_os(mock_set_browser_size, mock_edgeoptions, mock_edge, mock_platform):
+    context = MockContext()
+
+    open_edge(context)
+
+    check_mocked_functions_called(mock_edge, mock_set_browser_size)
+    check_mocked_functions_not_called(mock_edgeoptions)
+
+
+@mock.patch("platform.system", return_value="Darwin")
+@mock.patch("selenium.webdriver.Edge", side_effect=lambda **kwargs: "mock_edge")
+@mock.patch("selenium.webdriver.EdgeOptions")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_edge_mac_os(mock_set_browser_size, mock_edgeoptions, mock_edge, mock_platform):
+    context = MockContext()
+
+    open_edge(context)
+
+    check_mocked_functions_called(mock_edge, mock_set_browser_size)
+    check_mocked_functions_not_called(mock_edgeoptions)
+
+
+@mock.patch("platform.system", return_value="Linux")
+@mock.patch("selenium.webdriver.Edge", side_effect=lambda **kwargs: "mock_edge")
+@mock.patch("selenium.webdriver.EdgeOptions.add_argument")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_edge_non_windows_os(mock_set_browser_size, mock_add_argument, mock_edge, mock_platform):
+    context = MockContext()
+
+    open_edge(context)
+
+    assert_that(mock_add_argument.call_count, equal_to(4), "Incorrect number of arguments added to edge")
+    mock_add_argument.assert_any_call("--no-sandbox")
+    mock_add_argument.assert_any_call("--window-size=1420,1080")
+    mock_add_argument.assert_any_call("--headless")
+    mock_add_argument.assert_any_call("--disable-gpu")
+    check_mocked_functions_called(mock_edge, mock_set_browser_size)
+
+
+@mock.patch("platform.system", return_value="Windows")
 @mock.patch("selenium.webdriver.Firefox", side_effect=lambda **kwargs: "mock_firefox")
 @mock.patch("selenium.webdriver.FirefoxOptions")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
-def test_open_firefox_windows_os(mock_set_browser_size, mock_firefoxoptions, mock_firefox):
+def test_open_firefox_windows_os(mock_set_browser_size, mock_firefoxoptions, mock_firefox, mock_platform):
     context = MockContext()
 
     open_firefox(context)
@@ -341,11 +402,24 @@ def test_open_firefox_windows_os(mock_set_browser_size, mock_firefoxoptions, moc
     check_mocked_functions_not_called(mock_firefoxoptions)
 
 
-@mock.patch("os.name", "ubuntu")
+@mock.patch("platform.system", return_value="Darwin")
+@mock.patch("selenium.webdriver.Firefox", side_effect=lambda **kwargs: "mock_firefox")
+@mock.patch("selenium.webdriver.FirefoxOptions")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_firefox_mac_os(mock_set_browser_size, mock_firefoxoptions, mock_firefox, mock_platform):
+    context = MockContext()
+
+    open_firefox(context)
+
+    check_mocked_functions_called(mock_firefox, mock_set_browser_size)
+    check_mocked_functions_not_called(mock_firefoxoptions)
+
+
+@mock.patch("platform.system", return_value="Linux")
 @mock.patch("selenium.webdriver.Firefox", side_effect=lambda **kwargs: "mock_firefox")
 @mock.patch("selenium.webdriver.FirefoxOptions.add_argument")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
-def test_open_firefox_non_windows_os(mock_set_browser_size, mock_add_argument, mock_firefox):
+def test_open_firefox_non_windows_os(mock_set_browser_size, mock_add_argument, mock_firefox, mock_platform):
     context = MockContext()
 
     open_firefox(context)
@@ -365,5 +439,5 @@ def test_start_browserstack(mock_remote, mock_load, mock_open):
     start_browserstack(context)
 
     check_mocked_functions_called(mock_remote, mock_load, mock_open)
-    mock_remote.assert_called_with(command_executor="http://test_user:1234@test_server/wd/hub",
+    mock_remote.assert_called_with(command_executor="https://test_user:1234@test_server/wd/hub",
                                    desired_capabilities={"cap1": "1", "cap2": "2", "cap3": "3"})

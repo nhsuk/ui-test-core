@@ -1,6 +1,6 @@
 from unittest import mock
 from unittest.mock import MagicMock
-from hamcrest import assert_that, equal_to, contains
+from hamcrest import assert_that, equal_to, contains_exactly
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from tests.unit.unit_test_utils import check_mocked_functions_called
@@ -310,7 +310,7 @@ def test_clear_cookie_and_refresh_page_deletes_the_cookie():
     interact = Interactor(driver, None, None, None, None)
     name = "Banner717"
     interact.clear_cookie_and_refresh_page(name)
-    assert_that(driver.deleted_cookies, contains("Banner717"), "The cookie should be deleted")
+    assert_that(driver.deleted_cookies, contains_exactly("Banner717"), "The cookie should be deleted")
 
 
 def test_clear_cookie_and_refresh_page_performs_a_refresh():
