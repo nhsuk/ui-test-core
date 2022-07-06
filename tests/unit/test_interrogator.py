@@ -110,14 +110,14 @@ def test_list_is_not_empty():
     mock_finder = MagicMock()
 
     mock_element = MagicMock()
-    mock_element.find_elements_by_tag_name.return_value = ["element_1", "element_2"]
+    mock_element.find_elements.return_value = ["element_1", "element_2"]
     mock_finder.element.return_value = mock_element
 
     interrogate = Interrogator(None, mock_finder, MagicMock(name="logger"))
 
     result = interrogate.list_is_not_empty(default_page_element)
 
-    mock_element.find_elements_by_tag_name.assert_called_once_with("li")
+    mock_element.find_elements.assert_called_once_with(By.TAG_NAME, 'li')
     assert_that(result, equal_to(True), "List should not be empty")
 
 
@@ -125,14 +125,14 @@ def test_list_is_not_empty_min_value():
     mock_finder = MagicMock()
 
     mock_element = MagicMock()
-    mock_element.find_elements_by_tag_name.return_value = ["element_1"]
+    mock_element.find_elements.return_value = ["element_1"]
     mock_finder.element.return_value = mock_element
 
     interrogate = Interrogator(None, mock_finder, MagicMock(name="logger"))
 
     result = interrogate.list_is_not_empty(default_page_element)
 
-    mock_element.find_elements_by_tag_name.assert_called_once_with("li")
+    mock_element.find_elements.assert_called_once_with(By.TAG_NAME, 'li')
     assert_that(result, equal_to(False), "List should be considered empty below minimum length")
 
 
@@ -140,14 +140,14 @@ def test_list_is_not_empty_with_empty_list():
     mock_finder = MagicMock()
 
     mock_element = MagicMock()
-    mock_element.find_elements_by_tag_name.return_value = []
+    mock_element.find_elements.return_value = []
     mock_finder.element.return_value = mock_element
 
     interrogate = Interrogator(None, mock_finder, MagicMock(name="logger"))
 
     result = interrogate.list_is_not_empty(default_page_element)
 
-    mock_element.find_elements_by_tag_name.assert_called_once_with("li")
+    mock_element.find_elements.assert_called_once_with(By.TAG_NAME, 'li')
     assert_that(result, equal_to(False), "List is empty")
 
 
@@ -550,14 +550,14 @@ def test_get_current_url():
 
 def test_get_table_row_count():
     mock_element = MagicMock()
-    mock_element.find_elements_by_tag_name.return_value = ["element_1", "element_2"]
+    mock_element.find_elements.return_value = ["element_1", "element_2"]
     mock_finder = MagicMock()
     mock_finder.element.return_value = mock_element
     interrogate = Interrogator(None, mock_finder, None)
 
     result = interrogate.get_table_row_count(default_page_element)
 
-    mock_element.find_elements_by_tag_name.assert_called_once_with("tr")
+    mock_element.find_elements.assert_called_once_with(By.TAG_NAME, 'tr')
     assert_that(result, equal_to(2), "Incorrect number of rows found")
 
 

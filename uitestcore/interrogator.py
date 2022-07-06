@@ -56,7 +56,7 @@ class Interrogator:
             li tags. Defaults to 1
         :return: bool if number of li tags is less than expected
         """
-        list_unsorted_tag_result = (self.find.element(page_element)).find_elements_by_tag_name('li')
+        list_unsorted_tag_result = (self.find.element(page_element)).find_elements(By.TAG_NAME, 'li')
         if (len(list_unsorted_tag_result)) > min_list_length:
             return True
         return False
@@ -275,7 +275,7 @@ class Interrogator:
         :param page_element: PageElement instance representing the element
         :return: int
         """
-        return len(self.find.element(page_element).find_elements_by_tag_name('tr'))
+        return len(self.find.element(page_element).find_elements(By.TAG_NAME, 'tr'))
 
     @auto_log(__name__)
     def get_attribute(self, page_element, attribute):
