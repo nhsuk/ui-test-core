@@ -70,3 +70,19 @@ def test_decode_url_string_with_valid_input():
                        "%2C%22marketing%22%3Afalse%2C%22consented%22%3Afalse%2C%22version%22%3A1%7D"
     assert_that(calling(decode_url_string).with_args(valid_url_string), is_not(raises(JSONDecodeError)),
                 "A JSONDecodeError should not occur when decoding a valid input string")
+
+
+def test_replace_null_with_empty_string():
+    text = "null"
+
+    result = replace_null_with_empty_string(text)
+
+    assert_that(result, equal_to(""), "Expected empty string")
+
+
+def test_replace_null_with_empty_string_text_not_null():
+    text = "sample"
+
+    result = replace_null_with_empty_string(text)
+
+    assert_that(result, is_not(""), "Expected text to not be empty string")
