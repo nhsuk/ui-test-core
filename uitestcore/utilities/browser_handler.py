@@ -2,11 +2,14 @@ import json
 import os
 import platform
 import shutil
+from pathlib import Path
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.edge.service import Service as EdgeService
 from uitestcore.utilities.config_handler import parse_config_data
 from uitestcore.utilities.datetime_handler import get_current_datetime
 from uitestcore.utilities.string_util import remove_invalid_characters
-from pathlib import Path
 
 SCREENSHOTS_PATH = "screenshots"
 
@@ -121,7 +124,7 @@ class BrowserHandler:
 
 def write_axe_violations_to_file(context, results):
     Path("axe_reports/violations").mkdir(parents=True, exist_ok=True)
-    with open("axe_reports/violations/violations.txt", "a+") as violations_file:
+    with open("axe_reports/violations/violations.txt", "a+", encoding="utf-8") as violations_file:
         violations_file.write(f"{'=' * 75}\n\n\n"
                               f"Scenario name: {context.scenario_name}\n"
                               f"URL: {results['url']}\n"
@@ -141,6 +144,9 @@ def open_browser(context):
     if context.browser_name.lower() == "chrome":
         open_chrome(context)
 
+    elif context.browser_name.lower() == "edge":
+        open_edge(context)
+
     elif context.browser_name.lower() == "firefox":
         open_firefox(context)
 
@@ -157,10 +163,12 @@ def open_chrome(context):
     :param context: the test context instance
     """
     if platform.system() == 'Windows':
-        context.browser = webdriver.Chrome(executable_path=r"./browser_executables/chromedriver.exe")
+        chromedriver_path = ChromeService(executable_path=r"./browser_executables/chromedriver.exe")
+        context.browser = webdriver.Chrome(service=chromedriver_path)
 
     elif platform.system() == 'Darwin':
-        context.browser = webdriver.Chrome(executable_path=r"./browser_executables/chromedriver")
+        chromedriver_path = ChromeService(executable_path=r"./browser_executables/chromedriver")
+        context.browser = webdriver.Chrome(service=chromedriver_path)
 
     else:
         chrome_options = webdriver.ChromeOptions()
@@ -170,7 +178,33 @@ def open_chrome(context):
         chrome_options.add_argument("--disable-gpu")
 
         # No need to specify the executable as we're using one installed via pip in Dockerfile
-        context.browser = webdriver.Chrome(chrome_options=chrome_options)
+        context.browser = webdriver.Chrome(options=chrome_options)
+
+    BrowserHandler.set_browser_size(context)
+
+
+def open_edge(context):
+    """
+    Open the Edge browser
+    :param context: the test context instance
+    """
+    if platform.system() == 'Windows':
+        edgedriver_path = EdgeService(executable_path=r"./browser_executables/msedgedriver.exe")
+        context.browser = webdriver.Edge(service=edgedriver_path)
+
+    elif platform.system() == 'Darwin':
+        edgedriver_path = EdgeService(executable_path=r"./browser_executables/msedgedriver")
+        context.browser = webdriver.Edge(service=edgedriver_path)
+
+    else:
+        edge_options = webdriver.EdgeOptions()
+        edge_options.add_argument("--no-sandbox")
+        edge_options.add_argument("--window-size=1420,1080")
+        edge_options.add_argument("--headless")
+        edge_options.add_argument("--disable-gpu")
+
+        # No need to specify the executable as we're using one installed via pip in Dockerfile
+        context.browser = webdriver.Edge(options=edge_options)
 
     BrowserHandler.set_browser_size(context)
 
@@ -180,15 +214,21 @@ def open_firefox(context):
     Open the Firefox browser
     :param context: the test context instance
     """
-    if os.name == 'nt':
-        context.browser = webdriver.Firefox(executable_path=r"browser_executables/geckodriver.exe")
+    if platform.system() == 'Windows':
+        geckodriver_path = FirefoxService(executable_path=r"./browser_executables/geckodriver.exe")
+        context.browser = webdriver.Firefox(service=geckodriver_path)
+
+    elif platform.system() == 'Darwin':
+        geckodriver_path = FirefoxService(executable_path=r"./browser_executables/geckodriver")
+        context.browser = webdriver.Firefox(service=geckodriver_path)
 
     else:
         firefox_options = webdriver.FirefoxOptions()
         firefox_options.add_argument("--headless")
 
         # The Firefox driver (geckodriver) must be located in the "firefox" folder when running in Docker
-        context.browser = webdriver.Firefox(executable_path=r"firefox/geckodriver", firefox_options=firefox_options)
+        geckodriver_path = FirefoxService(executable_path=r"firefox/geckodriver")
+        context.browser = webdriver.Firefox(service=geckodriver_path, options=firefox_options)
 
     BrowserHandler.set_browser_size(context)
 
@@ -204,13 +244,15 @@ def start_browserstack(context):
     with open(config_file) as data_file:
         config = json.load(data_file)
 
-    browserstack_username = os.environ['BROWSERSTACK_USERNAME']
-    browserstack_access_key = os.environ['BROWSERSTACK_ACCESS_KEY']
+    browserstack_username = os.environ['BROWSERSTACK_USERNAME'] if 'BROWSERSTACK_USERNAME' in os.environ \
+        else config['user']
+    browserstack_access_key = os.environ['BROWSERSTACK_ACCESS_KEY'] if 'BROWSERSTACK_ACCESS_KEY' in os.environ \
+        else config['key']
     desired_capabilities = config['environments'][task_id]
     for key in config["capabilities"]:
         if key not in desired_capabilities:
             desired_capabilities[key] = config["capabilities"][key]
     context.browser = webdriver.Remote(
         desired_capabilities=desired_capabilities,
-        command_executor="http://%s:%s@%s/wd/hub" % (browserstack_username, browserstack_access_key, config['server'])
+        command_executor=f"https://{browserstack_username}:{browserstack_access_key}@{config['server']}/wd/hub"
     )

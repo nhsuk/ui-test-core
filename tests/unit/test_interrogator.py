@@ -110,14 +110,14 @@ def test_list_is_not_empty():
     mock_finder = MagicMock()
 
     mock_element = MagicMock()
-    mock_element.find_elements_by_tag_name.return_value = ["element_1", "element_2"]
+    mock_element.find_elements.return_value = ["element_1", "element_2"]
     mock_finder.element.return_value = mock_element
 
     interrogate = Interrogator(None, mock_finder, MagicMock(name="logger"))
 
     result = interrogate.list_is_not_empty(default_page_element)
 
-    mock_element.find_elements_by_tag_name.assert_called_once_with("li")
+    mock_element.find_elements.assert_called_once_with(By.TAG_NAME, 'li')
     assert_that(result, equal_to(True), "List should not be empty")
 
 
@@ -125,14 +125,14 @@ def test_list_is_not_empty_min_value():
     mock_finder = MagicMock()
 
     mock_element = MagicMock()
-    mock_element.find_elements_by_tag_name.return_value = ["element_1"]
+    mock_element.find_elements.return_value = ["element_1"]
     mock_finder.element.return_value = mock_element
 
     interrogate = Interrogator(None, mock_finder, MagicMock(name="logger"))
 
     result = interrogate.list_is_not_empty(default_page_element)
 
-    mock_element.find_elements_by_tag_name.assert_called_once_with("li")
+    mock_element.find_elements.assert_called_once_with(By.TAG_NAME, 'li')
     assert_that(result, equal_to(False), "List should be considered empty below minimum length")
 
 
@@ -140,14 +140,14 @@ def test_list_is_not_empty_with_empty_list():
     mock_finder = MagicMock()
 
     mock_element = MagicMock()
-    mock_element.find_elements_by_tag_name.return_value = []
+    mock_element.find_elements.return_value = []
     mock_finder.element.return_value = mock_element
 
     interrogate = Interrogator(None, mock_finder, MagicMock(name="logger"))
 
     result = interrogate.list_is_not_empty(default_page_element)
 
-    mock_element.find_elements_by_tag_name.assert_called_once_with("li")
+    mock_element.find_elements.assert_called_once_with(By.TAG_NAME, 'li')
     assert_that(result, equal_to(False), "List is empty")
 
 
@@ -550,14 +550,14 @@ def test_get_current_url():
 
 def test_get_table_row_count():
     mock_element = MagicMock()
-    mock_element.find_elements_by_tag_name.return_value = ["element_1", "element_2"]
+    mock_element.find_elements.return_value = ["element_1", "element_2"]
     mock_finder = MagicMock()
     mock_finder.element.return_value = mock_element
     interrogate = Interrogator(None, mock_finder, None)
 
     result = interrogate.get_table_row_count(default_page_element)
 
-    mock_element.find_elements_by_tag_name.assert_called_once_with("tr")
+    mock_element.find_elements.assert_called_once_with(By.TAG_NAME, 'tr')
     assert_that(result, equal_to(2), "Incorrect number of rows found")
 
 
@@ -583,6 +583,44 @@ def test_get_attribute_no_element_found():
     assert_that(result, equal_to(""), "No elements should have been found")
 
 
+def test_get_list_of_attributes():
+    mock_element_1 = MagicMock()
+    mock_element_2 = MagicMock()
+    mock_element_1.get_attribute.return_value = "test_attr_val1"
+    mock_element_2.get_attribute.return_value = "test_attr_val2"
+    mock_finder = MagicMock()
+    mock_finder.elements.return_value = [mock_element_1, mock_element_2]
+    interrogate = Interrogator(None, mock_finder, None)
+
+    result = interrogate.get_list_of_attributes(default_page_element, "test_attr")
+
+    assert_that(result, equal_to(["test_attr_val1", "test_attr_val2"]), "Unexpected list of attributes returned")
+    assert_that(len(result), equal_to(2), "Unexpected number of attributes in list")
+
+
+def test_get_list_of_attributes_single_element():
+    mock_element_1 = MagicMock()
+    mock_element_1.get_attribute.return_value = "test_attr_val"
+    mock_finder = MagicMock()
+    mock_finder.elements.return_value = [mock_element_1]
+    interrogate = Interrogator(None, mock_finder, None)
+
+    result = interrogate.get_list_of_attributes(default_page_element, "test_attr")
+
+    assert_that(result, equal_to(["test_attr_val"]), "Unexpected list of attributes returned")
+    assert_that(len(result), equal_to(1), "Unexpected number of attributes in list")
+
+
+def test_get_list_of_attributes_no_element_found():
+    mock_finder = MagicMock()
+    mock_finder.elements.return_value = []
+    interrogate = Interrogator(None, mock_finder, None)
+
+    result = interrogate.get_list_of_attributes(default_page_element, "test_attr")
+
+    assert_that(result, equal_to([]), "No elements should have been found")
+
+
 def test_get_text():
     mock_element = MagicMock()
     mock_element.text = "text_content"
@@ -593,6 +631,46 @@ def test_get_text():
     result = interrogate.get_text(default_page_element)
 
     assert_that(result, equal_to("text_content"), "Text not found correctly")
+
+
+def test_get_list_of_texts():
+    mock_element_1 = MagicMock()
+    mock_element_2 = MagicMock()
+    mock_element_3 = MagicMock()
+    mock_element_1.text = "element_text_1"
+    mock_element_2.text = "element_text_2"
+    mock_element_3.text = "element_text_3"
+    mock_finder = MagicMock()
+    mock_finder.elements.return_value = [mock_element_1, mock_element_2, mock_element_3]
+    interrogate = Interrogator(None, mock_finder, None)
+
+    result = interrogate.get_list_of_texts(default_page_element)
+
+    assert_that(result, equal_to(["element_text_1", "element_text_2", "element_text_3"]), "Unexpected list returned")
+    assert_that(len(result), equal_to(3), "Unexpected number of Strings in list")
+
+
+def test_get_list_of_texts_single_element():
+    mock_element_1 = MagicMock()
+    mock_element_1.text = "element_text_1"
+    mock_finder = MagicMock()
+    mock_finder.elements.return_value = [mock_element_1]
+    interrogate = Interrogator(None, mock_finder, None)
+
+    result = interrogate.get_list_of_texts(default_page_element)
+
+    assert_that(result, equal_to(["element_text_1"]), "Unexpected list returned")
+    assert_that(len(result), equal_to(1), "Unexpected number of Strings in list")
+
+
+def test_get_list_of_texts_no_element_found():
+    mock_finder = MagicMock()
+    mock_finder.elements.return_value = []
+    interrogate = Interrogator(None, mock_finder, None)
+
+    result = interrogate.get_list_of_texts(default_page_element)
+
+    assert_that(result, equal_to([]), "No elements should have been found")
 
 
 def test_element_has_class():

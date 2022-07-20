@@ -1,7 +1,18 @@
+9.0.0 / 2022-07-15
+===================
+- Upgrade to Selenium 4
+    - This might require a change in any test pack that uses deprecated Selenium functions such as 'find_element_by_id'
+    - Framework functions have been updated to work with Selenium 4.3.0 including the unit tests
+- Added support for Edge for Windows and macOS 
+- Added support for Firefox for macOS
+- New Interrogator functions
+    - 'get_list_of_texts' - returns a list when you pass a generic locator
+    - 'get_list_of_attributes' - returns a list when you pass in a generic locator and attribute
+
 8.0.0 / 2022-03-15
 ===================
 - Added Axe reporting functionality
-- Added ability to run non-headless tests on MacOS using Chrome 
+- Added ability to run non-headless tests on macOS using Chrome 
 - Updated invalid characters to be replaced in 'remove_invalid_characters' function 
 
 7.0.2 / 2021-11-29

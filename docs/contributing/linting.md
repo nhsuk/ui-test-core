@@ -7,9 +7,9 @@ We require a minimum score of 9.5
 
 ## How to run
 
-**Requires:** [pylint-fail-under](https://pypi.org/project/pylint-fail-under/)
+**Requires:** [pylint](https://pypi.org/project/pylint/)
 
 In the root of the project, run the following command:
 ``` bash
-pylint-fail-under --fail_under 9.5 uitestcore
+pylint --fail-under 9.5 uitestcore
 ```

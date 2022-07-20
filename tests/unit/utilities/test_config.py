@@ -6,7 +6,7 @@ from uitestcore.utilities.config_handler import parse_config_data
 
 class MockContext:
     def __init__(self, url=None, maximize_browser=None, logging_flag=None):
-        self.url = ""
+        self.url = url
         self.maximize_browser = maximize_browser
         self.logging_flag = logging_flag
         self.browser = ""

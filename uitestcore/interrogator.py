@@ -56,7 +56,7 @@ class Interrogator:
             li tags. Defaults to 1
         :return: bool if number of li tags is less than expected
         """
-        list_unsorted_tag_result = (self.find.element(page_element)).find_elements_by_tag_name('li')
+        list_unsorted_tag_result = (self.find.element(page_element)).find_elements(By.TAG_NAME, 'li')
         if (len(list_unsorted_tag_result)) > min_list_length:
             return True
         return False
@@ -275,12 +275,12 @@ class Interrogator:
         :param page_element: PageElement instance representing the element
         :return: int
         """
-        return len(self.find.element(page_element).find_elements_by_tag_name('tr'))
+        return len(self.find.element(page_element).find_elements(By.TAG_NAME, 'tr'))
 
     @auto_log(__name__)
     def get_attribute(self, page_element, attribute):
         """
-         Get any attribute on an element
+        Get any attribute on an element
         :param page_element: PageElement instance representing the element
         :param attribute: the name of the attribute whose value you want e.g. 'type'
         :return: attribute as string
@@ -291,6 +291,22 @@ class Interrogator:
         return elements[0].get_attribute(attribute)
 
     @auto_log(__name__)
+    def get_list_of_attributes(self, page_element, attribute):
+        """
+        Return a list of attributes of an element
+        :param page_element: PageElement instance representing the element
+        :param attribute: the name of the attribute whose value you want e.g. 'type' or 'href'
+        :return: list of attributes as Strings or empty list
+        """
+        elements_attributes = []
+        elements = self.find.elements(page_element)
+
+        for element in elements:
+            elements_attributes.append(element.get_attribute(attribute))
+
+        return elements_attributes
+
+    @auto_log(__name__)
     def get_text(self, page_element):
         """
         Return the text value of an element
@@ -298,6 +314,21 @@ class Interrogator:
         :return: String or None
         """
         return self.find.element(page_element).text
+
+    @auto_log(__name__)
+    def get_list_of_texts(self, page_element):
+        """
+        Return a list of text values of an element
+        :param page_element: PageElement instance representing the element
+        :return: list of Strings or empty list
+        """
+        elements_text = []
+        elements = self.find.elements(page_element)
+
+        for element in elements:
+            elements_text.append(element.text)
+
+        return elements_text
 
     @auto_log(__name__)
     def element_has_class(self, page_element, expected_class):

@@ -6,7 +6,7 @@ The unit tests for this package can be found in the tests folder and are written
 We require a minimum coverage rate of 95%
 
 ## How to run
-**Rquires:** [pytest](https://pypi.org/project/pytest/)
+**Requires:** [pytest](https://pypi.org/project/pytest/)
 
 In the root of the project, run the following command:
 ``` bash

@@ -129,7 +129,7 @@ class Interactor:
         remaining_windows.remove(self.driver.current_window_handle)
         self.driver.close()
         if remaining_windows:
-            self.driver.switch_to_window(remaining_windows[len(remaining_windows)-1])
+            self.driver.switch_to.window(remaining_windows[len(remaining_windows)-1])
 
     @auto_log(__name__)
     def scroll_into_view(self, page_element):
@@ -150,7 +150,7 @@ class Interactor:
         """
         new_window = self.driver.window_handles[len(self.driver.window_handles) - 1]
         self.logger.info("Switching to next window")
-        self.driver.switch_to_window(new_window)
+        self.driver.switch_to.window(new_window)
         self.logger.info("Switched to next window")
 
     @auto_log(__name__)
@@ -160,7 +160,7 @@ class Interactor:
         :return:None
         """
         old_window = self.driver.window_handles[0]
-        self.driver.switch_to_window(old_window)
+        self.driver.switch_to.window(old_window)
 
     @auto_log(__name__)
     def switch_to_frame(self, page_element):

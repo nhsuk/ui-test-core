@@ -1,6 +1,6 @@
 from unittest import mock
 from unittest.mock import MagicMock
-from hamcrest import assert_that, equal_to, contains
+from hamcrest import assert_that, equal_to, contains_exactly
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from tests.unit.unit_test_utils import check_mocked_functions_called
@@ -33,7 +33,7 @@ class MockWebElement:
         self.clicked_elements.append(self.page_element)
 
     @staticmethod
-    def get_attribute(*_args):
+    def get_dom_attribute(*_args):
         return None
 
     def send_keys(self, value):
@@ -187,7 +187,7 @@ def test_close_current_window_switch_to_a_remaining_window():
     interact.close_current_window()
 
     mock_driver.close.assert_called_once()
-    mock_driver.switch_to_window.assert_called_once_with("window_0")
+    mock_driver.switch_to.window.assert_called_once_with("window_0")
 
 
 def test_close_current_window_switch_to_next_window():
@@ -199,7 +199,7 @@ def test_close_current_window_switch_to_next_window():
     interact.close_current_window()
 
     mock_driver.close.assert_called_once()
-    mock_driver.switch_to_window.assert_called_once_with("window_1")
+    mock_driver.switch_to.window.assert_called_once_with("window_1")
 
 
 def test_close_current_window_with_one_window():
@@ -211,7 +211,7 @@ def test_close_current_window_with_one_window():
     interact.close_current_window()
 
     mock_driver.close.assert_called_once()
-    mock_driver.switch_to_window.assert_not_called()
+    mock_driver.switch_to.window.assert_not_called()
 
 
 def test_scroll_into_view():
@@ -232,7 +232,7 @@ def test_switch_to_next_window():
 
     interact.switch_to_next_window()
 
-    mock_driver.switch_to_window.assert_called_once_with("window_1")
+    mock_driver.switch_to.window.assert_called_once_with("window_1")
 
 
 def test_switch_to_original_window():
@@ -242,7 +242,7 @@ def test_switch_to_original_window():
 
     interact.switch_to_original_window()
 
-    mock_driver.switch_to_window.assert_called_once_with("window_0")
+    mock_driver.switch_to.window.assert_called_once_with("window_0")
 
 
 def test_switch_to_frame():
@@ -310,7 +310,7 @@ def test_clear_cookie_and_refresh_page_deletes_the_cookie():
     interact = Interactor(driver, None, None, None, None)
     name = "Banner717"
     interact.clear_cookie_and_refresh_page(name)
-    assert_that(driver.deleted_cookies, contains("Banner717"), "The cookie should be deleted")
+    assert_that(driver.deleted_cookies, contains_exactly("Banner717"), "The cookie should be deleted")
 
 
 def test_clear_cookie_and_refresh_page_performs_a_refresh():

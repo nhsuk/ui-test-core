@@ -11,8 +11,8 @@ pool:
   vmImage: 'ubuntu-latest'
 strategy:
   matrix:
-    Python37:
-      python.version: '3.7'
+    Python310:
+      python.version: '3.10'
 
 steps:
 - task: UsePythonVersion@0
@@ -23,9 +23,9 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -e .
-    pip install pytest==6.2.5
+    pip install pytest==7.1.2
     pip install pytest-cov==3.0.0
-    pip install pylint==2.12.1
+    pip install pylint==2.14.5
     pip install wheel
   displayName: 'Install dependencies'
 

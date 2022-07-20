@@ -75,7 +75,8 @@ class Waiter:
         :param attribute_name: the name of the attribute whose value you want e.g. 'type'
         :param expected_attribute_value: the string value which is expected for the attribute
         """
-        self.logger.info("Waiting for %s to be have attribute %s=$s", page_element, attribute_name, expected_attribute_value)
+        self.logger.info("Waiting for %s to be have attribute %s=$s", page_element, attribute_name,
+                         expected_attribute_value)
         WebDriverWait(self.driver, self.wait_time).until(ElementHasAttribute(self.find, page_element,
                                                                              attribute_name, expected_attribute_value))
         self.logger.info("Found element with expected attribute")

@@ -36,3 +36,14 @@ def decode_url_string(input_string):
     :return: json dictionary
     """
     return json.loads(urllib.parse.unquote(input_string))
+
+
+def replace_null_with_empty_string(text):
+    """
+    Replaces the string "null" with an empty string
+    :param text: must be exactly 'null' to work
+    :return: empty string
+    """
+    if text == "null":
+        text = ""
+    return text
