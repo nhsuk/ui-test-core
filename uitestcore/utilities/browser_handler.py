@@ -162,23 +162,24 @@ def open_chrome(context):
     Open the Chrome browser
     :param context: the test context instance
     """
+    chrome_options = webdriver.ChromeOptions()
+
     if platform.system() == 'Windows':
         chromedriver_path = ChromeService(executable_path=r"./browser_executables/chromedriver.exe")
-        context.browser = webdriver.Chrome(service=chromedriver_path)
-
     elif platform.system() == 'Darwin':
         chromedriver_path = ChromeService(executable_path=r"./browser_executables/chromedriver")
-        context.browser = webdriver.Chrome(service=chromedriver_path)
-
     else:
-        chrome_options = webdriver.ChromeOptions()
+        chromedriver_path = ChromeService()
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1420,1080")
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
 
-        # No need to specify the executable as we're using one installed via pip in Dockerfile
-        context.browser = webdriver.Chrome(options=chrome_options)
+    # Add config browser options to chrome options
+    for option in context.browser_options or []:
+        chrome_options.add_argument(option)
+
+    context.browser = webdriver.Chrome(options=chrome_options, service=chromedriver_path)
 
     BrowserHandler.set_browser_size(context)
 
@@ -188,23 +189,24 @@ def open_edge(context):
     Open the Edge browser
     :param context: the test context instance
     """
+    edge_options = webdriver.EdgeOptions()
+
     if platform.system() == 'Windows':
         edgedriver_path = EdgeService(executable_path=r"./browser_executables/msedgedriver.exe")
-        context.browser = webdriver.Edge(service=edgedriver_path)
-
     elif platform.system() == 'Darwin':
         edgedriver_path = EdgeService(executable_path=r"./browser_executables/msedgedriver")
-        context.browser = webdriver.Edge(service=edgedriver_path)
-
     else:
-        edge_options = webdriver.EdgeOptions()
+        edgedriver_path = EdgeService()
         edge_options.add_argument("--no-sandbox")
         edge_options.add_argument("--window-size=1420,1080")
         edge_options.add_argument("--headless")
         edge_options.add_argument("--disable-gpu")
 
-        # No need to specify the executable as we're using one installed via pip in Dockerfile
-        context.browser = webdriver.Edge(options=edge_options)
+    # Add config browser options to edge options
+    for option in context.browser_options or []:
+        edge_options.add_argument(option)
+
+    context.browser = webdriver.Edge(options=edge_options, service=edgedriver_path)
 
     BrowserHandler.set_browser_size(context)
 
@@ -214,21 +216,21 @@ def open_firefox(context):
     Open the Firefox browser
     :param context: the test context instance
     """
+    firefox_options = webdriver.FirefoxOptions()
+
     if platform.system() == 'Windows':
         geckodriver_path = FirefoxService(executable_path=r"./browser_executables/geckodriver.exe")
-        context.browser = webdriver.Firefox(service=geckodriver_path)
-
     elif platform.system() == 'Darwin':
         geckodriver_path = FirefoxService(executable_path=r"./browser_executables/geckodriver")
-        context.browser = webdriver.Firefox(service=geckodriver_path)
-
     else:
-        firefox_options = webdriver.FirefoxOptions()
+        geckodriver_path = FirefoxService()
         firefox_options.add_argument("--headless")
 
-        # The Firefox driver (geckodriver) must be located in the "firefox" folder when running in Docker
-        geckodriver_path = FirefoxService(executable_path=r"firefox/geckodriver")
-        context.browser = webdriver.Firefox(service=geckodriver_path, options=firefox_options)
+    # Add config browser options to firefox options
+    for option in context.browser_options or []:
+        firefox_options.add_argument(option)
+
+    context.browser = webdriver.Firefox(options=firefox_options, service=geckodriver_path)
 
     BrowserHandler.set_browser_size(context)
 

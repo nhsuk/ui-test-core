@@ -22,10 +22,11 @@ class MockBrowser:
 
 
 class MockContext:
-    def __init__(self, maximize_browser=None, logging_flag=None, implicit_wait=0):
+    def __init__(self, maximize_browser=None, logging_flag=None, implicit_wait=0, browser_options=None):
         self.maximize_browser = maximize_browser
         self.logging_flag = logging_flag
         self.browser = MockBrowser()
+        self.browser_options = browser_options
         self.logger = MockLogger()
         self.implicit_wait = implicit_wait
 
@@ -305,6 +306,21 @@ def test_open_browser_not_supported(mock_open_firefox, mock_start_browserstack, 
 
 @mock.patch("platform.system", return_value="Windows")
 @mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
+@mock.patch("selenium.webdriver.ChromeOptions.add_argument")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_chrome_windows_os_options(mock_set_browser_size, mock_add_argument, mock_chrome, mock_platform):
+    context = MockContext()
+    context.browser_options = ["--headless"]
+
+    open_chrome(context)
+
+    assert_that(mock_add_argument.call_count, equal_to(1), "Incorrect number of arguments added to chrome")
+    mock_add_argument.assert_any_call("--headless")
+    check_mocked_functions_called(mock_chrome, mock_set_browser_size)
+
+
+@mock.patch("platform.system", return_value="Windows")
+@mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
 @mock.patch("selenium.webdriver.ChromeOptions")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
 def test_open_chrome_windows_os(mock_set_browser_size, mock_chromeoptions, mock_chrome, mock_platform):
@@ -312,8 +328,7 @@ def test_open_chrome_windows_os(mock_set_browser_size, mock_chromeoptions, mock_
 
     open_chrome(context)
 
-    check_mocked_functions_called(mock_chrome, mock_set_browser_size)
-    check_mocked_functions_not_called(mock_chromeoptions)
+    check_mocked_functions_called(mock_chrome, mock_set_browser_size, mock_chromeoptions)
 
 
 @mock.patch("platform.system", return_value="Darwin")
@@ -325,8 +340,26 @@ def test_open_chrome_mac_os(mock_set_browser_size, mock_chromeoptions, mock_chro
 
     open_chrome(context)
 
+    check_mocked_functions_called(mock_chrome, mock_set_browser_size, mock_chromeoptions)
+
+
+@mock.patch("platform.system", return_value="Linux")
+@mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
+@mock.patch("selenium.webdriver.ChromeOptions.add_argument")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_chrome_non_windows_os_options(mock_set_browser_size, mock_add_argument, mock_chrome, mock_platform):
+    context = MockContext()
+    context.browser_options = ["--ignore-certificate-errors"]
+
+    open_chrome(context)
+
+    assert_that(mock_add_argument.call_count, equal_to(5), "Incorrect number of arguments added to chrome")
+    mock_add_argument.assert_any_call("--no-sandbox")
+    mock_add_argument.assert_any_call("--window-size=1420,1080")
+    mock_add_argument.assert_any_call("--headless")
+    mock_add_argument.assert_any_call("--disable-gpu")
+    mock_add_argument.assert_any_call("--ignore-certificate-errors")
     check_mocked_functions_called(mock_chrome, mock_set_browser_size)
-    check_mocked_functions_not_called(mock_chromeoptions)
 
 
 @mock.patch("platform.system", return_value="Linux")
@@ -348,6 +381,21 @@ def test_open_chrome_non_windows_os(mock_set_browser_size, mock_add_argument, mo
 
 @mock.patch("platform.system", return_value="Windows")
 @mock.patch("selenium.webdriver.Edge", side_effect=lambda **kwargs: "mock_edge")
+@mock.patch("selenium.webdriver.EdgeOptions.add_argument")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_edge_windows_os_options(mock_set_browser_size, mock_add_argument, mock_edge, mock_platform):
+    context = MockContext()
+    context.browser_options = ["--headless"]
+
+    open_edge(context)
+
+    assert_that(mock_add_argument.call_count, equal_to(1), "Incorrect number of arguments added to edge")
+    mock_add_argument.assert_any_call("--headless")
+    check_mocked_functions_called(mock_edge, mock_set_browser_size)
+
+
+@mock.patch("platform.system", return_value="Windows")
+@mock.patch("selenium.webdriver.Edge", side_effect=lambda **kwargs: "mock_edge")
 @mock.patch("selenium.webdriver.EdgeOptions")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
 def test_open_edge_windows_os(mock_set_browser_size, mock_edgeoptions, mock_edge, mock_platform):
@@ -355,8 +403,7 @@ def test_open_edge_windows_os(mock_set_browser_size, mock_edgeoptions, mock_edge
 
     open_edge(context)
 
-    check_mocked_functions_called(mock_edge, mock_set_browser_size)
-    check_mocked_functions_not_called(mock_edgeoptions)
+    check_mocked_functions_called(mock_edge, mock_set_browser_size, mock_edgeoptions)
 
 
 @mock.patch("platform.system", return_value="Darwin")
@@ -368,8 +415,7 @@ def test_open_edge_mac_os(mock_set_browser_size, mock_edgeoptions, mock_edge, mo
 
     open_edge(context)
 
-    check_mocked_functions_called(mock_edge, mock_set_browser_size)
-    check_mocked_functions_not_called(mock_edgeoptions)
+    check_mocked_functions_called(mock_edge, mock_set_browser_size, mock_edgeoptions)
 
 
 @mock.patch("platform.system", return_value="Linux")
@@ -391,6 +437,21 @@ def test_open_edge_non_windows_os(mock_set_browser_size, mock_add_argument, mock
 
 @mock.patch("platform.system", return_value="Windows")
 @mock.patch("selenium.webdriver.Firefox", side_effect=lambda **kwargs: "mock_firefox")
+@mock.patch("selenium.webdriver.FirefoxOptions.add_argument")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_firefox_windows_os_options(mock_set_browser_size, mock_add_argument, mock_firefox, mock_platform):
+    context = MockContext()
+    context.browser_options = ["--headless"]
+
+    open_firefox(context)
+
+    assert_that(mock_add_argument.call_count, equal_to(1), "Incorrect number of arguments added to firefox")
+    mock_add_argument.assert_any_call("--headless")
+    check_mocked_functions_called(mock_firefox, mock_set_browser_size)
+
+
+@mock.patch("platform.system", return_value="Windows")
+@mock.patch("selenium.webdriver.Firefox", side_effect=lambda **kwargs: "mock_firefox")
 @mock.patch("selenium.webdriver.FirefoxOptions")
 @mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
 def test_open_firefox_windows_os(mock_set_browser_size, mock_firefoxoptions, mock_firefox, mock_platform):
@@ -398,8 +459,7 @@ def test_open_firefox_windows_os(mock_set_browser_size, mock_firefoxoptions, moc
 
     open_firefox(context)
 
-    check_mocked_functions_called(mock_firefox, mock_set_browser_size)
-    check_mocked_functions_not_called(mock_firefoxoptions)
+    check_mocked_functions_called(mock_firefox, mock_set_browser_size, mock_firefoxoptions)
 
 
 @mock.patch("platform.system", return_value="Darwin")
@@ -411,8 +471,7 @@ def test_open_firefox_mac_os(mock_set_browser_size, mock_firefoxoptions, mock_fi
 
     open_firefox(context)
 
-    check_mocked_functions_called(mock_firefox, mock_set_browser_size)
-    check_mocked_functions_not_called(mock_firefoxoptions)
+    check_mocked_functions_called(mock_firefox, mock_set_browser_size, mock_firefoxoptions)
 
 
 @mock.patch("platform.system", return_value="Linux")
