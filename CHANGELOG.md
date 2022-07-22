@@ -1,3 +1,9 @@
+9.1.0 / 2022-07-22
+===================
+- Added support for setting extra arguments against the webdriver browser options
+    - These can be given as a list set to context.browser_options
+- Geckodriver executable path removed for Linux
+
 9.0.0 / 2022-07-15
 ===================
 - Upgrade to Selenium 4
