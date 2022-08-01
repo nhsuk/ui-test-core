@@ -4,3 +4,7 @@
 /dist
 /uitestcore.egg-info
 **/__pycache__/
+
+.coverage
+unit-tests.xml
+geckodriver.log
