@@ -26,8 +26,11 @@ def attach_files_release(organisation, project, attachments_path, release_id, ac
     :param access_token: access token to authenticate with the azure api
     :return: integer: a return value of 0 indicates success, 1 means that any file could not be attached
     """
+
+    # Set the URL for the required API
     request_url = f"https://dev.azure.com/{organisation}/{project}/_apis/test/runs"
 
+    # Get the run IDs for the given release
     run_ids = get_run_ids_by_release(release_id, request_url, access_token)
     if not run_ids:
         print_azure_error(f"No test runs found for release {release_id}")
@@ -47,8 +50,11 @@ def attach_files_build(organisation, project, attachments_path, build_id, access
     :param access_token: access token to authenticate with the azure api
     :return: integer: a return value of 0 indicates success, 1 means that any file could not be attached
     """
+
+    # Set the URL for the required API
     request_url = f"https://dev.azure.com/{organisation}/{project}/_apis/test/runs"
 
+    # Get the run IDs for the given build
     run_ids = get_run_ids_by_build(build_id, request_url, access_token)
     if not run_ids:
         print_azure_error(f"No test runs found for build {build_id}")
@@ -67,6 +73,8 @@ def attach_files(run_ids, request_url, access_token, attachment_file_path):
     :param attachment_file_path: the file path to the directory containing the files to attach
     :return: integer: a return value of 0 indicates success, 1 means that any file could not be attached
     """
+
+    # Get the list of failed tests
     failed_tests = get_failed_tests(run_ids, request_url, access_token)
 
     if not failed_tests:
@@ -152,7 +160,7 @@ def get_run_ids_by_release(release_id, request_url, access_token):
 def get_run_ids_by_build(build_id, request_url, access_token):
     """
     Get the test run IDs for the given build ID - each feature will have a unique run ID
-    :param release_id: the build ID from Azure DevOps
+    :param build_id: the build ID from Azure DevOps
     :param request_url: the url for the azure api
     :param access_token: access token to authenticate with the azure api
     :return: list of run IDs which were found
@@ -197,7 +205,7 @@ def get_run_ids_from_response(query_id, response):
 
 def print_response_info(response):
     """
-    Prints additional infomration from the title of the response e.g. to show when the token has expired
+    Prints additional information from the title of the response e.g. to show when the token has expired
     :param response: the response object returned by the request
     """
     if response.content:
@@ -211,7 +219,7 @@ def get_failed_tests(run_ids, request_url, access_token):
     Get the required details of the failed tests from the given runs
     :param run_ids: list of run IDs to query
     :param request_url: the url for the azure api
-    :param access_token: the ID number of the release from Azure DevOps
+    :param access_token: access token to authenticate with the azure api
     :return: list of test details in the format: (run ID, test ID, test name)
     """
     failed_tests = []
