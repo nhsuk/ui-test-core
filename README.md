@@ -54,7 +54,7 @@ This package is located on PyPI: https://pypi.org/project/uitestcore/ - it can b
 The easiest way to include this package in your project is by adding it to your requirements.txt. 
 Here is an example of the line which should be added to this file, we recommend using a specific version but it's your call: 
 
-`uitestcore==3.3.0`
+`uitestcore==10.0.0`
 
 ### Deployment to PyPI
 PyPI deployment is configured in the release pipeline of the NHS.UK Azure Devops project. Any changes merged into master will be automatically deployed to PyPI, and any changes pushed to a branch starting with "test/" will be automatically deployed to TestPyPI.

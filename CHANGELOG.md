@@ -1,3 +1,9 @@
+10.0.0 / 2022-08-01
+===================
+- Added support for attaching files to build runs (previously this was only release runs)
+    - The `attach_files()` method has been refactored out to `attach_files_release()` and `attach_files_build()`. These new methods **no longer accept cli system arguments** for the release/build id and access token being used. Instead these parameters should be given directly from the calling code.
+    - Updated to the latest API version for Azure GET requests
+
 9.1.0 / 2022-07-22
 ===================
 - Added support for setting extra arguments against the webdriver browser options
