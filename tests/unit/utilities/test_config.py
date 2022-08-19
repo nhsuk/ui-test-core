@@ -54,7 +54,7 @@ def test_parse_config_data_sets_browser_type():
 
     parse_config_data(context)
 
-    assert_that(context.browser, equal_to("chrome"), "Expected browser type was not found")
+    assert_that(context.browser_name, equal_to("chrome"), "Expected browser type was not found")
 
 
 def test_parse_config_data_sets_base_url():

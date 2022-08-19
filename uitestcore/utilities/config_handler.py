@@ -32,7 +32,7 @@ def parse_config_data(context):
                     continue
 
             elif key.lower() == "browser":
-                context.browser = value
+                context.browser_name = value
 
     else:
         print("No Command line Params detected, using Config file values")
