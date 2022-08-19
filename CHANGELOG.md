@@ -1,3 +1,8 @@
+10.0.1 / 2022-08-19
+===================
+- Bug fix - You can now set the browser via command line parameters 
+- If setting browser via command line, using _-Dbrowser=chrome_ will set context.browser_name to "chrome"
+
 10.0.0 / 2022-08-01
 ===================
 - Added support for attaching files to build runs (previously this was only release runs)
