@@ -176,8 +176,7 @@ def open_chrome(context):
         chrome_options.add_argument("--disable-gpu")
 
     # Add config browser options to chrome options
-    for option in context.browser_options or []:
-        chrome_options.add_argument(option)
+    chrome_options = add_browser_options(context, chrome_options)
 
     context.browser = webdriver.Chrome(options=chrome_options, service=chromedriver_path)
 
@@ -203,8 +202,7 @@ def open_edge(context):
         edge_options.add_argument("--disable-gpu")
 
     # Add config browser options to edge options
-    for option in context.browser_options or []:
-        edge_options.add_argument(option)
+    edge_options = add_browser_options(context, edge_options)
 
     context.browser = webdriver.Edge(options=edge_options, service=edgedriver_path)
 
@@ -227,12 +225,21 @@ def open_firefox(context):
         firefox_options.add_argument("--headless")
 
     # Add config browser options to firefox options
-    for option in context.browser_options or []:
-        firefox_options.add_argument(option)
+    firefox_options = add_browser_options(context, firefox_options)
 
     context.browser = webdriver.Firefox(options=firefox_options, service=geckodriver_path)
 
     BrowserHandler.set_browser_size(context)
+
+
+def add_browser_options(context, browser_options):
+    try:
+        for option in context.browser_options or []:
+            browser_options.add_argument(option)
+    except AttributeError:
+        print("No config browser_options detected and the variable 'context.browser_options' is not defined")
+
+    return browser_options
 
 
 def start_browserstack(context):

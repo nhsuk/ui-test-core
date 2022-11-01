@@ -1,3 +1,9 @@
+10.1.0 / 2022-11-02
+===================
+- No longer necessary to define the 'context.browser_options' variable in _environment.py_ if you do not intend on using 'browser_options' in the config
+- Updated required packages to the latest versions in setup.py
+- Updated required packages to the latest versions in azure-pipelines.yml
+
 10.0.1 / 2022-08-19
 ===================
 - Bug fix - You can now set the browser via command line parameters 
