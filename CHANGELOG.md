@@ -1,3 +1,7 @@
+10.2.0 / 2022-11-03
+===================
+- Added the ability to exclude elements when running Axe reports on a page. This is not a breaking change as the default is still running the report on the full page
+
 10.1.0 / 2022-11-02
 ===================
 - No longer necessary to define the 'context.browser_options' variable in _environment.py_ if you do not intend on using 'browser_options' in the config
