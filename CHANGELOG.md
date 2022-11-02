@@ -1,6 +1,6 @@
 10.2.0 / 2022-11-03
 ===================
-- Added the ability to exclude elements when running Axe reports on a page. This is not a breaking change as the default is still running the report on the full page
+- Added the ability to include/exclude elements when running Axe reports on a page. This is not a breaking change as the default is still running the report on the full page
 
 10.1.0 / 2022-11-02
 ===================

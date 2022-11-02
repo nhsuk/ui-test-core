@@ -100,12 +100,13 @@ class BrowserHandler:
                 shutil.move(source + file, destination)
 
     @staticmethod
-    def run_axe_accessibility_report(context, exclude=None):
+    def run_axe_accessibility_report(context, element_filter=None):
         """
         Run Axe accessibility report on the current page and output a file containing violations if found
         :param context: the test context instance
-        :param exclude: specify which elements to exclude from the run, the default is None
+        :param element_filter: specify which elements to include/exclude from the run, the default is None
         The context must include an instance of Axe (context.axe) and the Scenario name (context.scenario_name)
+        An example of include using CSS: {"include": [["#nhsuk-cookie-banner"]]}
         An example of exclude using CSS: {"exclude": [["#nhsuk-cookie-banner"], [".footer"]]}
         """
         try:
@@ -118,7 +119,7 @@ class BrowserHandler:
         # Inject axe-core javascript into page
         context.axe.inject()
         # Run axe accessibility checks
-        axe_results = context.axe.run(context=exclude)
+        axe_results = context.axe.run(context=element_filter)
         # Checks for violations and adds them to a text file if they exist
         if len(axe_results["violations"]) > 0:
             write_axe_violations_to_file(context, axe_results)
