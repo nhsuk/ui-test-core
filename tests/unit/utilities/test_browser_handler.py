@@ -1,3 +1,4 @@
+import io
 from datetime import datetime
 from unittest import mock
 from hamcrest import equal_to, raises, calling
@@ -304,6 +305,22 @@ def test_open_browser_not_supported(mock_open_firefox, mock_start_browserstack, 
     check_mocked_functions_not_called(mock_open_chrome, mock_open_edge, mock_start_browserstack, mock_open_firefox)
 
 
+@mock.patch('sys.stdout', new_callable=io.StringIO)
+@mock.patch("platform.system", return_value="Windows")
+@mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_chrome_browser_options_not_defined(mock_set_browser_size, mock_chrome, mock_platform, mock_stdout):
+    context = MockContext()
+    delattr(context, "browser_options")
+
+    open_chrome(context)
+
+    assert_that(mock_stdout.getvalue(), equal_to(
+        "No config browser_options detected and the variable 'context.browser_options' is not defined\n"),
+                "Unexpected print string")
+    check_mocked_functions_called(mock_chrome, mock_set_browser_size)
+
+
 @mock.patch("platform.system", return_value="Windows")
 @mock.patch("selenium.webdriver.Chrome", side_effect=lambda **kwargs: "mock_chrome")
 @mock.patch("selenium.webdriver.ChromeOptions.add_argument")
@@ -379,6 +396,22 @@ def test_open_chrome_non_windows_os(mock_set_browser_size, mock_add_argument, mo
     check_mocked_functions_called(mock_chrome, mock_set_browser_size)
 
 
+@mock.patch('sys.stdout', new_callable=io.StringIO)
+@mock.patch("platform.system", return_value="Darwin")
+@mock.patch("selenium.webdriver.Edge", side_effect=lambda **kwargs: "mock_edge")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_edge_browser_options_not_defined(mock_set_browser_size, mock_edge, mock_platform, mock_stdout):
+    context = MockContext()
+    delattr(context, "browser_options")
+
+    open_edge(context)
+
+    assert_that(mock_stdout.getvalue(), equal_to(
+        "No config browser_options detected and the variable 'context.browser_options' is not defined\n"),
+                "Unexpected print string")
+    check_mocked_functions_called(mock_edge, mock_set_browser_size)
+
+
 @mock.patch("platform.system", return_value="Windows")
 @mock.patch("selenium.webdriver.Edge", side_effect=lambda **kwargs: "mock_edge")
 @mock.patch("selenium.webdriver.EdgeOptions.add_argument")
@@ -433,6 +466,22 @@ def test_open_edge_non_windows_os(mock_set_browser_size, mock_add_argument, mock
     mock_add_argument.assert_any_call("--headless")
     mock_add_argument.assert_any_call("--disable-gpu")
     check_mocked_functions_called(mock_edge, mock_set_browser_size)
+
+
+@mock.patch('sys.stdout', new_callable=io.StringIO)
+@mock.patch("platform.system", return_value="Windows")
+@mock.patch("selenium.webdriver.Firefox", side_effect=lambda **kwargs: "mock_firefox")
+@mock.patch("uitestcore.utilities.browser_handler.BrowserHandler.set_browser_size")
+def test_open_firefox_browser_options_not_defined(mock_set_browser_size, mock_firefox, mock_platform, mock_stdout):
+    context = MockContext()
+    delattr(context, "browser_options")
+
+    open_firefox(context)
+
+    assert_that(mock_stdout.getvalue(), equal_to(
+        "No config browser_options detected and the variable 'context.browser_options' is not defined\n"),
+                "Unexpected print string")
+    check_mocked_functions_called(mock_firefox, mock_set_browser_size)
 
 
 @mock.patch("platform.system", return_value="Windows")
