@@ -5,7 +5,7 @@ with open("README.md", "r") as readme_file:
 
 setup(
     name="uitestcore",
-    version="10.2.0",
+    version="10.2.01",
     description="Package providing common functionality for UI automation test packs",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -21,7 +21,8 @@ setup(
         "requests==2.28.1",
         "selenium==4.4.3",
         "six==1.16.0",
-        "urllib3==1.26.12"
+        "urllib3==1.26.12",
+        "axe-selenium-python-nhsuk"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

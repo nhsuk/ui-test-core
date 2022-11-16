@@ -228,13 +228,6 @@ def test_move_screenshots_to_folder(mock_move, mock_path_exists, mock_listdir):
     mock_move.assert_any_call("screenshots/test4.png", "screenshots/test_folder")
 
 
-def test_run_axe_accessibility_report_no_axe_instance():
-    context = MockContext()
-
-    assert_that(calling(BrowserHandler.run_axe_accessibility_report).with_args(context), raises(AttributeError),
-                "An AttributeError should be raised when there is no context.axe value")
-
-
 @mock.patch("uitestcore.utilities.browser_handler.open_chrome")
 @mock.patch("uitestcore.utilities.browser_handler.open_edge")
 @mock.patch("uitestcore.utilities.browser_handler.start_browserstack")
