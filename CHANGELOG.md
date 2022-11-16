@@ -1,7 +1,7 @@
 10.3.0 / 2022-11-18
 ===================
 - Axe-core is now fully integrated in to the uitestcore framework
-    - No longer necessary to pip install axe-selenium-python in your test pack, the framework handles this
+    - No longer necessary to pip install _axe-selenium-python-nhsuk_ in your test pack, the framework handles this
     - No longer necessary to initialise Axe in your test pack, the framework handles this
 
 10.2.0 / 2022-11-03
