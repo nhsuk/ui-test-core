@@ -3,6 +3,7 @@ import os
 import platform
 import shutil
 from pathlib import Path
+from axe_selenium_python import Axe
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FirefoxService
@@ -105,7 +106,7 @@ class BrowserHandler:
         Run Axe accessibility report on the current page and output a file containing violations if found
         :param context: the test context instance
         :param element_filter: specify which elements to include/exclude from the run, the default is None
-        The context must include an instance of Axe (context.axe) and the Scenario name (context.scenario_name)
+        The context should include the Scenario name (context.scenario_name)
         An example of include using CSS: {"include": [["#nhsuk-cookie-banner"]]}
         An example of exclude using CSS: {"exclude": [["#nhsuk-cookie-banner"], [".footer"]]}
         """
@@ -113,8 +114,9 @@ class BrowserHandler:
             context.scenario_name
         except AttributeError:
             context.scenario_name = "No Scenario name passed to function"
-        if not context.axe:
-            raise AttributeError()
+
+        # Initialise and pass the driver/browser instance to the Axe class
+        context.axe = Axe(context.browser)
 
         # Inject axe-core javascript into page
         context.axe.inject()
