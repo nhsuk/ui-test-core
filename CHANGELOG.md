@@ -1,3 +1,7 @@
+10.3.1 / 2022-12-08
+===================
+- Resolved string formatting issue which prevented the 'for_element_to_have_attribute' method from working
+
 10.3.0 / 2022-11-22
 ===================
 - Axe-core is now fully integrated in to the uitestcore framework
