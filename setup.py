@@ -13,7 +13,7 @@ setup(
     homepage="https://github.com/nhsuk/ui-test-core/",
     packages=["uitestcore", "uitestcore.utilities"],
     install_requires=[
-        "certifi==2022.9.24",
+        "certifi==2022.12.7",
         "chardet==5.0.0",
         "idna==3.4",
         "pyhamcrest==2.0.4",
