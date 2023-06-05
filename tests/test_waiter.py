@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from hamcrest import calling, raises, is_not
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from tests.unit.unit_test_utils import *
+from tests.unit_test_utils import *
 from uitestcore.page_element import PageElement
 from uitestcore.waiter import Waiter
 

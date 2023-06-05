@@ -1,7 +1,6 @@
 from unittest import mock
-from hamcrest import equal_to, less_than, starts_with, calling, is_not, raises
-from tests.unit.unit_test_utils import *
-from uitestcore.utilities.datetime_handler import get_date_altered_by_days
+from hamcrest import equal_to, starts_with, calling, is_not, raises
+from tests.unit_test_utils import *
 from uitestcore.utilities.attachments_api import *
 
 

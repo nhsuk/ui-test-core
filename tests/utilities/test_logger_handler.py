@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from hamcrest import assert_that, equal_to, contains_string
-from tests.unit.unit_test_utils import check_mocked_functions_called
+from tests.unit_test_utils import check_mocked_functions_called
 from uitestcore.utilities.logger_handler import init_unique_log_file_logger, auto_log
 
 test_class_name = "test_class"
