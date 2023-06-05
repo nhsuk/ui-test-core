@@ -1,9 +1,9 @@
 from unittest import mock
 from unittest.mock import MagicMock
-from hamcrest import calling, raises, is_not, assert_that
+from hamcrest import calling, raises, is_not
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from tests.unit.unit_test_utils import check_mocked_functions_called
+from tests.unit.unit_test_utils import *
 from uitestcore.page_element import PageElement
 from uitestcore.waiter import Waiter
 
