@@ -2,7 +2,7 @@ import io
 from datetime import datetime
 from unittest import mock
 from hamcrest import equal_to, raises, calling
-from tests.unit_test_utils import *
+from unit.unit_test_utils import *
 from uitestcore.utilities.browser_handler import *
 
 

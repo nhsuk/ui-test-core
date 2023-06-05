@@ -1,6 +1,6 @@
 from unittest import mock
 from hamcrest import equal_to, starts_with, calling, is_not, raises
-from tests.unit_test_utils import *
+from unit.unit_test_utils import *
 from uitestcore.utilities.attachments_api import *
 
 

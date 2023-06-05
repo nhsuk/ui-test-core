@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from hamcrest import assert_that, equal_to, contains_exactly
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from tests.unit_test_utils import check_mocked_functions_called
+from unit.unit_test_utils import check_mocked_functions_called
 from uitestcore.finder import Finder
 from uitestcore.interactor import Interactor
 from uitestcore.interrogator import Interrogator
