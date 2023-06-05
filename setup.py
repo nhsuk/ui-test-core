@@ -5,7 +5,7 @@ with open("README.md", "r") as readme_file:
 
 setup(
     name="uitestcore",
-    version="10.3.1",
+    version="10.3.20230505",
     description="Package providing common functionality for UI automation test packs",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -13,15 +13,15 @@ setup(
     homepage="https://github.com/nhsuk/ui-test-core/",
     packages=["uitestcore", "uitestcore.utilities"],
     install_requires=[
-        "certifi==2022.9.24",
-        "chardet==5.0.0",
+        "certifi==2023.5.7",
+        "chardet==5.1.0",
         "idna==3.4",
         "pyhamcrest==2.0.4",
         "python-dateutil==2.8.2",
-        "requests==2.28.1",
-        "selenium==4.4.3",
+        "requests==2.31.0",
+        "selenium==4.9.1",
         "six==1.16.0",
-        "urllib3==1.26.12",
+        "urllib3==2.0.2",
         "axe-selenium-python-nhsuk"
     ],
     classifiers=[
