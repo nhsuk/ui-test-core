@@ -11,7 +11,7 @@ setup(
     long_description_content_type="text/markdown",
     license="MIT",
     homepage="https://github.com/nhsuk/ui-test-core/",
-    packages=["uitestcore", "uitestcore.utilities"],
+    packages=["uitestcore", "uitestcore.utilities", "tests", "tests.utilities"],
     install_requires=[
         "certifi==2023.5.7",
         "chardet==5.1.0",
