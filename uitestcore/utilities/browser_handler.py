@@ -5,9 +5,6 @@ import shutil
 from pathlib import Path
 from axe_selenium_python import Axe
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.edge.service import Service as EdgeService
 from uitestcore.utilities.config_handler import parse_config_data
 from uitestcore.utilities.datetime_handler import get_current_datetime
 from uitestcore.utilities.string_util import remove_invalid_characters
@@ -169,12 +166,7 @@ def open_chrome(context):
     """
     chrome_options = webdriver.ChromeOptions()
 
-    if platform.system() == 'Windows':
-        chromedriver_path = ChromeService(executable_path=r"./browser_executables/chromedriver.exe")
-    elif platform.system() == 'Darwin':
-        chromedriver_path = ChromeService(executable_path=r"./browser_executables/chromedriver")
-    else:
-        chromedriver_path = ChromeService()
+    if platform.system() != 'Windows' and platform.system() != 'Darwin':
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1420,1080")
         chrome_options.add_argument("--headless")
@@ -183,7 +175,7 @@ def open_chrome(context):
     # Add config browser options to chrome options
     chrome_options = add_browser_options(context, chrome_options)
 
-    context.browser = webdriver.Chrome(options=chrome_options, service=chromedriver_path)
+    context.browser = webdriver.Chrome(options=chrome_options)
 
     BrowserHandler.set_browser_size(context)
 
@@ -195,12 +187,7 @@ def open_edge(context):
     """
     edge_options = webdriver.EdgeOptions()
 
-    if platform.system() == 'Windows':
-        edgedriver_path = EdgeService(executable_path=r"./browser_executables/msedgedriver.exe")
-    elif platform.system() == 'Darwin':
-        edgedriver_path = EdgeService(executable_path=r"./browser_executables/msedgedriver")
-    else:
-        edgedriver_path = EdgeService()
+    if platform.system() != 'Windows' and platform.system() != 'Darwin':
         edge_options.add_argument("--no-sandbox")
         edge_options.add_argument("--window-size=1420,1080")
         edge_options.add_argument("--headless")
@@ -209,7 +196,7 @@ def open_edge(context):
     # Add config browser options to edge options
     edge_options = add_browser_options(context, edge_options)
 
-    context.browser = webdriver.Edge(options=edge_options, service=edgedriver_path)
+    context.browser = webdriver.Edge(options=edge_options)
 
     BrowserHandler.set_browser_size(context)
 
@@ -221,18 +208,13 @@ def open_firefox(context):
     """
     firefox_options = webdriver.FirefoxOptions()
 
-    if platform.system() == 'Windows':
-        geckodriver_path = FirefoxService(executable_path=r"./browser_executables/geckodriver.exe")
-    elif platform.system() == 'Darwin':
-        geckodriver_path = FirefoxService(executable_path=r"./browser_executables/geckodriver")
-    else:
-        geckodriver_path = FirefoxService()
+    if platform.system() != 'Windows' and platform.system() != 'Darwin':
         firefox_options.add_argument("--headless")
 
     # Add config browser options to firefox options
     firefox_options = add_browser_options(context, firefox_options)
 
-    context.browser = webdriver.Firefox(options=firefox_options, service=geckodriver_path)
+    context.browser = webdriver.Firefox(options=firefox_options)
 
     BrowserHandler.set_browser_size(context)
 

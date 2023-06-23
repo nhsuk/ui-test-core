@@ -1,3 +1,9 @@
+10.3.2 / 2023-06-23
+===================
+- Updated Selenium to version 4.10.0
+    - No longer required to _manually_ download ChromeDriver, GeckoDriver or EdgeDriver and add to browser_executables folder - **Selenium will handle this for you** (since v4.6.0)
+- Updated required packages to the latest versions in setup.py
+
 10.3.1 / 2022-12-08
 ===================
 - Resolved string formatting issue which prevented the 'for_element_to_have_attribute' method from working

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import requests
 from hamcrest import assert_that, equal_to, is_
 from selenium.webdriver.common.by import By
-from tests.unit.unit_test_utils import check_mocked_functions_called
+from tests.unit_test_utils import check_mocked_functions_called
 from uitestcore.finder import Finder
 from uitestcore.interrogator import Interrogator
 from uitestcore.page_element import PageElement
