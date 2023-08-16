@@ -1,3 +1,7 @@
+10.4.0 / 2023-08-16
+===================
+- Updated Selenium to version 4.11.2 to enable Chrome For Testing support.
+
 10.3.2 / 2023-06-23
 ===================
 - Updated Selenium to version 4.10.0
