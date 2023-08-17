@@ -169,7 +169,7 @@ def open_chrome(context):
     chromedriver_path = None
 
     if platform.system() != 'Windows' and platform.system() != 'Darwin':
-        chromedriver_path = ChromeService(executable_path=r"/usr/bin/chromium")
+        chromedriver_path = ChromeService(executable_path=r"/usr/bin/chromium-browser")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1420,1080")
         chrome_options.add_argument("--headless")
