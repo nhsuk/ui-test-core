@@ -171,7 +171,7 @@ def open_chrome(context):
         chrome_options.add_argument("--window-size=1420,1080")
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
-        chrome_options.binary_location = "/usr/bin/chromium"
+        chrome_options.binary_location = "/usr/bin"
 
     # Add config browser options to chrome options
     chrome_options = add_browser_options(context, chrome_options)
