@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 from axe_selenium_python import Axe
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
 from uitestcore.utilities.config_handler import parse_config_data
 from uitestcore.utilities.datetime_handler import get_current_datetime
 from uitestcore.utilities.string_util import remove_invalid_characters
@@ -165,8 +166,10 @@ def open_chrome(context):
     :param context: the test context instance
     """
     chrome_options = webdriver.ChromeOptions()
+    chromedriver_path = None
 
     if platform.system() != 'Windows' and platform.system() != 'Darwin':
+        chromedriver_path = ChromeService(executable_path=r"/usr/bin/chromium")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1420,1080")
         chrome_options.add_argument("--headless")
@@ -175,7 +178,7 @@ def open_chrome(context):
     # Add config browser options to chrome options
     chrome_options = add_browser_options(context, chrome_options)
 
-    context.browser = webdriver.Chrome(options=chrome_options)
+    context.browser = webdriver.Chrome(options=chrome_options, service=chromedriver_path)
 
     BrowserHandler.set_browser_size(context)
 
