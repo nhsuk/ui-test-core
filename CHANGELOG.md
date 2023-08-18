@@ -1,3 +1,7 @@
+10.4.1 / 2023-08-18
+===================
+- Updated Readme to cover work around for using 10.4.0 with Chromium in Linux
+
 10.4.0 / 2023-08-16
 ===================
 - Updated Selenium to version 4.11.2 to enable Chrome For Testing support.
