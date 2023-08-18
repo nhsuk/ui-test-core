@@ -56,6 +56,18 @@ Here is an example of the line which should be added to this file, we recommend 
 
 `uitestcore==10.4.0`
 
+
+#### Using 10.4.0 in Linux and with Chromium
+
+Please note, that due to a change in Selenium manager between versions 4.10 and 4.11.2, it is now necessary to set a local environment variable which points to the browser installation location.
+Failure to do so will result in the browser failing to initialise when running your tests. This is caused by Selenium Manager expecting a 'Chrome' installation; it does not currently
+fall back to check for Chromium.
+
+Set:
+```
+    ENV SE_BROWSER_PATH=/usr/bin/chromium-browser
+```
+
 ### Deployment to PyPI
 PyPI deployment is configured in the release pipeline of the NHS.UK Azure Devops project. Any changes merged into master will be automatically deployed to PyPI, and any changes pushed to a branch starting with "test/" will be automatically deployed to TestPyPI.
 
