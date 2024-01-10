@@ -1,10 +1,17 @@
+10.5.0 / 2024-01-10
+===================
+- Added the ability to specify which _rules_ to use when running Axe reports on a page. This is not a breaking change as the default is still running the report on the full page using default rules
+  - An example of filtering rules using tags: rule_filter={"runOnly": ['wcag2a', 'wcag2aa']} - this will run WCAG
+             2.0 Level A and Level AA rules only
+- Full Axe accessibility report is now returned regardless of whether violations are found
+
 10.4.1 / 2023-08-18
 ===================
 - Updated Readme to cover work around for using 10.4.0 with Chromium in Linux
 
 10.4.0 / 2023-08-16
 ===================
-- Updated Selenium to version 4.11.2 to enable Chrome For Testing support.
+- Updated Selenium to version 4.11.2 to enable Chrome For Testing support
 
 10.3.2 / 2023-06-23
 ===================

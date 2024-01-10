@@ -1,7 +1,8 @@
 import io
 from datetime import datetime
 from unittest import mock
-from hamcrest import equal_to, raises, calling
+from unittest.mock import mock_open
+from hamcrest import assert_that, equal_to, raises, calling, not_, has_property, contains_string
 from tests.unit_test_utils import *
 from uitestcore.utilities.browser_handler import *
 
@@ -23,13 +24,35 @@ class MockBrowser:
 
 
 class MockContext:
-    def __init__(self, maximize_browser=None, logging_flag=None, implicit_wait=0, browser_options=None):
+    def __init__(self, maximize_browser=None, logging_flag=None, implicit_wait=0, browser_options=None,
+                 scenario_name=None, axe=None):
         self.maximize_browser = maximize_browser
         self.logging_flag = logging_flag
         self.browser = MockBrowser()
         self.browser_options = browser_options
         self.logger = MockLogger()
         self.implicit_wait = implicit_wait
+        if scenario_name is not None:
+            self.scenario_name = scenario_name
+        self.axe = axe
+
+
+class MockAxe:
+    def __init__(self, selenium=None):
+        self.selenium = selenium
+
+    @staticmethod
+    def report(results_violations):
+        return "\n".join(results_violations)
+
+
+class MockSelenium:
+    def __init__(self, title=None, capabilities_browser_name=None, capabilities_browser_version=None):
+        self.title = title
+        self.capabilities = {
+            'browserName': capabilities_browser_name,
+            'browserVersion': capabilities_browser_version
+        }
 
 
 class MockConfig:
@@ -102,6 +125,20 @@ browserstack_config = {
         "cap3": "3"
     },
     "server": "test_server"
+}
+
+axe_report_with_no_violations = {
+    "violations": []
+}
+
+axe_report_with_some_violations = {
+    "url": "URL axe is run against",
+    "timestamp": "2000-01-01T00:00:00.000Z",
+    "violations": [
+        "Details of a violation",
+        "Details of a different violation"
+    ],
+    "testEngine": {"version": "0.0.0"}
 }
 
 
@@ -534,11 +571,132 @@ def test_open_firefox_non_windows_os(mock_set_browser_size, mock_add_argument, m
 @mock.patch("uitestcore.utilities.browser_handler.open", side_effect=MockBuiltIn)
 @mock.patch("json.load", side_effect=lambda *args: browserstack_config)
 @mock.patch("selenium.webdriver.Remote", side_effect=lambda **kwargs: "mock_browserstack")
-def test_start_browserstack(mock_remote, mock_load, mock_open):
+def test_start_browserstack(mock_remote, mock_load, mock_browser_handler_open):
     context = MockContext()
 
     start_browserstack(context)
 
-    check_mocked_functions_called(mock_remote, mock_load, mock_open)
+    check_mocked_functions_called(mock_remote, mock_load, mock_browser_handler_open)
     mock_remote.assert_called_with(command_executor="https://test_user:1234@test_server/wd/hub",
                                    desired_capabilities={"cap1": "1", "cap2": "2", "cap3": "3"})
+
+
+@mock.patch("axe_selenium_python.Axe.run")
+@mock.patch("axe_selenium_python.Axe.inject")
+def test_run_axe_accessibility_report_with_no_scenario_name_set(mock_inject, mock_run):
+    context = MockContext(scenario_name=None)
+    assert_that(context, not_(has_property('scenario_name')),
+                "Mocked context should have no scenario_name set")
+
+    BrowserHandler.run_axe_accessibility_report(context)
+
+    assert_that(context.scenario_name, equal_to("No Scenario name passed to function"),
+                "Given no scenario_name is set on the mocked context, the scenario name should be set by the function")
+    check_mocked_functions_called(mock_inject, mock_run)
+
+
+@mock.patch("axe_selenium_python.Axe.run")
+@mock.patch("axe_selenium_python.Axe.inject")
+def test_run_axe_accessibility_report_with_no_element_filter_passed(mock_inject, mock_run):
+    context = MockContext(scenario_name="element_filter is not provided in the method call")
+
+    BrowserHandler.run_axe_accessibility_report(context)
+
+    check_mocked_functions_called(mock_inject, mock_run)
+    mock_run.assert_called_with(context=None, options=None)
+
+
+@mock.patch("axe_selenium_python.Axe.run")
+@mock.patch("axe_selenium_python.Axe.inject")
+def test_run_axe_accessibility_report_with_an_element_filter_passed(mock_inject, mock_run):
+    context = MockContext(scenario_name="element_filter is provided in the method call")
+    element_filter = {"include": [["#example_element_filter"]]}
+
+    BrowserHandler.run_axe_accessibility_report(context, element_filter=element_filter)
+
+    check_mocked_functions_called(mock_inject, mock_run)
+    mock_run.assert_called_with(context=element_filter, options=None)
+
+
+@mock.patch("axe_selenium_python.Axe.run")
+@mock.patch("axe_selenium_python.Axe.inject")
+def test_run_axe_accessibility_report_with_no_rule_filter_passed(mock_inject, mock_run):
+    context = MockContext(scenario_name="rule_filter is not provided in the method call")
+
+    BrowserHandler.run_axe_accessibility_report(context)
+
+    check_mocked_functions_called(mock_inject, mock_run)
+    mock_run.assert_called_with(context=None, options=None)
+
+
+@mock.patch("axe_selenium_python.Axe.run")
+@mock.patch("axe_selenium_python.Axe.inject")
+def test_run_axe_accessibility_report_with_a_rule_filter_passed(mock_inject, mock_run):
+    context = MockContext(scenario_name="element_filter is provided in the method call")
+    rule_filter = {"runOnly": ['wcag2a', 'wcag2aa']}
+
+    BrowserHandler.run_axe_accessibility_report(context, rule_filter=rule_filter)
+
+    check_mocked_functions_called(mock_inject, mock_run)
+    mock_run.assert_called_with(context=None, options=rule_filter)
+
+
+@mock.patch("uitestcore.utilities.browser_handler.write_axe_violations_to_file")
+@mock.patch("axe_selenium_python.Axe.run", return_value=axe_report_with_no_violations)
+@mock.patch("axe_selenium_python.Axe.inject")
+def test_run_axe_accessibility_report_when_axe_report_returns_no_violations(mock_inject, mock_run,
+                                                                            mock_write_axe_violations_to_file):
+    context = MockContext(scenario_name="axe returns no violations")
+
+    actual_report = BrowserHandler.run_axe_accessibility_report(context)
+
+    check_mocked_functions_called(mock_inject, mock_run)
+    check_mocked_functions_not_called(mock_write_axe_violations_to_file)
+    assert_that(actual_report, equal_to(axe_report_with_no_violations),
+                "Expected an axe report (with no violations) to be returned by 'run_axe_accessibility_report'")
+
+
+@mock.patch("uitestcore.utilities.browser_handler.write_axe_violations_to_file")
+@mock.patch("axe_selenium_python.Axe.run", return_value=axe_report_with_some_violations)
+@mock.patch("axe_selenium_python.Axe.inject")
+def test_run_axe_accessibility_report_when_axe_report_returns_some_violations(mock_inject, mock_run,
+                                                                              mock_write_axe_violations_to_file):
+    context = MockContext(scenario_name="axe returns some violations")
+
+    actual_report = BrowserHandler.run_axe_accessibility_report(context)
+
+    check_mocked_functions_called(mock_inject, mock_run, mock_write_axe_violations_to_file)
+    mock_write_axe_violations_to_file.assert_called_with(context, axe_report_with_some_violations)
+    assert_that(actual_report, equal_to(axe_report_with_some_violations),
+                "Expected an axe report (with some violations) to be returned by 'run_axe_accessibility_report'")
+
+
+@mock.patch("builtins.open", new_callable=mock_open())
+def test_write_axe_violations_to_file_writes_expected_content_to_expected_file_location(mock_open_file):
+    mock_scenario_name = "testing the method to write to report"
+    mock_page_title = "test title"
+    mock_browser_name = "test browser name"
+    mock_browser_version = "test browser version"
+    context = MockContext(scenario_name=mock_scenario_name,
+                          axe=MockAxe(selenium=MockSelenium(title=mock_page_title,
+                                                            capabilities_browser_name=mock_browser_name,
+                                                            capabilities_browser_version=mock_browser_version)))
+    expected_report_content_snippets = [mock_scenario_name,
+                                        mock_page_title,
+                                        mock_browser_name,
+                                        mock_browser_version,
+                                        axe_report_with_some_violations['url'],
+                                        axe_report_with_some_violations['timestamp'],
+                                        axe_report_with_some_violations['testEngine']['version']
+                                        ] + axe_report_with_some_violations['violations']
+
+    write_axe_violations_to_file(context, axe_report_with_some_violations)
+
+    check_mocked_functions_called(mock_open_file, mock_open_file.return_value.__enter__().write)
+    mock_open_file.assert_called_once_with("axe_reports/violations/violations.txt", "a+", encoding="utf-8")
+
+    content_written_to_report = mock_open_file.return_value.__enter__().write.call_args_list[0].args[0]
+    for expected_report_content_snippet in expected_report_content_snippets:
+        assert_that(content_written_to_report, contains_string(expected_report_content_snippet),
+                    f"Expected the snippet of content {expected_report_content_snippet} to be in the report written to "
+                    f"the violations.txt file")
