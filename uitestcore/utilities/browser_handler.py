@@ -17,6 +17,8 @@ class BrowserHandler:
     This class performs any necessary tasks related to the browser
     """
 
+    saved_screenshot_file_names = []
+
     @staticmethod
     def set_browser_size(context):
         """
@@ -44,8 +46,8 @@ class BrowserHandler:
         # Check if Maximize Browser Flag has been activated
         BrowserHandler.set_browser_size(context)
 
-    @staticmethod
-    def take_screenshot(driver, description):
+    @classmethod
+    def take_screenshot(cls, driver, description):
         """
         Save a screenshot of the browser window - should be used after a test fails
         :param driver: the browser driver
@@ -77,13 +79,17 @@ class BrowserHandler:
         if scroll_height > window_height:
             driver.set_window_size(window_width, window_height)
 
+        if result:
+            cls.saved_screenshot_file_names.append(file_name)
         return result
 
     @staticmethod
-    def move_screenshots_to_folder(folder_name):
+    def move_screenshots_to_folder(folder_name, file_names=None):
         """
         Create a new folder and move all screenshots from the root screenshot folder into it (to be run at end of test)
         :param folder_name: the name of the folder into which the screenshots should be moved
+        :param file_names: (optional) the name of the files to be moved. Default None. If None, then move any files
+        ending with .png. Otherwise, move any files that match the given saved_screenshot_file_names.
         """
         folder_name = remove_invalid_characters(folder_name)
         source = f"{SCREENSHOTS_PATH}/"
@@ -94,8 +100,12 @@ class BrowserHandler:
             os.makedirs(destination)
 
         for file in files:
-            if file.endswith(".png"):
-                shutil.move(source + file, destination)
+            if file_names is None:
+                if file.endswith(".png"):
+                    shutil.move(source + file, destination)
+            else:
+                if any(file in f for f in file_names):
+                    shutil.move(source + file, destination)
 
     @staticmethod
     def run_axe_accessibility_report(context, element_filter=None, rule_filter=None):

@@ -2,7 +2,7 @@ import io
 from datetime import datetime
 from unittest import mock
 from unittest.mock import mock_open
-from hamcrest import assert_that, equal_to, raises, calling, not_, has_property, contains_string
+from hamcrest import equal_to, raises, calling, not_, has_property, contains_string, has_length
 from tests.unit_test_utils import *
 from uitestcore.utilities.browser_handler import *
 
@@ -71,11 +71,12 @@ class MockLogger:
 
 
 class MockDriver(object):
-    def __init__(self, window_width, window_height, scroll_height, save_screenshot_success=True):
+    def __init__(self, window_width, window_height, scroll_height, save_screenshot_success=True, save_test_file=False):
         self.window_width = window_width
         self.window_height = window_height
         self.scroll_height = scroll_height
         self.save_screenshot_success = save_screenshot_success
+        self.save_test_file = save_test_file
         self.screenshot_filename = ""
         self.num_resizes = 0
 
@@ -95,6 +96,9 @@ class MockDriver(object):
 
     def save_screenshot(self, file_name):
         self.screenshot_filename = file_name
+        if self.save_test_file:
+            with open(file_name, "w+") as file:
+                file.write("Test file content")
         return self.save_screenshot_success
 
 
@@ -182,18 +186,32 @@ def test_take_screenshot_save_file_success(mock_get_current_datetime, mock_maked
     result = BrowserHandler.take_screenshot(driver, "test_screenshot")
 
     check_mocked_functions_called(mock_path_exists, mock_makedirs, mock_get_current_datetime)
-    assert_that(driver.screenshot_filename, equal_to("screenshots/2019-02-15_00.00.00.000000_test_screenshot.png"),
+    expected_file_name = "screenshots/2019-02-15_00.00.00.000000_test_screenshot.png"
+    assert_that(driver.screenshot_filename, equal_to(expected_file_name),
                 "The screenshot filename was incorrect")
-    assert_that(result, equal_to(True), "The screenshot should have been saved successfully")
+    assert_that(result, equal_to(True), "The screenshot should have been saved successfully, and the file name should "
+                                        "be returned")
+    assert_that(BrowserHandler.saved_screenshot_file_names, has_length(1),
+                "Expected there to be one file name in the list of saved files names")
+    assert_that(BrowserHandler.saved_screenshot_file_names[0], equal_to(expected_file_name),
+                "Expected the saved file name to match the expected string")
+    # clean up saved file names
+    BrowserHandler.saved_screenshot_file_names = []
 
 
-def test_take_screenshot_save_file_fail():
+@mock.patch("uitestcore.utilities.browser_handler.get_current_datetime",
+            side_effect=lambda *args: datetime.strptime("2019-02-15_00.00.00.000000", "%Y-%m-%d_%H.%M.%S.%f"))
+def test_take_screenshot_save_file_fail(mock_get_current_datetime):
     driver = MockDriver(1024, 768, 2000, False)
 
     result = BrowserHandler.take_screenshot(driver, "test_screenshot")
 
-    check_mocked_functions_called()
+    check_mocked_functions_called(mock_get_current_datetime)
     assert_that(result, equal_to(False), "The screenshot should have failed to save")
+    assert_that(BrowserHandler.saved_screenshot_file_names, has_length(0),
+                "Expected there to be nothing in the list of saved file names")
+    # clean up saved file names
+    BrowserHandler.saved_screenshot_file_names = []
 
 
 @mock.patch("os.path.exists", side_effect=lambda *args: False)
@@ -206,8 +224,13 @@ def test_take_screenshot_save_file_with_invalid_characters(mock_get_current_date
     BrowserHandler.take_screenshot(driver, "abc://test_screenshot")
 
     check_mocked_functions_called(mock_path_exists, mock_makedirs, mock_get_current_datetime)
-    assert_that(driver.screenshot_filename, equal_to("screenshots/2019-02-15_00.00.00.000000_abc__test_screenshot.png"),
+    expected_file_name = "screenshots/2019-02-15_00.00.00.000000_abc__test_screenshot.png"
+    assert_that(driver.screenshot_filename, equal_to(expected_file_name),
                 "The screenshot filename was incorrect")
+    assert_that(BrowserHandler.saved_screenshot_file_names[0], equal_to(expected_file_name),
+                "The screenshot filename was incorrect")
+    # clean up saved file names
+    BrowserHandler.saved_screenshot_file_names = []
 
 
 @mock.patch("os.path.exists", side_effect=lambda *args: True)
@@ -219,6 +242,8 @@ def test_take_screenshot_resize_window(mock_path_exists):
     check_mocked_functions_called(mock_path_exists)
     assert_that(driver.num_resizes, equal_to(2), "Window should have been resized for the screenshot and then reset")
     assert_that(driver.window_height, equal_to(768), "Window height should have been reverted to its original value")
+    # clean up saved file names
+    BrowserHandler.saved_screenshot_file_names = []
 
 
 @mock.patch("os.path.exists", side_effect=lambda *args: True)
@@ -230,6 +255,8 @@ def test_take_screenshot_no_resize_window(mock_path_exists):
     check_mocked_functions_called(mock_path_exists)
     assert_that(driver.num_resizes, equal_to(0), "Window should not have been resized")
     assert_that(driver.window_height, equal_to(768), "Window height should not have changed")
+    # clean up saved file names
+    BrowserHandler.saved_screenshot_file_names = []
 
 
 @mock.patch("os.listdir", side_effect=lambda *args: [])
@@ -263,6 +290,41 @@ def test_move_screenshots_to_folder(mock_move, mock_path_exists, mock_listdir):
     mock_move.assert_any_call("screenshots/test1.png", "screenshots/test_folder")
     mock_move.assert_any_call("screenshots/test3.png", "screenshots/test_folder")
     mock_move.assert_any_call("screenshots/test4.png", "screenshots/test_folder")
+
+
+@mock.patch("os.listdir", side_effect=lambda *args: ["test1.png", "test2.jpg", "test3.png", "test4.png", "test5.bmp"])
+@mock.patch("os.path.exists", side_effect=lambda *args: True)
+@mock.patch("shutil.move")
+def test_move_screenshots_to_folder_with_file_names(mock_move, mock_path_exists, mock_listdir):
+    BrowserHandler.move_screenshots_to_folder("test_folder", ["test2.jpg", "test4.png", "test5.bmp"])
+
+    check_mocked_functions_called(mock_listdir, mock_path_exists, mock_move)
+    assert_that(mock_move.call_count, equal_to(3), "Only files passed in to method should be moved")
+    mock_move.assert_any_call("screenshots/test2.jpg", "screenshots/test_folder")
+    mock_move.assert_any_call("screenshots/test4.png", "screenshots/test_folder")
+    mock_move.assert_any_call("screenshots/test5.bmp", "screenshots/test_folder")
+
+
+def test_take_and_move_screenshots_to_folder():
+    # This is more of an integration test, validating the combination of take_screenshot and move_screenshots_to_folder.
+    driver = MockDriver(1024, 768, 2000, True, True)
+
+    # take_screenshot
+    result = BrowserHandler.take_screenshot(driver, "test_file_name")
+    assert_that(result, equal_to(True), "Expected to successfully save the test file")
+    assert_that(BrowserHandler.saved_screenshot_file_names, has_length(1), "Expected to have one saved file name")
+
+    # move_screenshots_to_folder
+    file_name = BrowserHandler.saved_screenshot_file_names[0]
+    BrowserHandler.move_screenshots_to_folder("test_folder", [file_name])
+    expected_moved_file_path = "screenshots/test_folder/" + file_name.split("/")[1]
+    assert_that(os.path.exists(expected_moved_file_path),
+                "Expected to find the file moved to the test_folder directory")
+
+    # clean up saved file names
+    BrowserHandler.saved_screenshot_file_names = []
+    # Clean up file that has been created
+    os.remove(expected_moved_file_path)
 
 
 @mock.patch("uitestcore.utilities.browser_handler.open_chrome")
