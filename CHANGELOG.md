@@ -1,3 +1,13 @@
+10.6.0 / 2024-07-29
+===================
+- Fix for concurrency issue in taking and moving screenshots
+  - Updated BrowserHandler.take_screenshot so that it will store the name of the file that has been saved in a property
+      on the class itself.
+  - Updated BrowserHandler.move_screenshots_to_folder to take an optional parameter, file_names, that (if provided) will
+      override the default behaviour of moving all .png files from the source to the target folder, and instead will 
+      only move files matching the file_names from the source to the target folder.
+
+
 10.5.0 / 2024-01-10
 ===================
 - Added the ability to specify which _rules_ to use when running Axe reports on a page. This is not a breaking change as the default is still running the report on the full page using default rules
