@@ -70,13 +70,15 @@ class MockLogger:
         return MockLogger(False, True)
 
 
-class MockDriver(object):
-    def __init__(self, window_width, window_height, scroll_height, save_screenshot_success=True, save_test_file=False):
+class MockDriver:
+
+    save_test_file = False
+
+    def __init__(self, window_width, window_height, scroll_height, save_screenshot_success=True):
         self.window_width = window_width
         self.window_height = window_height
         self.scroll_height = scroll_height
         self.save_screenshot_success = save_screenshot_success
-        self.save_test_file = save_test_file
         self.screenshot_filename = ""
         self.num_resizes = 0
 
@@ -97,7 +99,7 @@ class MockDriver(object):
     def save_screenshot(self, file_name):
         self.screenshot_filename = file_name
         if self.save_test_file:
-            with open(file_name, "w+") as file:
+            with open(file_name, "w+", encoding="UTF-8") as file:
                 file.write("Test file content")
         return self.save_screenshot_success
 
@@ -307,7 +309,8 @@ def test_move_screenshots_to_folder_with_file_names(mock_move, mock_path_exists,
 
 def test_take_and_move_screenshots_to_folder():
     # This is more of an integration test, validating the combination of take_screenshot and move_screenshots_to_folder.
-    driver = MockDriver(1024, 768, 2000, True, True)
+    driver = MockDriver(1024, 768, 2000, True)
+    driver.save_test_file = True # Set the mock so that it will save a real file.
 
     # take_screenshot
     result = BrowserHandler.take_screenshot(driver, "test_file_name")

@@ -1,4 +1,4 @@
-10.6.0
+10.6.0 / 2024-07-29
 ===================
 - Fix for concurrency issue in taking and moving screenshots
   - Updated BrowserHandler.take_screenshot so that it will store the name of the file that has been saved in a property
