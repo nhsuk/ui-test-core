@@ -23,10 +23,9 @@ def remove_invalid_characters(input_string):
     :param input_string: the string which needs to be altered
     :return: edited string
     """
-    return input_string.replace(" ", "_").replace(",", "").replace(".", "") \
-        .replace("\n", "").replace("/", "_").replace("*", "").replace(":", "") \
-        .replace("?", "").replace('"', '').replace("'", "").replace("|", "_") \
-        .replace("<", "_").replace(">", "_")
+    return input_string.replace(" ", "_").replace("\\", "").replace("/", "").replace("*", "").replace(":", "") \
+        .replace("?", "").replace('"', '').replace("'", "").replace("|", "").replace("<", "").replace(">", "") \
+        .replace("\n", "")
 
 
 def decode_url_string(input_string):

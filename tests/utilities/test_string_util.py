@@ -31,11 +31,20 @@ def test_generate_random_string_increased_length():
 
 
 def test_remove_invalid_characters():
-    test_input_string = "https://test, 'string'\n"
+    test_input_string = "https:// test, 'string'\n*:?\"<>|\\ more_text"
 
     result = remove_invalid_characters(test_input_string)
 
-    assert_that(result, equal_to("https__test_string"), "All invalid characters should be removed")
+    assert_that(result, equal_to("https_test,_string_more_text"), "All invalid characters should be removed")
+
+
+def test_remove_invalid_characters_from_scenario_name():
+    test_input_string = "User\/ can*: see and click Add profile panel?@!('|><,."
+
+    result = remove_invalid_characters(test_input_string)
+
+    assert_that(result, equal_to("User_can_see_and_click_Add_profile_panel@!(,."),
+                "All invalid characters should be removed")
 
 
 def test_remove_invalid_characters_does_not_change_valid_string():

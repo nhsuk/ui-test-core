@@ -1,3 +1,7 @@
+10.6.1 / 2025-03-17
+===================
+- Improved `remove_invalid_characters` function to handle a full range of invalid characters, ensuring all special characters like spaces, slashes, colons, and question marks are correctly removed or replaced
+
 10.6.0 / 2024-07-29
 ===================
 - Fix for concurrency issue in taking and moving screenshots
@@ -6,7 +10,6 @@
   - Updated BrowserHandler.move_screenshots_to_folder to take an optional parameter, file_names, that (if provided) will
       override the default behaviour of moving all .png files from the source to the target folder, and instead will 
       only move files matching the file_names from the source to the target folder.
-
 
 10.5.0 / 2024-01-10
 ===================
