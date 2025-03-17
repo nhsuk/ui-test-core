@@ -226,7 +226,7 @@ def test_take_screenshot_save_file_with_invalid_characters(mock_get_current_date
     BrowserHandler.take_screenshot(driver, "abc://test_screenshot")
 
     check_mocked_functions_called(mock_path_exists, mock_makedirs, mock_get_current_datetime)
-    expected_file_name = "screenshots/2019-02-15_00.00.00.000000_abc__test_screenshot.png"
+    expected_file_name = "screenshots/2019-02-15_00.00.00.000000_abctest_screenshot.png"
     assert_that(driver.screenshot_filename, equal_to(expected_file_name),
                 "The screenshot filename was incorrect")
     assert_that(BrowserHandler.saved_screenshot_file_names[0], equal_to(expected_file_name),
