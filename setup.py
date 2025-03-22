@@ -21,7 +21,7 @@ setup(
         "requests==2.31.0",
         "selenium==4.11.2",
         "six==1.16.0",
-        "urllib3==1.26.12",
+        "urllib3==1.26.18",
         "axe-selenium-python-nhsuk"
     ],
     classifiers=[
